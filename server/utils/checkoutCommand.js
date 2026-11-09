@@ -5,7 +5,7 @@ import { checkoutStreetAddress, hasDeliveryTestMarker } from '~/utils/checkoutAd
 
 export const normalizeCheckoutCommand = (body, user, { review = false } = {}) => {
   const invalid = message => { throw createError({ statusCode: 400, statusMessage: message }) }
-  if (!body || Object.keys(body).some(key => !['cart_id', 'quote_id', 'review_token', 'items', 'coupon_code', 'address', 'shipping_method', 'shipping_company_id', 'payment_method', 'locale', 'backorder_accepted'].includes(key))) invalid('A valid checkout request is required.')
+  if (!body || Object.keys(body).some(key => !['cart_id', 'quote_id', 'review_token', 'items', 'coupon_code', 'address', 'shipping_method', 'shipping_company_id', 'payment_method', 'locale', 'backorder_accepted', 'preorder_accepted'].includes(key))) invalid('A valid checkout request is required.')
   const cartId = String(body?.cart_id || '').trim().toLowerCase()
   if (!isStoreAnalyticsUuid(cartId)) invalid('Refresh your cart before checkout.')
   if (!Array.isArray(body?.items) || !body.items.length || body.items.length > 100) invalid('A valid cart is required.')
@@ -43,6 +43,7 @@ export const normalizeCheckoutCommand = (body, user, { review = false } = {}) =>
   if (body?.locale !== undefined && !['en', 'ar'].includes(body.locale)) invalid('Choose a supported checkout language.')
   order.locale = body?.locale || 'en'
   order.backorder_accepted = body.backorder_accepted === true
+  if (body.preorder_accepted !== undefined) {if(typeof body.preorder_accepted !== 'boolean')invalid('Review the preorder terms.');order.preorder_accepted=body.preorder_accepted}
   return { cartId, order, items: [...lines.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, value]) => value) }
 }
 
@@ -53,6 +54,12 @@ export const throwCheckoutError = error => {
     throw createError({ statusCode: 400, statusMessage: 'Select a supported governorate and city.', data: { code: 'checkout:location' } })
   }
   const conflicts = {
+    'preorder:disabled': 'Card preorders are unavailable.',
+    'preorder:unavailable': 'This preorder is unavailable.',
+    'preorder:sold_out': 'This preorder allocation is sold out.',
+    'preorder:customer_limit': 'This preorder exceeds your quantity limit.',
+    'preorder:payment_amount': 'This preorder requires a positive payment amount.',
+    'preorder:balance_unavailable': 'This balance cannot be paid online.',
     'checkout:restart': 'Review the updated checkout.',
     'checkout:conflict': 'This checkout changed. Review your cart before ordering.',
     'checkout:legacy': 'Review this order in My Account before ordering again.',

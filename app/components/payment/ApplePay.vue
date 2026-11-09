@@ -1,7 +1,7 @@
 <template>
  <section class="min-w-0 rounded-xl border border-slate-200 bg-white p-4 sm:p-6 dark:border-slate-700 dark:bg-slate-900" aria-live="polite">
   <h1 class="text-xl font-semibold">{{ $t('applePayment.title') }}</h1>
-  <p v-if="checkout" class="mt-2 text-lg font-semibold">{{ checkout.totalAmount }} {{ checkout.currency }}</p>
+  <p v-if="checkout" class="mt-2 text-lg font-semibold">{{ (checkout.paymentAmount ?? checkout.totalAmount) }} {{ checkout.currency }}</p>
   <p v-if="loading" role="status" class="mt-3 text-sm text-slate-600 dark:text-slate-400">{{ $t('applePayment.loading') }}</p>
   <p v-if="error" role="alert" class="mt-3 text-sm text-red-700 dark:text-red-400">{{ $t(error) }}</p>
   <p v-if="sheetClosed" role="status" class="mt-3 text-sm">{{ $t(checkout?.merchantRiskRetryAllowed ? 'merchantRetry.closed' : checkout?.canResume ? 'applePayment.closedReady' : 'applePayment.closedChecking') }}</p>

@@ -2,8 +2,10 @@
  <section class="min-w-0 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 sm:p-6" aria-live="polite">
   <Icon :name="confirmed ? 'lucide:circle-check' : 'lucide:clock-3'" size="28" class="text-blue-600" aria-hidden="true" />
   <h1 class="mt-3 text-xl font-semibold">{{ $t(payment ? 'embeddedCheckout.secureTitle' : checkout?.merchantRiskRetryAllowed && !confirmed ? 'merchantRetry.status' : confirmed ? 'paymentFirst.confirmed' : checkout?.paymentStatus === 'ready' ? 'paymentInterface.ready' : checkout?.paymentStatus === 'failed' ? 'embeddedCheckout.failed' : checkout?.paymentStatus === 'verified_order_pending' ? 'paymentFirst.orderReview' : 'embeddedCheckout.pending') }}</h1>
-  <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">{{ $t(confirmed ? 'paymentFirst.confirmedDetail' : 'embeddedCheckout.cartSaved') }}</p>
-  <p v-if="checkout" class="mt-3 break-words text-sm">{{ checkout.orderNumber || checkout.reference }} · {{ checkout.totalAmount }} {{ checkout.currency }}</p>
+  <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">{{ $t(confirmed ? (checkout?.isPreorderBalance ? 'preorderCard.balanceConfirmed' : checkout?.isPreorder && Number(checkout.remainingAmount)>0 ? 'preorderCard.depositConfirmed' : 'paymentFirst.confirmedDetail') : checkout?.isPreorderBalance ? 'preorderCard.balancePending' : 'embeddedCheckout.cartSaved') }}</p>
+  <p v-if="checkout" class="mt-3 break-words text-sm">{{ checkout.orderNumber || checkout.reference }} · {{ (checkout.paymentAmount ?? checkout.totalAmount) }} {{ checkout.currency }}</p>
+  <p v-if="checkout?.isPreorder" class="mt-2 text-sm">{{ $t('preorderCard.summary',{total:checkout.totalAmount,remaining:checkout.remainingAmount,currency:checkout.currency}) }}</p>
+  <p v-if="confirmed && checkout.isPreorder && checkout.preorderFulfillmentState === 'awaiting_stock'" class="mt-2 text-sm">{{ $t('preorderCard.awaitingStock') }}</p>
   <p v-if="confirmed && checkout.stockReview" class="mt-2 text-sm">{{ $t('paymentFirst.stockReview') }}</p>
   <p v-if="error" role="alert" class="mt-3 text-sm text-red-700">{{ $t('paymentFirst.unavailable') }}</p>
   <p v-if="checkout?.paymentStatus==='failed' && !confirmed" class="mt-2 text-sm">{{ $t('paymentFirst.failedDetail') }}</p>
@@ -17,7 +19,8 @@
    <NuxtLinkLocale v-if="confirmed" :to="`/account/orders/${checkout.orderId}`" class="inline-flex min-h-11 items-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white">{{ $t('paymob.viewOrder') }}</NuxtLinkLocale>
    <button v-else type="button" :disabled="busy" @click="refresh" class="min-h-11 rounded-lg border px-4 text-sm font-semibold disabled:opacity-50">{{ $t('paymentFirst.checkStatus') }}</button>
    <NuxtLinkLocale to="/account/payments" class="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-blue-700 dark:text-blue-400">{{ $t('paymentFirst.activity') }}</NuxtLinkLocale>
-   <NuxtLinkLocale to="/cart" class="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-blue-700 dark:text-blue-400">{{ $t('paymentFirst.cart') }}</NuxtLinkLocale>
+   <NuxtLinkLocale v-if="checkout?.isPreorderBalance" :to="`/account/orders/${checkout.orderId}`" class="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-blue-700 dark:text-blue-400">{{ $t('preorderCard.backToOrder') }}</NuxtLinkLocale>
+   <NuxtLinkLocale v-else to="/cart" class="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-blue-700 dark:text-blue-400">{{ $t('paymentFirst.cart') }}</NuxtLinkLocale>
   </div>
  </section>
 </template>
@@ -31,12 +34,18 @@ const {uiNavigateTo}=useUiNavigation()
 const checkout=ref(null),busy=ref(false),error=ref(false),cartNotice=ref(false)
 const payment=shallowRef(null),activeInterface=shallowRef(null),fallback=ref(false)
 const confirmed=computed(()=>checkout.value?.paymentStatus==='paid'&&!!checkout.value?.orderId)
+const route=useRoute()
+const balancePage=computed(()=>checkout.value?.isPreorderBalance?`/account/orders/${checkout.value.orderId}`:'')
 // A new submission reuses the same intention after server evidence permits it.
 // This never treats a browser result as financial finality or creates a retry order.
 const retiredRetry=computed(()=>checkout.value?.state==='retired'&&checkout.value?.paymentStatus==='failed'&&checkout.value?.fundsVerified===false&&!checkout.value?.orderId)
 const retrySafe=computed(()=>checkout.value?.merchantRiskRetryAllowed===true||checkout.value?.canResume===true||retiredRetry.value)
 const retryCheckout=async()=>{
  if(!retrySafe.value||busy.value||!scope.isCurrent())return
+ if(checkout.value?.merchantRiskRetryAllowed&&balancePage.value){
+  void scope.request(`/api/account/payment-checkouts/${props.sessionId}/retire`,{method:'POST',body:{},retry:0,timeout:10000}).catch(()=>{})
+  await uiNavigateTo(balancePage.value);return
+ }
  if(checkout.value?.merchantRiskRetryAllowed){
   const pending=readPendingCheckout(window.localStorage,scope.accountId);if(pending?.body.payment_method==='card')removePendingCheckout(window.localStorage,pending)
   void scope.request(`/api/account/payment-checkouts/${props.sessionId}/retire`,{method:'POST',body:{},retry:0,timeout:10000}).catch(()=>{})
@@ -73,7 +82,7 @@ const authorizePayment=async()=>{
  }catch{return false}
 }
 const paymentComplete=()=>{payment.value=null;activeInterface.value=null;fallback.value=false;last=0;refresh()}
-const cancelPayment=()=>{if(checkout.value?.merchantRiskRetryAllowed)void scope.request(`/api/account/payment-checkouts/${props.sessionId}/retire`,{method:'POST',body:{},retry:0,timeout:10000}).catch(()=>{});payment.value=null;activeInterface.value=null;fallback.value=false;uiNavigateTo('/checkout')}
+const cancelPayment=()=>{if(checkout.value?.merchantRiskRetryAllowed)void scope.request(`/api/account/payment-checkouts/${props.sessionId}/retire`,{method:'POST',body:{},retry:0,timeout:10000}).catch(()=>{});payment.value=null;activeInterface.value=null;fallback.value=false;uiNavigateTo(balancePage.value||'/checkout')}
 const paymentUnavailable=({beforeSubmit})=>{payment.value=null;fallback.value=beforeSubmit===true&&activeInterface.value?.redirectFallback===true;error.value=true}
 const hostedFallback=async()=>{
  if(busy.value||!fallback.value||!activeInterface.value?.interfaceToken)return
@@ -93,7 +102,7 @@ const refresh=async()=>{
   const result=await scope.request('/api/account/payment-checkouts/'+props.sessionId,{retry:0,timeout:10000})
   if(disposed||version!==epoch)return
   checkout.value=result.checkout;error.value=false
-  if(confirmed.value&&acknowledged!==result.checkout.id){
+  if(confirmed.value&&acknowledged!==result.checkout.id&&!result.checkout.isPreorderBalance){
    emitMetaEvent('Purchase',{orderId:result.checkout.orderId})
    try{
     const c=result.checkout,owner='account:'+scope.accountId
@@ -105,7 +114,7 @@ const refresh=async()=>{
  finally{if(version===epoch)busy.value=false}
 }
 watch(()=>props.sessionId,()=>{epoch++;checkout.value=null;payment.value=null;activeInterface.value=null;fallback.value=false;last=0;busy.value=false;refresh()})
-onMounted(refresh)
+onMounted(async()=>{await refresh();if(route.query.pay==='1'&&checkout.value?.isPreorderBalance&&checkout.value.canResume&&!confirmed.value)void retryCheckout()})
 onBeforeUnmount(()=>{disposed=true;epoch++})
 scope.onInvalidate(()=>{disposed=true;epoch++;checkout.value=null;payment.value=null;activeInterface.value=null;fallback.value=false;error.value=false;cartNotice.value=false;busy.value=false})
 </script>

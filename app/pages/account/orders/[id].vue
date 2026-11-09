@@ -110,7 +110,8 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
 
       <AccountOrderProgress :order="detail.order" :shipping="detail.shipping" />
 
-      <section v-if="detail.order.is_preorder" class="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-700 sm:p-6">{{ $t('account.orders.bankAndInstapayTransfersAreVerifiedByStoreStaffKeepYourTransferReferenceAndContactTheStoreIfYourPaymentHasNotAppearedHere') }}</section>
+      <AccountPreorderBalance v-if="detail.order.is_preorder && detail.order.payment_method === 'card'" :order="detail.order" />
+      <section v-else-if="detail.order.is_preorder" class="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-700 sm:p-6">{{ $t('account.orders.bankAndInstapayTransfersAreVerifiedByStoreStaffKeepYourTransferReferenceAndContactTheStoreIfYourPaymentHasNotAppearedHere') }}</section>
       <section v-else-if="paymentMethodNeedsProof(detail.order.payment_method)" class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6" aria-labelledby="proof-title">
         <div class="flex flex-wrap items-start justify-between gap-3"><div><h2 id="proof-title" class="text-lg font-bold text-slate-900">{{ $t('common.proofOfPayment') }}</h2><p class="mt-1 text-sm text-slate-600">{{ $t('account.orders.useThisSectionIfYouSkippedProofDuringCheckoutOrNeedToRetryIt') }}</p></div><span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentProofStatusClass(detail.order.payment_proof_status)">{{ $uiLabel(paymentProofStatusLabel(detail.order.payment_proof_status)) }}</span></div>
         <p v-if="detail.order.payment_proof_file_name" class="mt-4 text-sm text-slate-700">{{ $t('common.currentFile') }} <strong>{{ detail.order.payment_proof_file_name }}</strong></p>
@@ -130,7 +131,7 @@ useHead(() => ({ title: detail.value?.order?.order_number ? `${detail.value.orde
         <div class="space-y-5">
           <section class="rounded-2xl border border-slate-200 bg-white p-5" aria-labelledby="payment-title">
             <h2 id="payment-title" class="font-bold text-slate-900">{{ $t('common.payment') }}</h2>
-            <span v-if="detail.order.payment_method !== 'card' && (detail.order.payment_method !== 'cash' || detail.order.is_preorder)" class="mt-3 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentStatusClass(detail.order.payment_status)">{{ $uiLabel(paymentStatusLabel(detail.order.payment_status)) }}</span>
+            <span v-if="(detail.order.payment_method !== 'card' || detail.order.is_preorder) && (detail.order.payment_method !== 'cash' || detail.order.is_preorder)" class="mt-3 inline-flex rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentStatusClass(detail.order.payment_status)">{{ $uiLabel(paymentStatusLabel(detail.order.payment_status)) }}</span>
             <p v-if="detail.order.paid_at" class="mt-2 text-sm text-slate-600">{{ $t('common.paidValue', { value0: (formatAccountDate(detail.order.paid_at, true)) }) }}</p>
             <p v-if="detail.order.payment_method" class="mt-2 text-sm text-slate-600">{{ $t('common.methodValue', { value0: (getPaymentMethodLabel(detail.order.payment_method)) }) }}</p>
             <PaymentCodStatus v-if="detail.order.payment_method === 'cash' && !detail.order.is_preorder" :order="detail.order" />

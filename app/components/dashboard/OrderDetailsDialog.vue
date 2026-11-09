@@ -80,10 +80,11 @@
               <dl class="mt-4 grid gap-3 text-sm sm:grid-cols-2"><div><dt>{{ $t('common.orderValueVariant4') }}</dt><dd class="font-bold">{{ formatCurrency(orderDetail.total_amount) }}</dd></div><div><dt>{{ $t('common.requiredInitialPayment') }}</dt><dd class="font-bold">{{ formatCurrency(orderDetail.initial_amount_due) }}</dd></div><div><dt>{{ $t('common.verifiedPaid') }}</dt><dd class="font-bold">{{ formatCurrency(orderDetail.amount_paid) }}</dd></div><div><dt>{{ $t('common.balanceRemaining') }}</dt><dd class="font-bold">{{ formatCurrency(Number(orderDetail.total_amount) - Number(orderDetail.amount_paid)) }}</dd></div></dl>
               <p class="mt-3 text-sm font-semibold text-amber-900">{{ Number(orderDetail.amount_paid) >= Number(orderDetail.initial_amount_due) ? $t('common.initialPaymentReceived') : $t('common.initialPaymentPending') }}</p>
               <p v-if="orderDetail.status === 'cancelled' && Number(orderDetail.amount_paid) > 0" class="mt-2 text-sm font-semibold text-red-700">{{ $t('dashboard.OrderDetailsDialog.paymentWasRecordedReviewRefundHandlingManually') }}</p>
-              <p v-if="externalErp && orderDetail.is_preorder" class="mt-3 text-sm text-amber-700">{{ $t('erp.preorderManual') }}</p>
-              <button v-if="!externalErp && orderDetail.preorder_fulfillment_state === 'awaiting_stock' && orderDetail.payment_status === 'paid' && orderDetail.status === 'on_hold'" type="button" :disabled="releaseSaving" class="mt-3 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" @click="releasePreorder">{{ releaseSaving ? $t('common.checkingStock') : $t('dashboard.OrderDetailsDialog.assignArrivedStockAndRelease') }}</button>
+              <p v-if="externalErp && orderDetail.is_preorder && orderDetail.stock_fulfillment_state !== 'untracked'" class="mt-3 text-sm text-amber-700">{{ $t('erp.preorderManual') }}</p>
+              <button v-if="(!externalErp || orderDetail.stock_fulfillment_state === 'untracked') && orderDetail.preorder_fulfillment_state === 'awaiting_stock' && orderDetail.payment_status === 'paid' && orderDetail.status === 'on_hold'" type="button" :disabled="releaseSaving" class="mt-3 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50" @click="releasePreorder">{{ releaseSaving ? $t('common.checkingStock') : $t('dashboard.OrderDetailsDialog.assignArrivedStockAndRelease') }}</button>
               <ul v-if="preorderPayments.length" class="mt-4 space-y-1 text-xs text-gray-600"><li v-for="payment in preorderPayments" :key="payment.id">{{ formatCurrency(payment.amount) }} · {{ payment.reference }} · {{ formatDate(payment.recorded_at) }}</li></ul>
               <form v-if="!['cancelled', 'refunded'].includes(orderDetail.status) && Number(orderDetail.amount_paid) < Number(orderDetail.total_amount)" class="mt-5 grid gap-3 border-t pt-4 sm:grid-cols-[1fr_1.5fr_auto]" @submit.prevent="recordVerifiedPayment">
+                <label v-if="orderDetail.payment_method === 'card'" class="text-sm font-semibold sm:col-span-3">{{ $t('preorderCard.balanceMethod') }}<select v-model="balancePaymentMethod" required class="mt-1 w-full rounded-lg border bg-white p-2"><option value="">{{ $t('preorderCard.chooseMethod') }}</option><option value="bank_transfer">{{ $t('preorderCard.bankTransfer') }}</option><option value="instapay">InstaPay</option></select></label>
                 <label class="text-sm font-semibold">{{ $t('common.verifiedAmount') }}<input v-model="paymentAmount" type="number" min="0.01" step="0.01" required class="mt-1 w-full rounded-lg border bg-white p-2"></label>
                 <label class="text-sm font-semibold">{{ $t('dashboard.OrderDetailsDialog.bankOrInstapayReference') }}<input v-model="paymentReference" type="text" minlength="3" maxlength="120" required class="mt-1 w-full rounded-lg border bg-white p-2"></label>
                 <button type="submit" :disabled="paymentSaving" class="self-end rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{{ paymentSaving ? $t('common.recording') : $t('common.recordVerifiedPayment') }}</button>
@@ -318,6 +319,7 @@ const orderBill = ref(null)
 const paymentAmount = ref('')
 const paymentReference = ref('')
 const paymentVerified = ref(false)
+const balancePaymentMethod = ref('')
 const paymentSaving = ref(false)
 const releaseSaving = ref(false)
 const actionBusy = computed(() => paymentSaving.value || releaseSaving.value)
@@ -589,7 +591,7 @@ const printOrderDetails = () => {
 
 const resetDialogState = () => {
   dialogEpoch++; detailVersion++; detailController?.abort(); detailController=null
-  paymentAmount.value=''; paymentReference.value=''; paymentVerified.value=false
+  paymentAmount.value=''; paymentReference.value=''; paymentVerified.value=false; balancePaymentMethod.value=''
   preorderPayments.value=[]; codCash.value=null; orderBill.value=null
   errorMessage.value = ''
   orderDetail.value = null
@@ -625,12 +627,12 @@ const refreshCash = async () => {
 }
 const recordVerifiedPayment = async () => {
   const context=beginAction();if(!context||!paymentVerified.value)return
-  const body={amount:paymentAmount.value,reference:paymentReference.value,verified:true}
+  const body={amount:paymentAmount.value,reference:paymentReference.value,verified:true,...(balancePaymentMethod.value?{payment_method:balancePaymentMethod.value}:{})}
   paymentSaving.value=true;errorMessage.value=''
   try{
     const response=await scopedRequest(context,`/api/admin-orders/${context.id}/payments`,{method:'POST',body})
     if(!response)return
-    paymentAmount.value='';paymentReference.value='';paymentVerified.value=false
+    paymentAmount.value='';paymentReference.value='';paymentVerified.value=false;balancePaymentMethod.value=''
     await loadOrderDetails()
     if(contextCurrent(context))emit('updated',response.order)
   }catch(error){if(contextCurrent(context))errorMessage.value=error?.data?.statusMessage||'Could not record the payment.'}finally{paymentSaving.value=false}

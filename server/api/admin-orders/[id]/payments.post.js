@@ -6,13 +6,14 @@ export default defineEventHandler(async event => {
   const { adminUser, supabaseAdmin } = await requireAdminRequest(event, { permission: 'dashboard.orders' })
   const orderId = getRouterParam(event, 'id')
   const body = await readBody(event)
+  if(body?.payment_method !== undefined && !['bank_transfer','instapay'].includes(body.payment_method))throw createError({statusCode:400,statusMessage:'Choose a verified balance payment method.'})
   const amount = Number(body?.amount)
   const reference = String(body?.reference || '').trim()
   if (!Number.isFinite(amount) || amount <= 0 || !/^\d+(\.\d{1,2})?$/.test(String(body?.amount)) || reference.length < 3 || reference.length > 120 || body?.verified !== true) {
     throw createError({ statusCode: 400, statusMessage: 'Confirm a verified payment amount and reference.' })
   }
   const { data: order, error } = await supabaseAdmin.rpc('commerce_record_preorder_payment', {
-    p_order_id: orderId, p_admin_id: adminUser.id, p_amount: amount, p_reference: reference
+    p_order_id: orderId, p_admin_id: adminUser.id, p_amount: amount, p_reference: reference, ...(body.payment_method ? {p_method:body.payment_method} : {})
   })
   if (error) throw createError({ statusCode: error.code === '23505' ? 409 : 400, statusMessage: error.message || 'Could not record payment.' })
   await recordAdminActivity({ supabaseAdmin, adminUser, actionKey: 'orders.preorder.payment_recorded',

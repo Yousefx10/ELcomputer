@@ -31,7 +31,7 @@ export default paymentHandler(async event => {
   const purchase = { ...safePurchaseCapability(scope), ...beta }
   let lifecycle=null
   if(paymentFirstEnabled(runtime)){try{const r=await getSupabaseAdminClient().rpc('commerce_payment_checkout_readiness');if(!r.error)lifecycle=r.data}catch{}}
-  if(paymentFirstEnabled(runtime)){purchase.paymentFirst=lifecycle?.enabled===true;purchase.merchantRiskRetries=lifecycle?.merchantRiskRetries===true}
+  if(paymentFirstEnabled(runtime)){purchase.paymentFirst=lifecycle?.enabled===true;purchase.merchantRiskRetries=lifecycle?.merchantRiskRetries===true;if(lifecycle?.preorders?.installed){purchase.preordersEnabled=lifecycle.preorders.enabled===true;purchase.preorderBalanceOnline=lifecycle.preorders.balanceOnline===true}}
   const manualTransfer={available:paymentFirstEnabled(runtime)&&[true,'true'].includes(runtime.manualTransferEnabled)&&lifecycle?.manual?.ready===true&&(!purchase.beta||purchase.paymentMethods?.includes('instapay')===true)}
   try {
     const config = getPaymobConfig(scope ? controlledPaymentRuntime(runtime) : runtime)

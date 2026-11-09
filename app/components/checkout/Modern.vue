@@ -27,7 +27,7 @@
 
       <section v-if="savedCheckout" class="cm-card cm-payment-live" aria-labelledby="cm-secure-payment">
         <h2 id="cm-secure-payment" class="cm-card-title">{{ $t('embeddedCheckout.secureTitle') }}</h2>
-        <p v-if="paymentSummary" class="cm-amount">{{ formatCurrency(paymentSummary.totalAmount) }}</p>
+        <p v-if="paymentSummary" class="cm-amount">{{ formatCurrency(paymentSummary.paymentAmount ?? paymentSummary.totalAmount) }}</p>
         <p v-if="paymentFormError || orderError" role="alert" class="cm-error">{{ paymentFormError || $uiMessage(orderError) }}</p>
         <ClientOnly><PaymentPaymobPixel v-if="embeddedPayment" :key="savedCheckout" :session="embeddedPayment" :authorize="authorizeEmbeddedPayment" class="mt-4" @complete="checkEmbeddedPayment" @cancel="dismissPayment" @unavailable="embeddedUnavailable" /></ClientOnly>
         <div class="cm-inline-actions">
@@ -153,7 +153,7 @@
           <!-- 3. Payment -->
           <section class="cm-card" aria-labelledby="cm-payment-title">
             <div class="cm-card-head"><h2 id="cm-payment-title" class="cm-card-title"><span class="cm-step">{{ requiresDelivery ? 3 : 2 }}</span>{{ $t('checkoutModern.payment') }}</h2></div>
-            <p v-if="isPreorderCart" class="cm-muted">{{ $t('checkout.preordersCurrentlyUseBankTransferOrInstapayPaymentRemainsPendingUntilVerified') }}</p>
+            <p v-if="isPreorderCart" class="cm-muted">{{ $t('preorderCard.explanation') }}</p>
             <div v-if="availablePaymentMethods.length" class="cm-options" role="radiogroup" :aria-label="$t('common.chooseAPaymentMethod')">
               <label v-for="method in availablePaymentMethods" :key="method.value" class="cm-option cm-method" :class="{ 'cm-option-active': paymentChoice === method.value, 'cm-method-branded': ['card', 'apple_pay', 'instapay'].includes(method.value) }">
                 <input v-model="paymentChoice" type="radio" name="payment-method" :value="method.value" class="sr-only" @change="methodTouched = true">
@@ -186,6 +186,7 @@
               </div>
             </Transition>
 
+            <label v-if="isPreorderCart && selectedPaymentMethod === 'card'" class="cm-check cm-divider"><input v-model="preorderAccepted" type="checkbox">{{ $t('preorderCard.consent') }}</label>
             <p v-if="quote?.stockFulfillmentState === 'untracked' && quote.fulfillmentMessage" class="cm-muted cm-divider">{{ quote.fulfillmentMessage }}</p>
             <div v-if="quote?.stockFulfillmentState === 'awaiting_stock'" class="cm-divider cm-backorder">
               <p class="font-semibold">{{ $t('beta.specialOrder') }}</p><p>{{ quote.fulfillmentMessage }}</p><p>{{ $t('beta.wholeOrderWaits') }}</p>
@@ -256,7 +257,7 @@ const props = defineProps({ flow: { type: Object, required: true } })
 const {
   address, addressComplete, addressConflict, addressExpanded, addressLabel, addressLoadError, addressBookError, addressBookNotice,
   affectedPayment, appliedCoupon, applyCoupon, applyingCoupon, authorizeEmbeddedPayment, availableDeliveryOptions, availablePaymentMethods,
-  backorderAccepted, busyAddress, checkEmbeddedPayment, confirmAddressRemoval, couponCode, couponError, couponSuccess, customerId,
+  backorderAccepted, preorderAccepted, busyAddress, checkEmbeddedPayment, confirmAddressRemoval, couponCode, couponError, couponSuccess, customerId,
   deliveryDiscountAmount, deliveryError, discountAmount, dismissPayment, editAddress, embeddedPayment, embeddedUnavailable,
   expectedAvailabilityLabel, formatCurrency, getMethodFee, hasSavedAddress, hostedFallback, isEmpty, isPreorderCart, itemCount, items,
   keepAsNewAddress, loadDeliveryOptions, loadSavedAddresses, loadingAddresses, loadingDelivery, loadingProfile, merchantRiskRetry,
@@ -295,8 +296,8 @@ const primaryLabel = computed(() => {
   if (placingOrder.value) return t('common.confirming')
   if (!addressComplete.value) return t('checkoutModern.completeDetails')
   if (waitingForTotal.value) return t('checkoutModern.updating')
+  if (prepaidFlow.value && selectedPaymentMethod.value === 'card') return paymentChoice.value === 'apple_pay' ? t('checkoutModern.payApple') : t('checkoutModern.payAmount', { amount: formatCurrency(isPreorderCart.value ? (quote.value?.requiredNow ?? totalAmount.value) : totalAmount.value) })
   if (isPreorderCart.value) return t('common.confirmPreOrder')
-  if (prepaidFlow.value && selectedPaymentMethod.value === 'card') return paymentChoice.value === 'apple_pay' ? t('checkoutModern.payApple') : t('checkoutModern.payAmount', { amount: formatCurrency(totalAmount.value) })
   return t('checkoutModern.placeOrder')
 })
 // One action: incomplete details open the form; otherwise the shared flow pays.

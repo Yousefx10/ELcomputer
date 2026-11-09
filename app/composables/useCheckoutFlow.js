@@ -95,6 +95,7 @@ export function useCheckoutFlow(options) {
   const quoteRequests = ref(0)
   const quoteLoading = computed(() => quoteRequests.value > 0)
   const backorderAccepted = ref(false)
+  const preorderAccepted = ref(false)
   const pendingCheckout = ref(null)
   const reviewRequired = ref('')
   const customerId = ref(customerScope.accountId)
@@ -127,7 +128,8 @@ export function useCheckoutFlow(options) {
     address: { ...address, email: address.email.trim() || user.value?.email || '' },
     shipping_method: 'shipping', payment_method: selectedPaymentMethod.value, locale: locale.value,
     ...(requiresDelivery.value && shippingCompanyId.value ? { shipping_company_id: shippingCompanyId.value } : {}),
-    backorder_accepted: backorderAccepted.value
+    backorder_accepted: backorderAccepted.value,
+    ...(isPreorderCart.value ? { preorder_accepted: preorderAccepted.value } : {})
   })
   const loadDeliveryOptions = async () => {
     loadingDelivery.value = true
@@ -156,7 +158,7 @@ export function useCheckoutFlow(options) {
       if (sequence !== quoteSequence || identity !== JSON.stringify(checkoutBody())) return false
       quote.value = next
       if (previous && JSON.stringify([previous.totalAmount, previous.requiredNow, previous.lines, previous.shipping, previous.stockFulfillmentState, previous.fulfillmentMessage]) !== JSON.stringify([next.totalAmount, next.requiredNow, next.lines, next.shipping, next.stockFulfillmentState, next.fulfillmentMessage])) {
-        backorderAccepted.value = false
+        backorderAccepted.value = false; preorderAccepted.value = false
         quoteError.value = 'Checkout changed. Review the updated summary, then continue.'
         return false
       }
@@ -173,7 +175,7 @@ export function useCheckoutFlow(options) {
     }
   }
   watch([revision, address, locale, shippingCompanyId], () => {
-    backorderAccepted.value = false
+    backorderAccepted.value = false; preorderAccepted.value = false
     ++quoteSequence
     quote.value = null
     if (checkoutStep.value === 'payment') {
@@ -187,6 +189,7 @@ export function useCheckoutFlow(options) {
     quote.value = null
     scheduleQuote()
   }, { flush: 'sync' })
+  watch(preorderAccepted, () => { ++quoteSequence; quote.value = null; scheduleQuote() }, { flush: 'sync' })
   const hasSavedAddress = computed(() => Boolean(address.street_address && address.city && address.governorate))
   const addressComplete = computed(() => Boolean(address.first_name.trim() && address.street_address.trim() && address.city.trim()
     && egyptGovernorates.includes(address.governorate.trim()) && PHONE_PATTERN.test(address.phone.trim())
@@ -254,6 +257,7 @@ export function useCheckoutFlow(options) {
   }
 
   const validatePayment = () => {
+    if (isPreorderCart.value && selectedPaymentMethod.value === 'card' && !preorderAccepted.value) return t('preorderCard.acceptTerms')
     if (quote.value?.stockFulfillmentState === 'awaiting_stock' && !backorderAccepted.value) return t('beta.acceptTerms')
     if (!availablePaymentMethods.value.some(method => method.value === paymentChoice.value)) return 'Choose an available payment method.'
     return ''
@@ -342,7 +346,7 @@ export function useCheckoutFlow(options) {
         orderError.value=t('embeddedCheckout.pending');recoveryVisible.value=true;return
       }
       if(code==='payment_first:refresh'){orderError.value=t('paymentInterface.reload');return}
-      if (code?.startsWith('coupon:') || ['checkout:conflict', 'checkout:legacy', 'checkout:retired', 'checkout:quote', 'checkout:unavailable', 'checkout:coupon', 'checkout:delivery', 'checkout:stock'].includes(code)) {
+      if (code?.startsWith('coupon:') || code?.startsWith('preorder:') || ['checkout:conflict', 'checkout:legacy', 'checkout:retired', 'checkout:quote', 'checkout:unavailable', 'checkout:coupon', 'checkout:delivery', 'checkout:stock'].includes(code)) {
         removePendingCheckout(window.localStorage, command)
         readPending()
         reviewRequired.value = code
@@ -404,7 +408,7 @@ export function useCheckoutFlow(options) {
     finally { placingOrder.value = false }
   }
   const reviewCart = () => {
-    if (code?.startsWith('coupon:') || ['checkout:conflict', 'checkout:legacy', 'checkout:retired'].includes(reviewRequired.value)) renewCart()
+    if (reviewRequired.value?.startsWith('coupon:') || reviewRequired.value?.startsWith('preorder:') || ['checkout:conflict', 'checkout:legacy', 'checkout:retired'].includes(reviewRequired.value)) renewCart()
     reviewRequired.value = ''
     orderError.value = ''
     quote.value = null
@@ -417,7 +421,7 @@ export function useCheckoutFlow(options) {
     savedCheckout.value='';hostedFallback.value='';embeddedPayment.value=null;paymentSummary.value=null;embeddedFallback='';recoveryVisible.value=false;appleDevice.value=false;selectedPaymobMethod.value='card'
     activeInterface.value=null;affectedPayment.value=null;submissionStarted=false;paymentFormError.value='';paymentEpoch++
 
-    backorderAccepted.value = false
+    backorderAccepted.value = false; preorderAccepted.value = false
     ++quoteSequence
     customerId.value = ''
     pendingCheckout.value = null
@@ -477,6 +481,7 @@ export function useCheckoutFlow(options) {
     availableDeliveryOptions,
     availablePaymentMethods,
     backorderAccepted,
+    preorderAccepted,
     busyAddress,
     cartId,
     cartOwner,

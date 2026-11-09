@@ -1955,7 +1955,8 @@
     "live": "live",
     "reconnecting": "reconnecting",
     "other": "Other",
-    "moreCategories": "More categories"
+    "moreCategories": "More categories",
+    "closeSearch": "Close search"
   },
   "dashboard": {
     "commerce": {
@@ -6076,6 +6077,34 @@
   "couponRules": {
     "category": "Eligible category ID",
     "customerLimit": "Lifetime uses per customer"
+  },
+  "preorderCard": {
+    "explanation": "Pay the full price or the deposit shown.",
+    "consent": "I accept these preorder payment and availability terms.",
+    "acceptTerms": "Accept the preorder terms before paying.",
+    "enable": "Allow CARD/Apple Pay for preorders.",
+    "depositConfirmed": "Deposit verified. Your preorder is confirmed.",
+    "summary": "Order total: {total} {currency}. Balance: {remaining} {currency}.",
+    "balanceMethod": "Verified balance payment method",
+    "chooseMethod": "Choose the actual payment method",
+    "bankTransfer": "Bank transfer",
+    "awaitingStock": "Preorder stock awaits store confirmation.",
+    "disabled": "Card preorders are unavailable.",
+    "unavailable": "This preorder is unavailable.",
+    "soldOut": "This preorder allocation is sold out.",
+    "customerLimit": "This preorder exceeds your quantity limit.",
+    "paymentAmount": "This preorder requires a positive payment amount.",
+    "balanceConfirmed": "Balance paid. Your order is fully paid.",
+    "balancePending": "Your order is safe. We are checking this payment.",
+    "balanceTitle": "Remaining balance",
+    "balanceDue": "{amount} left to pay.",
+    "payRest": "Pay the rest",
+    "balanceStaff": "The store will contact you about the balance.",
+    "balanceUnavailable": "This balance cannot be paid online now.",
+    "backToOrder": "Back to order",
+    "balanceSetting": "Remaining balance",
+    "balanceOnline": "Customers pay online from their order",
+    "balanceByStaff": "Staff record it"
   },
   "smsTransactional": {
     "title": "Transactional SMS",

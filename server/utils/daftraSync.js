@@ -156,7 +156,7 @@ export async function syncOrderToDaftra(db, orderId, { request = daftraRequest }
   await assertExternalErpDomain(db)
   const order = check(await db.from('customer_orders').select('*').eq('id',orderId).maybeSingle())
   if (!order || order.erp_owner !== 'daftra') throw manual('This order belongs to the retained built-in ERP history.')
-  if (order.is_preorder) throw manual('Preorder ERP accounting requires manual Daftra completion.')
+  if (order.is_preorder && order.preorder_fulfillment_state !== 'ready') throw manual('Preorder ERP accounting requires manual Daftra completion.')
   const summary = { orderId:order.id,orderNumber:order.order_number,direction:'elcomputer_to_daftra' }
   if (AWAITING_PAYMENT_STATUSES.has(order.status)) return { ...summary,skipped:'awaiting_payment' }
   if (MANUAL_ORDER_STATUSES.has(order.status)) {

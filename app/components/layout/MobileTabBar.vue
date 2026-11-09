@@ -10,11 +10,13 @@ const { itemCount, isReady: cartReady } = useCart()
 const hydrated = ref(false)
 const sheetOpen = ref(false)
 const sheet = ref(null)
+const phoneSearch = usePhoneSearch()
 const categories = computed(() => siteContent.value?.navbarCategories || [])
 const accountPath = computed(() => hydrated.value && identity.accountId.value ? '/account' : '/login')
 const visible = computed(() => !/^\/(products\/|cart$|checkout)/.test(route.path))
 const active = computed(() => {
   const path = route.path
+  if (phoneSearch.open.value) return 'search'
   if (sheetOpen.value) return 'categories'
   if (path === '/') return 'home'
   if (path === '/cart') return 'cart'
@@ -26,9 +28,7 @@ const active = computed(() => {
 const count = computed(() => hydrated.value && cartReady.value ? itemCount.value : 0)
 const focusSearch = () => {
   sheetOpen.value = false
-  const input = document.querySelector('.store-search input')
-  window.scrollTo({ top: 0 })
-  if (input) input.focus()
+  phoneSearch.toggle()
 }
 const openSheet = async () => {
   sheetOpen.value = !sheetOpen.value
@@ -60,7 +60,7 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', onKey); document
     <nav class="store-tabbar" :aria-label="$t('common.yourShopping')">
       <NuxtLinkLocale to="/" class="store-tab" :aria-current="active === 'home' ? 'page' : undefined"><Icon name="lucide:house" size="22" /><span>{{ $t('common.home') }}</span></NuxtLinkLocale>
       <button type="button" class="store-tab" :aria-current="active === 'categories' ? 'true' : undefined" :aria-expanded="sheetOpen" aria-controls="store-category-sheet" @click="openSheet"><Icon name="lucide:layout-grid" size="22" /><span>{{ $t('common.categories') }}</span></button>
-      <button type="button" class="store-tab" :aria-current="active === 'search' ? 'true' : undefined" @click="focusSearch"><Icon name="lucide:search" size="22" /><span>{{ $t('common.search') }}</span></button>
+      <button type="button" class="store-tab" :aria-current="active === 'search' ? 'true' : undefined" :aria-expanded="phoneSearch.open.value" aria-controls="store-search-input" @click="focusSearch"><Icon name="lucide:search" size="22" /><span>{{ $t('common.search') }}</span></button>
       <NuxtLinkLocale to="/cart" class="store-tab" :aria-current="active === 'cart' ? 'page' : undefined" :aria-label="count ? $t('common.cartValueItems', { value0: count }) : undefined"><span class="store-tab-icon"><Icon name="lucide:shopping-cart" size="22" /><span v-if="count" class="store-tab-badge">{{ count > 99 ? '99+' : count }}</span></span><span>{{ $t('common.cart') }}</span></NuxtLinkLocale>
       <NuxtLinkLocale :to="accountPath" class="store-tab" :aria-current="active === 'account' ? 'page' : undefined"><Icon name="lucide:user-round" size="22" /><span>{{ $t('common.account') }}</span></NuxtLinkLocale>
     </nav>

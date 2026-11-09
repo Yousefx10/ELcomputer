@@ -6,7 +6,7 @@
   <p v-else-if="loading" role="status">{{ $t('common.loading') }}</p>
   <p v-else-if="!items.length">{{ $t('paymentFirst.noActivity') }}</p>
   <ul v-else class="space-y-3"><li v-for="row in items" :key="row.id" class="min-w-0 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4">
-   <div class="flex flex-wrap items-center justify-between gap-2"><strong class="break-all text-sm">{{ row.orderNumber || row.reference }}</strong><span class="text-sm">{{ row.totalAmount }} {{ row.currency }}</span></div>
+   <div class="flex flex-wrap items-center justify-between gap-2"><strong class="break-all text-sm">{{ row.orderNumber || row.reference }}</strong><span class="text-sm">{{ (row.paymentAmount ?? row.totalAmount) }} {{ row.currency }}</span></div>
    <p class="mt-2 text-sm">{{ $t(row.paymentStatus==='paid' ? 'paymentFirst.confirmed' : row.method==='instapay' ? 'transfer.states.'+row.transfer?.state : row.paymentStatus==='ready' ? 'paymentInterface.ready' : row.canRestart && row.interfaceState==='superseded' ? 'paymentInterface.closed' : row.paymentStatus==='failed' ? 'embeddedCheckout.failed' : 'paymentFirst.verifying') }}</p>
    <NuxtLinkLocale :to="row.method==='instapay' && !row.orderId ? `/checkout/transfer/${row.id}` : `/checkout/session/${row.id}`" class="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-blue-700 dark:text-blue-400">{{ $t('paymentFirst.details') }}</NuxtLinkLocale>
   </li></ul>

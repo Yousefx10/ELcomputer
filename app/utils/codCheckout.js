@@ -6,7 +6,7 @@ export const checkoutPaymentMethods = (settings, capabilities, { restricted = fa
     && (!capabilities?.purchase?.paymentFirst||['card','cash','instapay'].includes(method.value))
     && (method.value!=='instapay'||capabilities?.manualTransfer?.available===true)
     && (method.value !== 'card' || capabilities?.card?.available === true)
-    && (!preorder || ['bank_transfer', 'instapay'].includes(method.value)))
+    && (!preorder || (capabilities?.purchase?.paymentFirst ? method.value==='card' && settings.payment_preorder_card_enabled===true && capabilities.purchase.preordersEnabled===true : ['bank_transfer', 'instapay'].includes(method.value))))
 
 export { checkoutDeliveryOptions } from './deliveryOptions'
 

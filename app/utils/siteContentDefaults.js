@@ -56,6 +56,8 @@ export const defaultSiteSettings = {
   banner_ad_2_image_url: '',
   banner_ad_2_link_url: '',
   payment_card_enabled: false,
+  payment_preorder_card_enabled: false,
+  payment_preorder_balance_mode: 'staff',
   payment_card_fee: 0,
   payment_bank_transfer_enabled: false,
   payment_bank_transfer_fee: 0,

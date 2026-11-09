@@ -17,7 +17,7 @@
         @keydown.down.prevent="moveSelection(1)"
         @keydown.up.prevent="moveSelection(-1)"
         @keydown.enter="selectActiveSuggestion"
-        @keydown.esc.stop="closeSuggestions"
+        @keydown.esc.stop="closeSuggestions(); phoneSearch.hide()"
       />
       <button type="submit" :aria-label="$t('common.search')"><Icon name="lucide:search" size="23" /></button>
     </form>
@@ -115,6 +115,7 @@ const { uiNavigateTo } = useUiNavigation()
 import { getStoreImageUrl } from '~/utils/storefront'
 
 const route = useUiRoute()
+const phoneSearch = usePhoneSearch()
 const supabase = useSupabaseClient()
 const { data: siteContent } = await useSiteContent()
 
@@ -267,6 +268,7 @@ const selectActiveSuggestion = async event => {
 const submitSearch = async () => {
   const q = normalizedQuery.value
   closeSuggestions()
+  phoneSearch.hide()
   await uiNavigateTo({ path: '/search', query: q ? { q } : {} })
 }
 
@@ -278,7 +280,7 @@ watch(searchQuery, queueSuggestions)
 watch(() => route.query.q, value => {
   searchQuery.value = typeof value === 'string' ? value : ''
 }, { immediate: true })
-watch(() => route.fullPath, closeSuggestions)
+watch(() => route.fullPath, () => { closeSuggestions(); phoneSearch.hide() })
 
 onMounted(() => document.addEventListener('pointerdown', onOutsidePointer))
 onBeforeUnmount(() => {

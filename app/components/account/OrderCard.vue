@@ -43,7 +43,7 @@ const reorder = async () => {
     <div class="mt-3 flex flex-wrap items-center gap-2">
       <span v-if="order.is_preorder" class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-900">{{ $t('common.preOrder') }}</span>
       <span class="max-w-full break-words rounded-full px-2.5 py-1 text-xs font-semibold" :class="getCustomerOrderStatusClass(order.status)">{{ $uiLabel(formatCustomerOrderStatus(order.status, order.payment_method)) }}</span>
-      <span v-if="!compact && order.payment_method !== 'card' && (order.payment_method !== 'cash' || order.is_preorder) && order.payment_status" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentStatusClass(order.payment_status)">{{ $uiLabel(paymentStatusLabel(order.payment_status)) }}</span>
+      <span v-if="!compact && (order.payment_method !== 'card' || order.is_preorder) && (order.payment_method !== 'cash' || order.is_preorder) && order.payment_status" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentStatusClass(order.payment_status)">{{ $uiLabel(paymentStatusLabel(order.payment_status)) }}</span>
       <span v-if="!compact && paymentMethodNeedsProof(order.payment_method)" class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="paymentProofStatusClass(order.payment_proof_status)">{{ $uiLabel(paymentProofStatusLabel(order.payment_proof_status)) }}</span>
     </div>
     <PaymentCodStatus v-if="order.payment_method === 'cash' && !order.is_preorder" :order="order" />

@@ -52,6 +52,24 @@ def operations(*_):
 
 
 class MonitorTests(unittest.TestCase):
+    def test_verified_preorder_deposit_uses_initial_due_and_preserves_alarms(self):
+        o = order()
+        o.update(is_preorder=True, initial_amount_due='25.00', checkout_session_id='fixture-session',
+                 total_amount='100.00', amount_paid='25.00', payment_status='partially_paid', status='on_hold', paid_at=None)
+        o['payment_attempts'][0]['amount_minor'] = 2500
+        self.assertEqual(m.inspect_orders([o], NOW)[0], [])
+        self.assertEqual(m.inspect_orders([o], NOW)[1], [])
+        o['amount_paid'] = '24.99'
+        self.assertIn('CHARGED_BUT_UNPAID_EVIDENCE', {x['code'] for x in m.inspect_orders([o], NOW)[0]})
+        o['amount_paid'] = '25.00'
+        o['payment_attempts'][0]['amount_minor'] = 2499
+        self.assertIn('PAYMENT_AMOUNT_MISMATCH', {x['code'] for x in m.inspect_orders([o], NOW)[0]})
+        o['payment_attempts'][0]['amount_minor'] = 2500
+        o['payment_attempts'][0]['payment_transactions'] = []
+        self.assertIn('PAID_WITHOUT_SIGNED_SUCCESS', {x['code'] for x in m.inspect_orders([o], NOW)[0]})
+        o['checkout_session_id'] = None
+        self.assertIn('PAYMENT_AMOUNT_MISMATCH', {x['code'] for x in m.inspect_orders([o], NOW)[0]})
+
     def test_overdue_does_not_mean_failed_or_paid(self):
         original = order(False)
         result = m.inspect_orders([original], NOW)

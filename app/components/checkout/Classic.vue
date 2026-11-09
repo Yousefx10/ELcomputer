@@ -35,7 +35,7 @@
       </section>
       <section v-if="savedCheckout" class="mx-auto mt-4 max-w-3xl rounded-xl border border-slate-200 bg-white p-4 sm:p-6" aria-labelledby="secure-payment-title">
         <h2 id="secure-payment-title" class="text-lg font-semibold">{{ $t('embeddedCheckout.secureTitle') }}</h2>
-        <p v-if="paymentSummary" class="mt-2 text-lg font-semibold">{{ formatCurrency(paymentSummary.totalAmount) }}</p>
+        <p v-if="paymentSummary" class="mt-2 text-lg font-semibold">{{ formatCurrency(paymentSummary.paymentAmount ?? paymentSummary.totalAmount) }}</p>
         <p v-if="paymentFormError || orderError" role="alert" class="mt-3 text-sm text-red-700">{{ paymentFormError || $uiMessage(orderError) }}</p>
         <ClientOnly><PaymentPaymobPixel v-if="embeddedPayment" :key="savedCheckout" :session="embeddedPayment" :authorize="authorizeEmbeddedPayment" class="mt-4" @complete="checkEmbeddedPayment" @cancel="dismissPayment" @unavailable="embeddedUnavailable" /></ClientOnly>
         <button v-if="hostedFallback" type="button" :disabled="placingOrder" class="mt-3 inline-flex min-h-11 items-center rounded-lg border px-4 text-sm font-semibold" @click="openHostedFallback">{{ $t('embeddedCheckout.hosted') }}</button>
@@ -133,7 +133,7 @@
 
             <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6" aria-labelledby="payment-method-title">
               <h2 id="payment-method-title" class="text-xl font-bold text-slate-950">{{ $t('common.chooseAPaymentMethod') }}</h2>
-              <p class="mt-1 text-sm text-slate-600">{{ isPreorderCart ? $t('checkout.preordersCurrentlyUseBankTransferOrInstapayPaymentRemainsPendingUntilVerified') : $t('checkout.onlyMethodsEnabledByTheStoreAreShown') }}</p>
+              <p class="mt-1 text-sm text-slate-600">{{ isPreorderCart ? $t('preorderCard.explanation') : $t('checkout.onlyMethodsEnabledByTheStoreAreShown') }}</p>
 
               <div v-if="availablePaymentMethods.length" class="mt-5 grid gap-3 sm:grid-cols-2">
                 <label v-for="method in availablePaymentMethods" :key="method.value" class="flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition" :class="paymentChoice === method.value ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-slate-200 hover:border-blue-300'">
@@ -143,6 +143,7 @@
                 </label>
               </div>
               <p v-else class="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">{{ $t('checkout.noPaymentMethodIsAvailablePleaseContactTheStore') }}</p>
+              <label v-if="isPreorderCart && selectedPaymentMethod === 'card'" class="mt-4 flex items-start gap-2 border-t border-slate-200 pt-4 text-sm"><input v-model="preorderAccepted" type="checkbox" class="mt-1">{{ $t('preorderCard.consent') }}</label>
               <p v-if="quote?.stockFulfillmentState === 'untracked' && quote.fulfillmentMessage" class="mt-4 border-t border-slate-200 pt-4 text-sm text-slate-600">{{ quote.fulfillmentMessage }}</p>
               <div v-if="quote?.stockFulfillmentState === 'awaiting_stock'" class="mt-4 space-y-2 border-t border-slate-200 pt-4 text-sm">
                 <p class="font-semibold">{{ $t('beta.specialOrder') }}</p>
@@ -179,7 +180,7 @@
               <p v-if="couponError" class="mt-3 text-sm text-red-700">{{ $uiMessage(couponError) }}</p><p v-if="couponSuccess" class="mt-3 text-sm text-emerald-700">{{ $uiLabel(couponSuccess) }}</p>
             </details></div><div v-if="!isPreorderCart" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.coupon') }}<span v-if="appliedCoupon" class="block text-xs font-normal">{{ appliedCoupon.code }}</span></dt><dd>{{ appliedCoupon ? `- ${formatCurrency(discountAmount - deliveryDiscountAmount)}` : '—' }}</dd></div><div v-if="deliveryDiscountAmount" class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.deliveryDiscount') }}</dt><dd>− {{ formatCurrency(deliveryDiscountAmount) }}</dd></div><div class="flex justify-between gap-3 text-slate-600"><dt>{{ $t('common.shipping') }}</dt><dd>{{ quote?.shipping ? formatCurrency(quote.shippingFee) : requiresDelivery ? $t('codCheckout.chooseDelivery') : $t('common.calculatedLater') }}</dd></div><div v-if="paymentFee" class="flex justify-between gap-3 text-amber-700"><dt>{{ $t('common.paymentFee') }}</dt><dd>+ {{ formatCurrency(paymentFee) }}</dd></div><div class="flex justify-between gap-3 border-t border-slate-200 pt-3 text-lg font-bold text-slate-950"><dt>{{ $t('common.orderValueVariant4') }}</dt><dd>{{ requiresDelivery && !quote ? '—' : formatCurrency(totalAmount) }}</dd></div><template v-if="isPreorderCart"><div class="flex justify-between gap-3 font-bold text-blue-800"><dt>{{ $t('common.requiredNow') }}</dt><dd>{{ formatCurrency(quote?.requiredNow || 0) }}</dd></div><div class="flex justify-between gap-3 text-slate-700"><dt>{{ $t('common.remainingAfterPayment') }}</dt><dd>{{ formatCurrency(quote?.remainingAfterPayment || 0) }}</dd></div><p class="text-xs text-slate-600">{{ $t('checkout.noPaymentIsRecordedUntilTheStoreVerifiesItDeliveryFollowsAvailability') }}</p></template></dl>
           <button v-if="checkoutStep === 'shipping'" type="button" :disabled="savingAddress || removingAddress" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50" @click="continueToPayment">{{ $t('common.continueToPayment') }}</button>
-          <button v-else type="button" :disabled="placingOrder || !quote || !!reviewRequired || !availablePaymentMethods.length" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" @click="placeOrder">{{ placingOrder ? $t('common.confirming') : isPreorderCart ? $t('common.confirmPreOrder') : prepaidFlow && selectedPaymentMethod === 'card' ? $t('paymentInterface.pay') : $t('common.confirmCheckout') }}</button>
+          <button v-else type="button" :disabled="placingOrder || !quote || !!reviewRequired || !availablePaymentMethods.length" class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" @click="placeOrder">{{ placingOrder ? $t('common.confirming') : prepaidFlow && selectedPaymentMethod === 'card' ? $t('paymentInterface.pay') : isPreorderCart ? $t('common.confirmPreOrder') : $t('common.confirmCheckout') }}</button>
           <p class="mt-3 text-center text-xs leading-5 text-slate-500">{{ $t('checkout.noCardNumberOrSecurityCodeIsStoredByThisCheckout') }}</p>
         </aside>
       </div>
@@ -211,6 +212,7 @@ const {
   availableDeliveryOptions,
   availablePaymentMethods,
   backorderAccepted,
+  preorderAccepted,
   busyAddress,
   cartId,
   cartOwner,

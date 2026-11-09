@@ -1955,7 +1955,8 @@
     "live": "مباشرة",
     "reconnecting": "جارٍ إعادة الاتصال",
     "other": "أخرى",
-    "moreCategories": "المزيد من الأقسام"
+    "moreCategories": "المزيد من الأقسام",
+    "closeSearch": "إغلاق البحث"
   },
   "dashboard": {
     "commerce": {
@@ -6076,6 +6077,34 @@
   "couponRules": {
     "category": "معرّف الفئة المؤهلة",
     "customerLimit": "عدد الاستخدامات لكل عميل"
+  },
+  "preorderCard": {
+    "explanation": "ادفع السعر كاملًا أو العربون الموضح.",
+    "consent": "أوافق على شروط دفع الطلب المسبق وتوفره.",
+    "acceptTerms": "وافق على شروط الطلب المسبق قبل الدفع.",
+    "enable": "السماح بالبطاقات وApple Pay للطلبات المسبقة.",
+    "depositConfirmed": "تم التحقق من العربون وتأكيد طلبك المسبق.",
+    "summary": "إجمالي الطلب: {total} {currency}. المتبقي: {remaining} {currency}.",
+    "balanceMethod": "وسيلة دفع الرصيد المتحقق منها",
+    "chooseMethod": "اختر وسيلة الدفع الفعلية",
+    "bankTransfer": "تحويل بنكي",
+    "awaitingStock": "توفر الطلب المسبق بانتظار تأكيد المتجر.",
+    "disabled": "الدفع بالبطاقة للطلب المسبق غير متاح.",
+    "unavailable": "هذا الطلب المسبق غير متاح.",
+    "soldOut": "نفدت الكمية المخصصة للطلب المسبق.",
+    "customerLimit": "تتجاوز هذه الكمية الحد المسموح لك.",
+    "paymentAmount": "يتطلب هذا الطلب المسبق مبلغ دفع أكبر من صفر.",
+    "balanceConfirmed": "تم دفع المتبقي. طلبك مدفوع بالكامل.",
+    "balancePending": "طلبك محفوظ. نتحقق من هذه الدفعة.",
+    "balanceTitle": "المبلغ المتبقي",
+    "balanceDue": "المتبقي للدفع: {amount}.",
+    "payRest": "ادفع المتبقي",
+    "balanceStaff": "سيتواصل معك المتجر بشأن المتبقي.",
+    "balanceUnavailable": "لا يمكن دفع المتبقي عبر الإنترنت الآن.",
+    "backToOrder": "العودة إلى الطلب",
+    "balanceSetting": "المبلغ المتبقي",
+    "balanceOnline": "يدفع العميل من صفحة طلبه",
+    "balanceByStaff": "يسجله فريق المتجر"
   },
   "smsTransactional": {
     "title": "رسائل المعاملات",

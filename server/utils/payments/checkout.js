@@ -1,6 +1,6 @@
 import {createError} from 'h3'
 import {normalizeCheckoutCommand} from '../checkoutCommand'
-import {authorizeNormalCheckout} from '../normalPurchase.js'
+import {authorizeNormalCheckout,publicPurchasingEnabled} from '../normalPurchase.js'
 import {getPaymobConfig,selectPaymobMethod,buildIntentionRequest,createPaymobIntention} from './paymob.js'
 import {pixelEnabledFor,paymobExperience} from './methods.js'
 import {runPaymentCheckoutRpc as paymentCheckoutRpc} from './checkoutRpc.js'
@@ -28,6 +28,10 @@ export async function createPaymentCheckout({body,user,db,runtime,fetcher=fetch}
  try{prepared=await paymentCheckoutRpc(db,'commerce_prepare_payment_checkout',{p_user_id:user.id,p_cart_id:context.cartId,p_quote_id:quoteId,p_order:order,p_items:items,p_cart_revision:cart_revision||null,p_cart_lines:cart_lines})}
  catch(error){return affectedCheckout(db,user,error)}
  if(prepared.checkout.orderId&&prepared.checkout.paymentStatus==='paid'||prepared.checkout.fundsVerified===true)return {created:false,checkout:prepared.checkout}
+ return startCheckoutPayment({prepared,config,locale:order.locale,user,db,runtime,fetcher})
+}
+
+async function startCheckoutPayment({prepared,config,locale,user,db,runtime,fetcher}){
  const reopen=async()=>{
   if(prepared.checkout.canRestart&&!prepared.checkout.canResume)throw createError({statusCode:409,statusMessage:'Review the updated checkout.',data:{code:'checkout:restart'}})
   try{
@@ -44,16 +48,32 @@ export async function createPaymentCheckout({body,user,db,runtime,fetcher=fetch}
  if(!claimed.created)return reopen()
  try{
   const snapshot=claimed.snapshot,attempt=claimed.attempt
-  const payable={...snapshot.order,id:prepared.checkout.id,order_number:claimed.reference,total_amount:String(snapshot.review.totalAmount),currency:'EGP'}
-  const payload=buildIntentionRequest(config,payable,attempt,order.locale)
+  const payable={...snapshot.order,id:prepared.checkout.id,order_number:claimed.reference,total_amount:String(snapshot.review.payableNow ?? snapshot.review.totalAmount),currency:'EGP'}
+  const payload=buildIntentionRequest(config,payable,attempt,locale)
   const redirect=new URL(payload.redirection_url);redirect.searchParams.delete('order_id');redirect.searchParams.set('checkout_id',prepared.checkout.id);payload.redirection_url=redirect.href
   const result=await createPaymobIntention(config,payload,fetcher)
   const committed=await paymentCheckoutRpc(db,'commerce_store_checkout_intention',{p_attempt_id:attempt.id,p_intention_id:result.intentionId,p_provider_order_id:result.providerOrderId,p_client_secret:result.clientSecret})
   const checkout=await paymentCheckoutRpc(db,'commerce_read_payment_checkout',{p_user_id:user.id,p_session_id:prepared.checkout.id})
-  if(committed?.order_id||checkout.orderId)return {checkout,created:true}
+  if(committed?.order_id||(checkout.orderId&&!checkout.isPreorderBalance))return {checkout,created:true}
   return {...await paymentInterface({db,user,runtime,sessionId:prepared.checkout.id}),created:true}
  }catch{
   await paymentCheckoutRpc(db,'commerce_checkout_payment_uncertain',{p_attempt_id:claimed.attempt.id})
   return {checkout:await paymentCheckoutRpc(db,'commerce_read_payment_checkout',{p_user_id:user.id,p_session_id:prepared.checkout.id}),created:true}
  }
+}
+
+// The order already exists, so this reuses the payment path without a cart or quote.
+export async function createPreorderBalanceCheckout({body,user,db,runtime,fetcher=fetch}){
+ if(!paymentFirstEnabled(runtime))throw createError({statusCode:503,statusMessage:'Payment checkout is unavailable.'})
+ if(!publicPurchasingEnabled(runtime))throw createError({statusCode:403,statusMessage:'This payment is unavailable.'})
+ const {action,order_id:orderId,paymob_method:method='card',payment_ui_version:version,...rest}=body||{}
+ if(action!=='preorder_balance'||Object.keys(rest).length||version!==2||!/^[0-9a-f-]{36}$/i.test(String(orderId||''))||!['card','apple_pay'].includes(method))throw createError({statusCode:400,statusMessage:'This payment is unavailable.'})
+ const embedded=pixelEnabledFor(runtime,user.id),paymob=getPaymobConfig(runtime)
+ if(method==='apple_pay'&&!paymobExperience(paymob.methods.find(item=>item.method==='apple_pay'),embedded,user.id))throw createError({statusCode:409,statusMessage:'This payment method is unavailable.'})
+ const config=selectPaymobMethod(paymob,method)
+ let prepared
+ try{prepared=await paymentCheckoutRpc(db,'commerce_prepare_preorder_balance',{p_user_id:user.id,p_order_id:orderId})}
+ catch(error){return affectedCheckout(db,user,error)}
+ if(prepared.checkout.paymentStatus==='paid'||prepared.checkout.fundsVerified===true)return {created:false,checkout:prepared.checkout}
+ return startCheckoutPayment({prepared,config,locale:prepared.checkout.address?.locale,user,db,runtime,fetcher})
 }

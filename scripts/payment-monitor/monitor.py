@@ -35,7 +35,7 @@ MAX_CHILDREN = 500
 MAX_EVENTS = 50000
 ORDER_FIELDS = ('id,user_id,order_number,status,payment_status,payment_method,'
                 'total_amount,amount_paid,currency,created_at,updated_at,paid_at,'
-                'is_preorder,card_checkout_verified,packing_completed_at,'
+                'is_preorder,initial_amount_due,checkout_session_id,card_checkout_verified,packing_completed_at,'
                 'shipping_company_id,stock_fulfillment_state')
 ATTEMPT_FIELDS = ('id,order_id,provider,method,mode,amount_minor,currency,status,'
                   'provider_order_id,error_code,expires_at,created_at,updated_at')
@@ -217,11 +217,17 @@ def inspect_orders(orders, now):
             continue
         stats['orders'] += 1
         successes, attempts_succeeded = set(), False
+        total = decimal.Decimal(str(o['total_amount']))
+        received = decimal.Decimal(str(o['amount_paid']))
+        preorder = bool(o['is_preorder'] and o['card_checkout_verified'] and o.get('checkout_session_id') and o['payment_method'] == 'card')
+        charge = decimal.Decimal(str(o.get('initial_amount_due', 0))) if preorder else total
+        if preorder and not (0 < charge <= total):
+            issue(o, 'PAYMENT_AMOUNT_MISMATCH', 'CRITICAL')
         for a in live:
             stats['attempt_' + a['status']] += 1
             if a['order_id'] != o['id']:
                 issue(o, 'ATTEMPT_ORDER_MISMATCH', 'CRITICAL')
-            if decimal.Decimal(str(a['amount_minor'])) != decimal.Decimal(str(o['total_amount'])) * 100 or a['currency'] != o['currency']:
+            if decimal.Decimal(str(a['amount_minor'])) != charge * 100 or a['currency'] != o['currency']:
                 issue(o, 'PAYMENT_AMOUNT_MISMATCH', 'CRITICAL')
             if a['provider_order_id']:
                 provider_orders[str(a['provider_order_id'])].add(o['id'])
@@ -246,10 +252,11 @@ def inspect_orders(orders, now):
                     issue(o, 'OVERDUE_PAYMENT_UNVERIFIED', proof='UNVERIFIED')
             elif a['status'] in ('expired', 'cancelled', 'failed') and a['provider_order_id'] and not a['payment_transactions']:
                 issue(o, 'TERMINAL_PAYMENT_UNVERIFIED', proof='UNVERIFIED')
-        settled = o['payment_status'] == 'paid' and decimal.Decimal(str(o['amount_paid'])) == decimal.Decimal(str(o['total_amount']))
-        if (successes or attempts_succeeded) and not settled:
+        settled = o['payment_status'] == 'paid' and received == total
+        deposit_recorded = preorder and 0 < charge <= received < total and o['payment_status'] == 'partially_paid'
+        if (successes or attempts_succeeded) and not (settled or deposit_recorded):
             issue(o, 'CHARGED_BUT_UNPAID_EVIDENCE', 'CRITICAL', 'SIGNED_CALLBACK_LEDGER' if successes else 'LOCAL_LEDGER')
-        if settled and not successes:
+        if (settled or deposit_recorded) and not successes:
             issue(o, 'PAID_WITHOUT_SIGNED_SUCCESS', 'CRITICAL')
         if len(successes) > 1:
             issue(o, 'MULTIPLE_SUCCESSFUL_CHARGES', 'CRITICAL', 'SIGNED_CALLBACK_LEDGER')

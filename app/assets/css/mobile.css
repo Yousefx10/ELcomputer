@@ -95,3 +95,17 @@
 
 /* Filter panel dividers use the store line color. */
 .storefront .store-listing-page aside .border-t { border-color: var(--store-line); }
+
+/* Phone search stays hidden until the search icon opens it above the tab bar. */
+.storefront .store-search-dim, .storefront .store-search-action { display: none; }
+@media (max-width: 767px) {
+  .storefront .store-search-action { display: flex; }
+  .storefront .store-search-wrap { display: none; position: fixed; z-index: 66; inset-inline: 0; bottom: calc(64px + env(safe-area-inset-bottom)); padding: 8px 12px; background: var(--store-blue); }
+  html.dark .storefront .store-search-wrap { background: #123b79; }
+  .storefront:not(:has(.store-tabbar)) .store-search-wrap { bottom: env(safe-area-inset-bottom); }
+  html.store-search-keyboard .storefront .store-search-wrap { bottom: var(--phone-search-keyboard, 0px); }
+  html.store-search-open .storefront .store-search-wrap { display: block; }
+  html.store-search-open .storefront .store-header { z-index: 66; }
+  html.store-search-open .storefront .store-search-dim { display: block; position: fixed; z-index: 65; inset: 0; width: 100%; border: 0; background: rgb(8 20 46 / .45); }
+  .storefront .store-search-suggestions { top: auto; bottom: calc(100% + 8px); inset-inline: 12px; max-height: min(60dvh, calc(var(--phone-search-space, 100dvh) - 90px)); overflow-y: auto; }
+}

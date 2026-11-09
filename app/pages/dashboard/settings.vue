@@ -1244,6 +1244,10 @@
                 </button>
               </div>
 
+              <label v-if="method.value === 'card'" class="mt-4 flex min-h-11 items-start gap-2 text-sm"><input v-model="siteSettings.payment_preorder_card_enabled" type="checkbox" class="mt-1">{{ $t('preorderCard.enable') }}</label>
+              <label v-if="method.value === 'card' && siteSettings.payment_preorder_card_enabled" class="mt-3 block text-sm font-semibold text-gray-700">{{ $t('preorderCard.balanceSetting') }}
+                <select v-model="siteSettings.payment_preorder_balance_mode" class="mt-2 w-full rounded-lg border bg-white p-3 font-normal outline-none focus:border-blue-500"><option value="online">{{ $t('preorderCard.balanceOnline') }}</option><option value="staff">{{ $t('preorderCard.balanceByStaff') }}</option></select>
+              </label>
               <div class="mt-4">
                 <label class="mb-2 block text-sm font-semibold text-gray-700">{{ $t('common.fixedFeeEgp') }}</label>
                 <input v-model.number="siteSettings[method.feeField]" type="number" min="0" step="0.01" class="w-full rounded-lg border bg-white p-3 outline-none focus:border-blue-500">
@@ -2719,7 +2723,7 @@ const siteSettingsSectionFields = {
     'banner_ad_2_link_url'
   ],
   paymentSettings: [
-    'payment_card_enabled',
+    'payment_card_enabled', 'payment_preorder_card_enabled', 'payment_preorder_balance_mode',
     'payment_card_fee',
     'payment_bank_transfer_enabled',
     'payment_bank_transfer_fee',
@@ -3117,6 +3121,8 @@ const normalizeSiteSettings = (source = {}) => ({
   banner_ad_2_image_url: String(source.banner_ad_2_image_url || '').trim(),
   banner_ad_2_link_url: String(source.banner_ad_2_link_url || '').trim(),
   payment_card_enabled: source.payment_card_enabled ?? false,
+  payment_preorder_card_enabled: source.payment_preorder_card_enabled ?? false,
+  payment_preorder_balance_mode: source.payment_preorder_balance_mode === 'online' ? 'online' : 'staff',
   payment_card_fee: Math.max(0, Number(source.payment_card_fee) || 0),
   payment_bank_transfer_enabled: source.payment_bank_transfer_enabled ?? false,
   payment_bank_transfer_fee: Math.max(0, Number(source.payment_bank_transfer_fee) || 0),
@@ -3275,7 +3281,7 @@ const buildSiteSettingsPayload = (sectionName) => {
       'top_bar_rotation_seconds',
       'banner_ad_1_enabled',
       'banner_ad_2_enabled',
-      'payment_card_enabled',
+      'payment_card_enabled', 'payment_preorder_card_enabled', 'payment_preorder_balance_mode',
       'payment_card_fee',
       'payment_bank_transfer_enabled',
       'payment_bank_transfer_fee',

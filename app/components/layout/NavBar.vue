@@ -6,8 +6,10 @@
       </NuxtLinkLocale>
 
       <LayoutSearchBar />
+      <button type="button" class="store-search-dim" tabindex="-1" :aria-label="$t('common.closeSearch')" @click="phoneSearch.hide" />
 
       <nav class="store-header-actions" :aria-label="$t('common.yourShopping')">
+        <button v-if="searchInHeader" type="button" class="store-header-action store-search-action" :aria-label="$t('common.search')" :aria-expanded="phoneSearch.open.value" aria-controls="store-search-input" @click="phoneSearch.toggle"><Icon name="lucide:search" size="25" /></button>
         <NuxtLinkLocale :to="ordersPath" class="store-header-action store-orders-action" :aria-label="$t('common.myOrders')">
           <Icon name="lucide:package" size="25" />
           <span class="store-action-copy"><small>{{ $t('common.trackManage') }}</small><strong>{{ $t('common.myOrders') }}</strong></span>
@@ -70,6 +72,9 @@ const { intlLocale } = useUiLocale()
 import { getStoreCategoryIcon, getStoreImageUrl } from '~/utils/storefront'
 import { customerDisplayName } from '~/utils/customerDisplayName'
 const route = useUiRoute()
+const phoneSearch = usePhoneSearch()
+// These pages hide the tab bar, so the header carries the search icon.
+const searchInHeader = computed(() => /^\/(products\/|cart$|checkout)/.test(route.path))
 const identity = useCustomerIdentity()
 const hydrated = ref(false)
 const customerUser = computed(() => hydrated.value && identity.accountId.value ? identity.user.value : null)
