@@ -9,10 +9,24 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E364 is the latest milestone (Dashboard Phase 1 committed, release29 built, not deployed; E363 is live). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E365 is the latest milestone (whole hero banner on phones, live). DASH-R1 is committed, not built; build it as release30. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E365 — HOME-HERO-PHONE-01 LIVE: whole banner on phones — 10 November 2026
+
+Owner: "the hero banner is still broken on the phone, what i mean is that image is zoomed, i can't read it since there's a text inside it ... please fix the hero banner for small screen, to be full visible. with available diamension." Go-ahead: "once you finish, make sure it's deployed, i approve for it".
+Release e1790020f01ceb85 (commit 1d5017a on branch e365-hero-phone, base 87f4c56, release29/, not pushed) installed 23:13:25 UTC on 9 Nov, pause 3.5 s, app only, schema 142.
+Verify HERO_PHONE_INSTALLED_NATURAL_MON_PASS 23:21 UTC; 9762 assets match.
+Rollback: point current back to releases/57f45b157f09622b and restart.
+
+Cause: E363 restored the older phone hero, which hides the image and shows an enlarged crop of the banner's picture side from storePresentation, with the text repeated below. The text inside the banner was cut off.
+Fix: under 768 px the whole banner shows at its own shape (no crop, no letterbox), the repeated text is hidden, and the slide controls sit under the image. Live at 390 px: Discord 358x157, Mice 358x228. Wider screens are unchanged from E363.
+Banners differ in shape, so phone height changes between slides. The hero now rotates only while it is on screen (IntersectionObserver), so content below does not move while someone reads it. Checked live: rotation every 4 s on screen, none for 10 s off screen.
+Tests: hero files 59/59 in Chrome and WebKit. Across 30 related files the new and live release exports both give 330 pass and 61 fail; the only difference is the renamed hero test, which passes under its new name.
+
+RELEASE29 NAME CLASH, RECORDED AS IT HAPPENED: the Dashboard session had built DASH-R1 as release29 (f926904587a9beb3, qualified, never deployed). The hero build reused the name, so make-release29.py removed that folder and the hero session overwrote release-tools/make-release29.py and build-release29.sh. DASH-R1 itself is safe as commit cf480cd. product-modern is now cf480cd followed by d990703 (a cherry-pick of 1d5017a). Build DASH-R1 as release30 from that HEAD, with predecessor e1790020f01ceb85 and previous artifact release29/artifact, so the phone hero does not revert. Lesson: check that a releaseN folder does not exist before running a generator.
 
 # E364 — DASH-R1 BUILT: Dashboard Phase 1, truthful screens, release29 ready for approval — 9 November 2026
 

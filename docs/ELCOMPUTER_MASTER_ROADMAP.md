@@ -9,10 +9,24 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E364 is the latest milestone (Dashboard Phase 1 committed, release29 built, not deployed; E363 is live). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E365 is the latest milestone (whole hero banner on phones, live). DASH-R1 is committed, not built; build it as release30. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E365 — HOME-HERO-PHONE-01 LIVE: whole banner on phones — 10 November 2026
+
+Owner: "the hero banner is still broken on the phone, what i mean is that image is zoomed, i can't read it since there's a text inside it ... please fix the hero banner for small screen, to be full visible. with available diamension." Go-ahead: "once you finish, make sure it's deployed, i approve for it".
+Release e1790020f01ceb85 (commit 1d5017a on branch e365-hero-phone, base 87f4c56, release29/, not pushed) installed 23:13:25 UTC on 9 Nov, pause 3.5 s, app only, schema 142.
+Verify HERO_PHONE_INSTALLED_NATURAL_MON_PASS 23:21 UTC; 9762 assets match.
+Rollback: point current back to releases/57f45b157f09622b and restart.
+
+Cause: E363 restored the older phone hero, which hides the image and shows an enlarged crop of the banner's picture side from storePresentation, with the text repeated below. The text inside the banner was cut off.
+Fix: under 768 px the whole banner shows at its own shape (no crop, no letterbox), the repeated text is hidden, and the slide controls sit under the image. Live at 390 px: Discord 358x157, Mice 358x228. Wider screens are unchanged from E363.
+Banners differ in shape, so phone height changes between slides. The hero now rotates only while it is on screen (IntersectionObserver), so content below does not move while someone reads it. Checked live: rotation every 4 s on screen, none for 10 s off screen.
+Tests: hero files 59/59 in Chrome and WebKit. Across 30 related files the new and live release exports both give 330 pass and 61 fail; the only difference is the renamed hero test, which passes under its new name.
+
+RELEASE29 NAME CLASH, RECORDED AS IT HAPPENED: the Dashboard session had built DASH-R1 as release29 (f926904587a9beb3, qualified, never deployed). The hero build reused the name, so make-release29.py removed that folder and the hero session overwrote release-tools/make-release29.py and build-release29.sh. DASH-R1 itself is safe as commit cf480cd. product-modern is now cf480cd followed by d990703 (a cherry-pick of 1d5017a). Build DASH-R1 as release30 from that HEAD, with predecessor e1790020f01ceb85 and previous artifact release29/artifact, so the phone hero does not revert. Lesson: check that a releaseN folder does not exist before running a generator.
 
 # E364 — DASH-R1 BUILT: Dashboard Phase 1, truthful screens, release29 ready for approval — 9 November 2026
 
@@ -10920,7 +10934,7 @@ source/requirement inspection, not hosted acceptance or provider verification.
 | ORDER-06 | Actual package KG at packing/confirmation and PDC binding | 1 — measured staff booking | 106 DEPLOYED / REAL STAFF PARCEL ACCEPTANCE PENDING | Post-Beta enhancement; provider weight precision/limits and order/package authority; ORDER-01/02 | Positive precise actual KG persisted on correct package and snapshotted into explicit authorized booking; no checkout shipment/pickup or invented actual weight | E38; L1 requirement5; SHIP-07 | 2026-10-25 | E157/SHIP-13 measured weight source063 qualified; E159 source063/ce4142/schema106 deployed;91cc consumed complete. Actual staff parcel measurement and genuine provider acceptance remain separate |
 | DASH-01 | Settings opens Store Settings without nested sidebar menus | P2 | PLANNED | Post-Beta navigation-only; preserve settings permissions/pages/direct routes | One direct Settings entry; all configuration still reachable within existing settings surfaces; EN/AR/RTL/mobile/active-state access intact | E38; L1 requirement6; E20 | 2026-10-25 | Map current navigation/settings keys and propose compact direct entry; delete no settings feature |
 | DASH-02 | Overview Store Activity and separate Live on Store tile | P2 | PLANNED | Post-Beta; existing CustomerExperience/Overview data and permissions | Reused Store Activity on Overview plus small distinct live tile; accurate timestamped values, responsive themes/locales, bounded requests/subscriptions | E38; L1 requirement7; FUT-04 | 2026-10-25 | Reuse existing source/component contracts and set refresh/query budget; no invented live counts |
-| DASH-R1 | Dashboard Phase 1: screens match the live setup (payments, stock, copy, titles, monitor, raw errors) | P1 | COMMITTED cf480cd, RELEASE29 QUALIFIED, NOT DEPLOYED | App-only release29 needs the owner's words to deploy | Options that cannot work are hidden or marked; EN/AR, RTL, themes and phone width kept; no setting or permission change | E364; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Owner decides on deploying release29 |
+| DASH-R1 | Dashboard Phase 1: screens match the live setup (payments, stock, copy, titles, monitor, raw errors) | P1 | COMMITTED cf480cd, NOT BUILT (release29 build lost, see E365) | Build as release30 from product-modern HEAD (includes d990703); deploy needs the owner's words | Options that cannot work are hidden or marked; EN/AR, RTL, themes and phone width kept; no setting or permission change | E364; E365; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | Owner decides; then build release30 |
 | DASH-R2 | Dashboard Phase 2: named permissions for reviews, CRM, returns, courier prices, users; server-side Settings saves | P1 | PLANNED | One migration; details in logs/DASHBOARD_REFRESH_PRIVATE_2026-11-09.md | No staff lockout; RLS and HTTP 401/403 matrix; revision-checked Settings saves with server audit | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Starts only after the owner approves it |
 | DASH-R3 | Dashboard Phase 3: menu from 21 to 9 entries, merged duplicates, one parcel weight, order queues (includes DASH-01) | P2 | PLANNED | After DASH-R1; old URLs redirect | Every old URL works; permissions per item; both ERP modes | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Starts only after the owner approves it |
 | DASH-R4 | Dashboard Phase 4: shared parts, no gradients, one corner scale, dark tokens | P2 | PLANNED | Page by page with screenshots | No visual regressions in EN/AR, light/dark, 1440/390 | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Starts only after the owner approves it |
