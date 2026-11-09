@@ -9,10 +9,38 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E363 is the latest milestone (hero restored, iOS search zoom). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E364 is the latest milestone (Dashboard Phase 1 committed, release29 built, not deployed; E363 is live). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E364 — DASH-R1 BUILT: Dashboard Phase 1, truthful screens, release29 ready for approval — 9 November 2026
+
+Owner: "Start Phase 1", after reviewing docs/DASHBOARD_REFRESH_PLAN_2026-11-09.md (DASH-REFRESH-01). Then: "Finish DASH-R1 locally ... prepare it for my final review and release approval." Then: "Commit and build".
+Commit cf480cd on product-modern (parent 87f4c56, live release 57f45b157f09622b), not pushed. Release29 built and qualified, NOT deployed. No database, setting or provider change.
+
+What changed:
+- Settings > Payment methods shows what checkout really offers for each saved switch, using checkout's own rule (app/utils/paymentMethodState.js) and /api/payments/capabilities read as a guest. Bank transfer stays switched on as stored and now reads "Not offered at checkout". PayPal is hidden unless switched on. The PayPal warning is gone.
+- Stock tracking off: product list stock column and filter, editor tracked stock and item-ID box, add-page unit and cost boxes, and the Overview out-of-stock tile are hidden. Daftra mode hides the supplier field and the Procurement line. Out of stock now counts published products only.
+- Overview sales growth: "New" without last month's sales, a multiple from ten times up (app/utils/salesGrowth.js). Catalog tiles open filtered lists.
+- Payments and Meta tracking restyled with existing panels, tables and buttons; Meta technical fields under Advanced. Six pages no longer repeat the top-bar title in Modern (.dashboard-classic-only).
+- Payment monitor panel only on Orders and Payments; other pages show a top-bar chip linking to Orders. Header clock updates once a minute.
+- Images show file name and pixel size instead of the storage path. /dashboard/orders?order=<id> now opens that order (links from Payments and Order flow did nothing before).
+- 32 admin endpoint errors no longer send raw database text (server/utils/adminDatabaseError.js); deliberate P0001 messages and the two Supabase Auth messages pass through.
+- Copy: Order flow help points to Confirm Orders and names no provider; captions shortened; Arabic for Meta tracking, Payments and new strings.
+- Removed four unused components (dashboard/SideBar.vue, FileWorkspaceOverview.vue, products/addProducts.vue, products/editProducts.vue).
+
+Not changed: stored settings (Bank transfer, PayPal, InstaPay), permissions and RLS, /api/payments/capabilities, database schema 142.
+Plan corrections: Settings opens the chosen section expanded; the Settings users route rule guards a working redirect and stays.
+
+Tests: new tests/dashboard-truthful-screens.test.mjs 6/6; new tests/dashboard-truthful-browser.test.mjs 17/17 (Payments and Meta, EN/AR, light/dark, 390/1440, real components with local fixtures, no external requests). Comparison across 56 affected test files with built CSS: 415 pass and 50 fail on the new tree, 391 pass and 53 fail on the live commit 87f4c56. No test that passes on the live commit fails on the new tree. The 24 extra passes are the 23 new cases plus one Apple Pay page browser case; that file failed 2 cases on the live tree in this run and passed on the new one, unrelated to these changes and treated as flaky. The earlier run without built CSS against 03c27dd gave 325 pass and 44 fail on both trees.
+Isolated copy of the working tree: nuxt typecheck exit 0, nuxt build complete (fixture public settings only, no production environment).
+Release29 (release-tools/make-release29.py, build-release29.sh): typecheck 0, build 0, CURRENT_APP_ASSETS_MERGED_PASS with predecessor 57f45b157f09622b (9662 old assets kept), new release f926904587a9beb3, 11017 entries, MANIFEST_ONLY_ARCHIVE_STRICT_PRODUCTION_UNPACK_AND_READBACK_PASS. qualify.mjs run first: COMPILED_RETAINED_ARTIFACT_PASS, 9768 asset and 19 API checks, 0 production writes. App only, schema 142, /api/payments/capabilities unchanged.
+NOT DONE: operator prepare and check (read-only on production; run right before approval so the snapshot is fresh), approve with the owner's words, apply, verify, signed-in check of the real Dashboard.
+Rollback after a future install: point current back to releases/57f45b157f09622b and restart.
+
+Next: owner says whether to deploy release29; then prepare, check, approve, apply, verify. Open owner decisions stay in the plan (Classic layout, one support inbox, returns and claims, unusable methods, Bank transfer switch, Quick Setup, serialized items in Daftra mode).
+Later phases: DASH-R2 permissions and safe saves, DASH-R3 menu, DASH-R4 design, DASH-R5 heavy screens, DASH-R6 new features.
 
 # E363 — HOME-HERO-RESTORE-01 LIVE, iOS search zoom stopped — 9 November 2026
 

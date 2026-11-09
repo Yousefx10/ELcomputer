@@ -9,10 +9,38 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E363 is the latest milestone (hero restored, iOS search zoom). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E364 is the latest milestone (Dashboard Phase 1 committed, release29 built, not deployed; E363 is live). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E364 — DASH-R1 BUILT: Dashboard Phase 1, truthful screens, release29 ready for approval — 9 November 2026
+
+Owner: "Start Phase 1", after reviewing docs/DASHBOARD_REFRESH_PLAN_2026-11-09.md (DASH-REFRESH-01). Then: "Finish DASH-R1 locally ... prepare it for my final review and release approval." Then: "Commit and build".
+Commit cf480cd on product-modern (parent 87f4c56, live release 57f45b157f09622b), not pushed. Release29 built and qualified, NOT deployed. No database, setting or provider change.
+
+What changed:
+- Settings > Payment methods shows what checkout really offers for each saved switch, using checkout's own rule (app/utils/paymentMethodState.js) and /api/payments/capabilities read as a guest. Bank transfer stays switched on as stored and now reads "Not offered at checkout". PayPal is hidden unless switched on. The PayPal warning is gone.
+- Stock tracking off: product list stock column and filter, editor tracked stock and item-ID box, add-page unit and cost boxes, and the Overview out-of-stock tile are hidden. Daftra mode hides the supplier field and the Procurement line. Out of stock now counts published products only.
+- Overview sales growth: "New" without last month's sales, a multiple from ten times up (app/utils/salesGrowth.js). Catalog tiles open filtered lists.
+- Payments and Meta tracking restyled with existing panels, tables and buttons; Meta technical fields under Advanced. Six pages no longer repeat the top-bar title in Modern (.dashboard-classic-only).
+- Payment monitor panel only on Orders and Payments; other pages show a top-bar chip linking to Orders. Header clock updates once a minute.
+- Images show file name and pixel size instead of the storage path. /dashboard/orders?order=<id> now opens that order (links from Payments and Order flow did nothing before).
+- 32 admin endpoint errors no longer send raw database text (server/utils/adminDatabaseError.js); deliberate P0001 messages and the two Supabase Auth messages pass through.
+- Copy: Order flow help points to Confirm Orders and names no provider; captions shortened; Arabic for Meta tracking, Payments and new strings.
+- Removed four unused components (dashboard/SideBar.vue, FileWorkspaceOverview.vue, products/addProducts.vue, products/editProducts.vue).
+
+Not changed: stored settings (Bank transfer, PayPal, InstaPay), permissions and RLS, /api/payments/capabilities, database schema 142.
+Plan corrections: Settings opens the chosen section expanded; the Settings users route rule guards a working redirect and stays.
+
+Tests: new tests/dashboard-truthful-screens.test.mjs 6/6; new tests/dashboard-truthful-browser.test.mjs 17/17 (Payments and Meta, EN/AR, light/dark, 390/1440, real components with local fixtures, no external requests). Comparison across 56 affected test files with built CSS: 415 pass and 50 fail on the new tree, 391 pass and 53 fail on the live commit 87f4c56. No test that passes on the live commit fails on the new tree. The 24 extra passes are the 23 new cases plus one Apple Pay page browser case; that file failed 2 cases on the live tree in this run and passed on the new one, unrelated to these changes and treated as flaky. The earlier run without built CSS against 03c27dd gave 325 pass and 44 fail on both trees.
+Isolated copy of the working tree: nuxt typecheck exit 0, nuxt build complete (fixture public settings only, no production environment).
+Release29 (release-tools/make-release29.py, build-release29.sh): typecheck 0, build 0, CURRENT_APP_ASSETS_MERGED_PASS with predecessor 57f45b157f09622b (9662 old assets kept), new release f926904587a9beb3, 11017 entries, MANIFEST_ONLY_ARCHIVE_STRICT_PRODUCTION_UNPACK_AND_READBACK_PASS. qualify.mjs run first: COMPILED_RETAINED_ARTIFACT_PASS, 9768 asset and 19 API checks, 0 production writes. App only, schema 142, /api/payments/capabilities unchanged.
+NOT DONE: operator prepare and check (read-only on production; run right before approval so the snapshot is fresh), approve with the owner's words, apply, verify, signed-in check of the real Dashboard.
+Rollback after a future install: point current back to releases/57f45b157f09622b and restart.
+
+Next: owner says whether to deploy release29; then prepare, check, approve, apply, verify. Open owner decisions stay in the plan (Classic layout, one support inbox, returns and claims, unusable methods, Bank transfer switch, Quick Setup, serialized items in Daftra mode).
+Later phases: DASH-R2 permissions and safe saves, DASH-R3 menu, DASH-R4 design, DASH-R5 heavy screens, DASH-R6 new features.
 
 # E363 — HOME-HERO-RESTORE-01 LIVE, iOS search zoom stopped — 9 November 2026
 
@@ -10892,6 +10920,12 @@ source/requirement inspection, not hosted acceptance or provider verification.
 | ORDER-06 | Actual package KG at packing/confirmation and PDC binding | 1 — measured staff booking | 106 DEPLOYED / REAL STAFF PARCEL ACCEPTANCE PENDING | Post-Beta enhancement; provider weight precision/limits and order/package authority; ORDER-01/02 | Positive precise actual KG persisted on correct package and snapshotted into explicit authorized booking; no checkout shipment/pickup or invented actual weight | E38; L1 requirement5; SHIP-07 | 2026-10-25 | E157/SHIP-13 measured weight source063 qualified; E159 source063/ce4142/schema106 deployed;91cc consumed complete. Actual staff parcel measurement and genuine provider acceptance remain separate |
 | DASH-01 | Settings opens Store Settings without nested sidebar menus | P2 | PLANNED | Post-Beta navigation-only; preserve settings permissions/pages/direct routes | One direct Settings entry; all configuration still reachable within existing settings surfaces; EN/AR/RTL/mobile/active-state access intact | E38; L1 requirement6; E20 | 2026-10-25 | Map current navigation/settings keys and propose compact direct entry; delete no settings feature |
 | DASH-02 | Overview Store Activity and separate Live on Store tile | P2 | PLANNED | Post-Beta; existing CustomerExperience/Overview data and permissions | Reused Store Activity on Overview plus small distinct live tile; accurate timestamped values, responsive themes/locales, bounded requests/subscriptions | E38; L1 requirement7; FUT-04 | 2026-10-25 | Reuse existing source/component contracts and set refresh/query budget; no invented live counts |
+| DASH-R1 | Dashboard Phase 1: screens match the live setup (payments, stock, copy, titles, monitor, raw errors) | P1 | COMMITTED cf480cd, RELEASE29 QUALIFIED, NOT DEPLOYED | App-only release29 needs the owner's words to deploy | Options that cannot work are hidden or marked; EN/AR, RTL, themes and phone width kept; no setting or permission change | E364; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Owner decides on deploying release29 |
+| DASH-R2 | Dashboard Phase 2: named permissions for reviews, CRM, returns, courier prices, users; server-side Settings saves | P1 | PLANNED | One migration; details in logs/DASHBOARD_REFRESH_PRIVATE_2026-11-09.md | No staff lockout; RLS and HTTP 401/403 matrix; revision-checked Settings saves with server audit | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Starts only after the owner approves it |
+| DASH-R3 | Dashboard Phase 3: menu from 21 to 9 entries, merged duplicates, one parcel weight, order queues (includes DASH-01) | P2 | PLANNED | After DASH-R1; old URLs redirect | Every old URL works; permissions per item; both ERP modes | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Starts only after the owner approves it |
+| DASH-R4 | Dashboard Phase 4: shared parts, no gradients, one corner scale, dark tokens | P2 | PLANNED | Page by page with screenshots | No visual regressions in EN/AR, light/dark, 1440/390 | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Starts only after the owner approves it |
+| DASH-R5 | Dashboard Phase 5: product editor tabs, Settings split, Home rebuild (includes DASH-02), order panel | P2 | PLANNED | Keep product save, editor, media, listing and bulk contracts | Existing editor/listing/bulk/media suites pass | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Starts only after the owner approves it |
+| DASH-R6 | Dashboard Phase 6: new features, each approved on its own | P3 | PLANNED | After DASH-R1 to R5 | Per feature | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Owner picks features |
 | ERP-01 | Daftara API connectivity, mappings and full data audit | LAST / FINAL-FIN | DEFERRED / ORIGINAL EVIDENCE PRESERVED | E140 ERP/Daftra accounting integration last, not shipment eligibility | Retain original read/write capability/mapping/pagination/idempotency/recovery scope and approval boundaries; existing ownership remains enforced | E140; E38; L1 requirement8; FUT-08; E20; DTR-30/35 | 2026-10-29 owner priority reset; no provider audit | Resume scoped read-only audit in FINAL-FIN after migration/storage; no booking dependency |
 | ERP-02 | Local/Daftara mode compatibility and backend ownership enforcement | LAST / FINAL-FIN | DEFERRED / CURRENT MODE GUARDS RETAINED | E140 new mode-switch/accounting integration work last; current built-in ownership remains authoritative | Preserve original compatibility/API/UI/SQL ownership tests and historical local data; no silent fallback or duplicate accounting | E140; E38; L1 requirement9; FUT-08; E20; DTR-30/35 | 2026-10-29 owner priority reset; no mode/credential/data changes | Resume matrix/repair only in FINAL-FIN; existing correct mode enforcement is never deferred |
 
