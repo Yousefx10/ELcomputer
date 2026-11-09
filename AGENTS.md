@@ -1,5 +1,6 @@
 # Project continuity
 
+- Start with [the current handoff](docs/HANDOFF_2026-11-09.md). Live code is not in this checkout.
 - Before substantial work, read [the master roadmap](docs/ELCOMPUTER_MASTER_ROADMAP.md),
   `PROJECT_STATE.md` and `CODEX_HANDOFF.md`.
 - The roadmap is the central cross-account status and requirements index.

@@ -9,10 +9,169 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E355 is the latest milestone (Meta Pixel and Conversions API live);
+family imports remain consumed. E361 is the latest milestone (Pixel PageView coverage). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E361 — MKT-META-COVERAGE-01 LIVE: one Pixel PageView per route with the shared ID — 9 November 2026
+
+Owner: "could you investigate for me? and solve and deploy!" and "fix the improve", about the Events Manager warning on PageView coverage by the Conversions API.
+Release b2b0002e1fd79066 (commit 08e664c, release26/) installed 11:32:17 UTC, pause 4.2 s, app only, schema 142. The app-only receipt still prints schema 141; that is a stale label.
+Verify NATURAL_MON_PASS 11:42 UTC; 9387 assets match.
+Rollback: point current back to releases/4a0f64f236fd8da0 and restart.
+
+Cause: Meta's SDK fired an automatic PageView on every history change, with no shared event ID, and dropped the storefront's own PageView as a repeat. Only the first page matched its server event.
+Fix: fbq.disablePushState and fbq.allowDuplicatePageViews are set before the SDK loads. Both are needed. With only the first, later PageViews disappear.
+Measured with all writes mocked: before, 1 of 4 browser PageViews carried the shared ID. After, 4 of 4 on live in 4 of 5 runs. The run right after the restart captured no Pixel events; the cause was not established and it did not recur.
+InitiateCheckout now waits for the first successful quote. It was dropped for customers with no quote yet, because the server values it from that quote.
+Meta event queue: 298 delivered, 0 stuck, 0 rejected. Tests: 71 pass against 69 on the live commit across 10 files; the same 8 fail on both. Meta's warning looks back 3 days, so it was not yet seen clearing.
+
+OPEN LIST: the E360 list stands. The current list is in docs/HANDOFF_2026-11-09.md. New items:
+- MKT-META-PURCHASE-01 (owner decision): cash orders send CODOrderPlaced and never Purchase in Daftra mode, because order_cod_collections stays empty. Deposit pre-orders also never send Purchase, because the fund check uses total_amount.
+- PDC-WEBHOOK-01: tracking runs by hourly polling. PDC asked whether the new webhook has auth. The receiver is off and has never received a delivery.
+- SEC-ROTATE-01: replace one internal secret. Details are in the private notes.
+
+# E360 — PREORDER-CARD-01 LIVE: card and Apple Pay pre-orders, deposit now and balance later, phone search moved down — 9 November 2026
+
+Owner: "please fix the 'pre order' ... investigate how it should work first, then look for the problem, activate what should be activated, then make it live." Decisions: card or Apple Pay, 25% today and 75% later with a pay option, the flow can change later, turn all 8 closed products on.
+Release 4a0f64f236fd8da0 (commit 0c3b02b, release25/, not pushed), app restarted 10:15:46 UTC, schema 142 (20261109100000_preorder_card_and_balance).
+Rollback: point current back to releases/4c22b8a84ec44ea7 and restart. Added columns and functions stay. Both switches can be turned off in Dashboard.
+
+RELEASE STOP, RECORDED AS IT HAPPENED: the operator ended with PREORDER_PAYMENTS_STOP HEALTH_TIMEOUT_NO_RETRY after the migration and restart. The app had started normally.
+Cause: remote.py requires /api/payments/capabilities to equal the response saved at prepare, and this release adds purchase.preordersEnabled and purchase.preorderBalanceOnline. The check waited its 40 seconds, so workers paused 41 seconds instead of about 4. Workers resumed on their own.
+installed.json and consumed-complete.json do not exist and were not created by hand. The single-use attempt was not replayed. Independent read-only check: release25/verify-after-stop.mjs, receipt packet/verified-after-stop-*.json, result INSTALLED_AFTER_GUARDED_STOP_NATURAL_MON_PASS.
+That check found only the two new capability fields, schema 142, every other function and policy unchanged, all protected rows present, 9263 hosted assets matching, 0 service restarts, 7 timers active, natural monitor run 10:20:06 UTC complete with 0 critical.
+
+What was wrong: pre-orders only offered bank transfer and InstaPay, both off live, so checkout showed no payment method. The card work (1475600) was never merged and assumed built-in ERP. In Daftra mode, release, ERP export and courier booking all refused pre-orders.
+How it works now: the customer pays the deposit by card or Apple Pay. The order waits on hold. The customer pays the rest from My account > order > Pay the rest. Staff press Release once it is fully paid. The order then follows Confirm Orders, the courier and the Daftra bill.
+The change-later option: Dashboard > Settings > Payment methods > Remaining balance (Customers pay online / Staff record it). Deposit size stays per product.
+Safety: a balance session reuses the payment-first attempt, signed callback and funds path for the exact amount left. One open balance session per order. Money that cannot apply stays in review as preorder_balance_conflict and is never counted twice. A deposit gets the same paid SMS as a full payment.
+Activated 10:25 UTC after installing the new payment monitor: payment_preorder_card_enabled true, balance mode online, 8 closed products opened. Previous values: meta-activation-20261108/preorder-on-before.json. Monitor backup: /var/lib/storefront-preorder-payments/monitor-backup/monitor.py.before. 20 of 21 published pre-orders can be bought now.
+Phone search: hidden from the header on phones. The tab bar icon opens it above the tab bar. Product, cart and checkout pages have a header icon because they have no tab bar. Suggestions open upward. EN/AR and dark checked.
+
+Tests: 1008 pass against 979 on the live commit across 135 affected files. No test regressed. The same 158 failures exist on both trees. New: 23 native, 6 HTTP, 3 search.
+Rolled-back rehearsals on the live database in Daftra mode passed: deposit, SMS event, balance, release, ERP job. Before activation with the migration, after activation on a newly opened product. No provider was called.
+NOT TESTED: a real card or Apple Pay charge for a deposit or balance, and the search bar above a real iPhone keyboard (checked with a simulated keyboard height only).
+
+OWNER OPEN LIST (kept; the pre-order checkout item is done):
+- PREORDER-CARD-01-FIRST: first real deposit and balance, card and Apple Pay.
+- PREORDER-CARD-01-LINKS: pre-order products need Daftra links before their bill can issue.
+- PREORDER-CARD-01-REMIND: no SMS or email reminds customers to pay the rest yet. Not requested.
+- One published pre-order window ended 27 October and stays closed. The owner can reopen it in the product editor.
+- ORDER-MODIFY-01 (owner will ask): study cancelling, refunds and order changes. This now includes pre-order deposits.
+- MKT-GOOGLE-01: owner to send G- ID, AW- ID and Purchase label, then build.
+- MKT-META-02-PAGE: owner's terms page must name Meta and the Pixel, explain the footer opt-out, and be linked in the footer.
+- MKT-CATALOG-01-SETUP: Meta account holder points one catalog at /feeds/meta-catalog.csv. Domain verification and deduplication view still to confirm. The feed leaves pre-orders out.
+- MKT-CATALOG-01-DATA: brands on 5 products; JPG or PNG for WebP-only products if Meta rejects them.
+- Daftra: answer 4 product holds, then Create all in Daftra (75). Set ERP payment methods.
+- Real paid test order. First real cash SMS on placement still to be seen.
+- 10-minute card window decision (needs paymob.js expiration, session default and message together).
+- Phone banners and transparent category images (optional).
+- Courier-confirmed SMS text says "confirmed" before review; owner may edit in SMS templates.
+- Later: RESET-COVERAGE-01, OWNER-DB-REVIEW-01, MKT-META-02-COOKIE (with the Google release).
+
+# E359 — STORE-PHONE-01 LIVE: phone storefront polish and instant order SMS — 9 November 2026
+
+Owner: "YES DEPLOY!" Release 4c22b8a84ec44ea7 (commit 9d24ab2, release24/, not pushed) installed 09:08:34 UTC, pause 3.8 s, app only, schema 141. Verify NATURAL_MON_PASS 09:11 UTC.
+Rollback: point current back to releases/c957315208913d30 and restart.
+Order SMS now sends straight after a cash order commits and after the Paymob webhook. The worker timer stays as the backstop.
+Phone: search page sort control, product page price row and share placement, checkout summary lines and an alert linking back to the cart, footer images and links.
+The "product is no longer available" alert came from a cart holding an old inactive option. 52 published products have inactive and active options.
+
+# E358 — ORDERS-CONFIRM-01 LIVE: Confirm Orders rebuilt, order page information only, bills fixed — 8 November 2026
+
+Owner: "go ahead and deploy, ask anything you want." Owner decisions: tap to check items; one press finishes and books PDC; Cancel order sits in Confirm Orders.
+Release c957315208913d30 (commit e411aaa, release23/, not pushed) installed 20:16:30 UTC, pause 4.0 s, schema 141
+(20261108120000_confirm_orders_workspace). Verify NATURAL_MON_PASS 20:20; 9009 assets.
+Rollback: point current back to releases/cc951437a2eaedca and restart. Added columns, function and video documents stay.
+
+Confirm Orders: one-screen layout on desktop (queue, order, camera and finish) with no page scrolling; EN/AR, dark and phone width checked in a real browser with a fake camera.
+Session recovery: the page reports every 20 seconds (order_packing_work_sessions.last_seen_at, client_id). One screen holds a session; another must choose Use it here.
+A reload returns an unfinished order to the queue because recordings live in the browser. After 150 seconds of silence another packer can take over, discarding the unfinished video.
+Tap to check: scan_type 'checked', only on orders with stock_fulfillment_state 'untracked'. Orders with assigned units still need exact scans. Live data: no variant has its own SKU.
+Finish: saves the video, confirms the order, books PDC with the entered weight (default from Order flow). A failed booking keeps the order confirmed and shows Book again.
+Confirmed tab: courier state, Book, Reconcile, Label, Attach AWB, Bill and Video for every confirmed order. This replaces the courier panel on the order page.
+Cancel order: inside Problem on an order waiting to be confirmed (cancel-order route). Confirmed orders cannot be cancelled until ORDER-MODIFY-01.
+
+Packing videos: bytes stay in /srv/storefront/shared/private/packing-videos under generated keys. Documents shows Packing videos / date / packer / "packer - order.ext".
+Folders are system-managed and read-only; opening them also needs Orders permission. The date uses the store's business timezone. The 2 existing videos were added at install.
+Order page: Update Status and PDC actions removed; AWB, courier status and tracking stay as information. PDF downloads the store bill. Stores with no bills keep the printable sheet.
+My account bill error cause: Caddy blocked /api/account/orders/<id>/bill with 403. The download now uses GET /api/account/orders/<id>?bill=1, which the proxy allows.
+Old bill after confirming: no longer printed in Daftra mode. The bill appears about 2 minutes after confirming, once the ERP worker issues it.
+
+Tests: 477 pass against 417 on the live commit across 63 affected files. A shared fixture fix let older tests run further. The remaining reset failures are RESET-COVERAGE-01, unchanged.
+
+OWNER OPEN LIST (kept, nothing removed):
+- ORDER-MODIFY-01 (new, owner will ask): study cancelling, refunds and order changes. Manual status change is gone from the order page.
+- MKT-GOOGLE-01: owner to send G- ID, AW- ID and Purchase label, then build.
+- MKT-META-02-PAGE: owner's terms page must name Meta and the Pixel, explain the footer opt-out, and be linked in the footer.
+- MKT-CATALOG-01-SETUP: Meta account holder points one catalog at /feeds/meta-catalog.csv. Domain verification and deduplication view still to confirm.
+- MKT-CATALOG-01-DATA: brands on 5 products; JPG or PNG for WebP-only products if Meta rejects them.
+- Daftra: answer 4 product holds, then Create all in Daftra (75). Set ERP payment methods.
+- Real paid test order. First real cash SMS on placement still to be seen.
+- 10-minute card window decision (needs paymob.js expiration, session default and message together).
+- Published preorder products could not be checked out when tested; investigation asked, unanswered.
+- Phone banners and transparent category images (optional).
+- Courier-confirmed SMS text says "confirmed" before review; owner may edit in SMS templates.
+- Later: RESET-COVERAGE-01, OWNER-DB-REVIEW-01, MKT-META-02-COOKIE (with the Google release).
+
+# E357 — MKT-CATALOG-01 and SMS-COD-01 LIVE: Meta catalog feed, cash SMS on placement — 8 November 2026
+
+Owner: "YES deploy!" (answering "Should I build the product feed for the Meta catalog?"), and in the same message:
+"i've made a cash order and not received sms, can we make sms for cash order same as paid order? approval is not required for sms."
+Release cc951437a2eaedca (commit 116fd2a, release22/, not pushed) installed 18:36:40 UTC, pause 4.6 s, schema 140
+(20261108110000_cash_sms_on_placement_catalog_ids). Verify NATURAL_MON_PASS 18:44; 8,879 assets. Rollback: point current back to releases/702f7625f401fe4e and restart; the two function changes stay until a follow-up migration.
+
+SMS-COD-01: sms_capture_transactional no longer waits for a reviewed status. A cash order that is not cancelled, returned or refunded gets
+cod_confirmed from the next sweep (storefront-sms.timer, 60 s). Template text unchanged and still says "confirmed"; editable in the Dashboard.
+Cause of the owner's missing SMS: the rule fired only after staff moved the order on. That order is now cancelled, so it stays silent.
+No standing cash order from the last 24 hours was waiting at install, so the change sent nothing by itself.
+
+MKT-CATALOG-01: public /feeds/meta-catalog.csv, CSV, cached 15 minutes, public fields only. One row per active variant, ID equal to content_ids.
+An empty read returns an error, so Meta never receives an empty feed. commerce_meta_event now uses the first active variant for a product view,
+because views sent the product UUID while carts and orders sent the variant UUID.
+Live: 244 rows of 266 active variants. Left out: 17 preorder products (published preorders could not be checked out when tested) and 5 with no brand.
+43 rows have only WebP or AVIF images; Meta documents JPEG and PNG, so these may be rejected. Availability follows what the store can sell.
+One OPEN BOX product is marked used.
+Tests: 313 pass against 302 on the live commit; the same 18 fail on both. Compiled artifact qualified.
+Rolled-back rehearsal on live: a new cash order (pending_payment) captured one cod_confirmed event and was authorized; cancelling it first blocks the send. A product view sent the variant ID and that ID is in the feed.
+
+Open:
+- MKT-CATALOG-01-SETUP (Meta account holder): point one catalog at the feed URL on a schedule; two Catalog_Products exist.
+- MKT-CATALOG-01-DATA (owner): set brands on 5 products; re-upload JPEG or PNG for WebP-only products if Meta rejects them.
+- Approving cash orders: Dashboard > Orders > open order > Update Status > Ready to Deliver > confirm weight > Book shipment.
+  Confirm Orders is the packing-session route. Settings > Order flow > Cash on delivery > Automatic books without review. Currently Review first.
+
+# E356 — MKT-META-02 LIVE: this store tracks by default with a footer opt-out — 8 November 2026
+
+Owner: "can i just hide it? i agree for the risks, i want it to work normally silency, i'll put a terms of use page myself."
+Deploy approval: "i want it to be working asap, so you have my approve to directly deploy once ready."
+The owner was told first: Meta's terms need a notice and opt-out; a law-firm summary reads Egypt's data law as requiring consent. Legal review not done.
+Release 702f7625f401fe4e (commit 6a9b18e, release21/, not pushed) installed 17:05:55 UTC, pause 3.2 s, schema 139
+(20261108100000_marketing_consent_mode). Verify NATURAL_MON_PASS 17:16; 8,755 assets; seven worker timers active.
+Switch: commerce_meta_configure 17:14:51 UTC, revision 8 to 9, consent_mode opt_in to default.
+Rollback: Dashboard > Meta tracking > Visitor consent > Ask before tracking. App: point current back to releases/582b106e5c487a39.
+
+Reusable product: private.meta_settings.consent_mode defaults to opt_in. Each store chooses in the Dashboard.
+private.meta_consents.basis records 'default' or 'opt_in', so a default grant is never stored as an opt-in.
+commerce_meta_default_consent refuses opt-in stores, Test Events and staff. A recorded decline stands, including after settings changes.
+Do Not Track and Global Privacy Control still stop tracking. Automated browsers are skipped. Staff stay excluded.
+The floating "Privacy preferences" box is gone; both footers carry a link. Google and TikTok click IDs no longer drop landing-page events.
+Tests: 150 pass against 138 on the live commit; the same 9 fail on both (environment or older pins). Compiled artifact qualified.
+Live guest check, ad-click URL, no banner: PageView and ViewContent in browser and server; Conversions API delivered them.
+Footer Decline: no further events on the next page. One test visit counted in Meta (3 events).
+
+Open:
+- MKT-META-02-PAGE (owner): terms page must name Meta and the Pixel, say what they are for, explain the footer opt-out, and be linked in the footer.
+  /privacy-terms exists, mentions cookies, does not mention Meta or the Pixel, and is not linked from the homepage.
+- MKT-GOOGLE-01 (owner IDs, then build): no Google tag code exists. Needs G- ID, AW- ID and Purchase label.
+  A browser purchase must fire on /checkout/... with a clean URL; commerce_meta_purchase claims Purchase only, so cash needs a patch.
+- MKT-CATALOG-01: both Catalog_Products show 0% match. Site sends variant/product UUIDs and has no product feed.
+- MKT-META-02-COOKIE: after Decline the _fbp cookie stays because Meta sets it on the root domain. No events are sent. Fix with the Google release.
+- Browser Purchase never fires because /checkout and /account are excluded. Purchase reaches Meta from the server only. Cash orders send
+  CODOrderPlaced first and Purchase only after collection. Neither is proven until a real order.
+- Still with the Meta account holder: domain verification and the deduplication view.
 
 # E355 — MKT-META-01 LIVE: Meta Pixel and Conversions API on for consenting visitors — 8 November 2026
 
