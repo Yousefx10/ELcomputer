@@ -9,10 +9,29 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E361 is the latest milestone (Pixel PageView coverage). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E362 is the latest milestone (phone search, cash mark, category pictures). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E362 — PHONE-SEARCH-TOP-01 LIVE, cash checkout mark, category pictures — 9 November 2026
+
+Owner: "when i click search icon, it's being zoomed in and moves a lot ... bring it back to top and fixed in top but hidden", "change the cash icon in the checkout", "also put the e-wallet, wepay, vodafone cash, orange, icons", and the six category pictures in Downloads. Go-ahead: "claude is ready and connexted in chrome browser, deploy, fix."
+Release cbeb3ce78dea6484 (commit 03c27dd, release27/, not pushed) installed 13:58:53 UTC, pause 4.1 s, app only, schema 142. The app-only receipt now says schema 142.
+Verify PHONE_SEARCH_INSTALLED_NATURAL_MON_PASS 14:06 UTC; 9512 assets match. The first verify run stopped on a connect timeout from the Mac to the site during the asset fetch; the site was up, and the read-only rerun passed.
+Rollback: point current back to releases/b2b0002e1fd79066 and restart.
+
+Cause: the phone search field was 13 px. iOS Safari zooms the page when a field under 16 px takes focus. The zoom shrank the visual viewport, so the bar's keyboard offset moved it around.
+Fix: phone search opens fixed at the top from the search icon, the field is 16 px, the page stops scrolling while it is open, and suggestions stay above the keyboard and scroll inside. The bar no longer follows the keyboard.
+Checked locally at 390 px in EN/AR, light and dark, scrolled, and with a simulated 340 px keyboard. Live, read-only: bar at the top, 16 px, focus kept after a 2062 px scroll. A real iPhone was not used.
+Cash on delivery has its own bundled banknote mark in the Modern checkout, on its own row like the card and Apple Pay marks. Classic checkout is unchanged.
+
+CAT-IMAGES-01 DONE: the owner's six transparent PNGs went through Dashboard > Catalog > Categories with Claude in Chrome in the owner's session (upload, then Update Category). Keyboards, Mouse, Accessories (Keychron trackball, owner's choice), Headsets, Mouse Pad, Controllers. The served files match the originals byte for byte, and the live homepage shows all six on desktop and phone. webcams and Microphones keep the generic art and are not in the top six. The Dashboard's "edges will be cut" note is the generic size warning; the homepage circle shows the whole image.
+
+Tests: 49 pass against 47 on the live commit across 12 affected files; the same 8 fail on both. New: cash mark, iOS font size. The Modern checkout browser test passes 12/12 on both trees when given built CSS (CHECKOUT_REVIEW_CSS_DIR); without a build folder it fails on both.
+
+NOT DONE, NEEDS THE OWNER: PAY-WALLET-01. E-wallet logos (WE Pay, Vodafone Cash, Orange Cash) were not added. Live capabilities offer card, Apple Pay and cash only. server/utils/payments/methods.js marks mobile_wallet as not implemented, and the Paymob callback rejects other wallets. Showing those logos would advertise a method customers cannot use. It needs a Paymob mobile-wallet integration and the payment flow first.
+Dashboard refresh: the owner asked for a deep Dashboard and backend audit with a phased plan. It runs in its own session and implements nothing before the owner reviews it.
 
 # E361 — MKT-META-COVERAGE-01 LIVE: one Pixel PageView per route with the shared ID — 9 November 2026
 
