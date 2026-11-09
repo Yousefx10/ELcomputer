@@ -20,6 +20,9 @@ export const useMetaTracking=()=>{
   if(!sdkPromise){sdkPromise=new Promise(resolve=>{
    const timeout=setTimeout(()=>resolve(false),10000)
    const q=function(...args){q.callMethod?q.callMethod(...args):q.queue.push(args)};q.queue=[];q.loaded=true;q.version='2.0';q.push=q;window.fbq=q;window._fbq=q
+   // Each route sends its own PageView with a shared ID. The SDK must neither add an
+   // automatic one, which has no ID, nor drop ours as a repeat after the first page.
+   q.disablePushState=true;q.allowDuplicatePageViews=true
    q('consent','grant');q('set','autoConfig',false,state.value.pixelId);q('init',state.value.pixelId)
    const script=document.createElement('script');script.async=true;script.src='https://connect.facebook.net/en_US/fbevents.js';script.referrerPolicy='no-referrer';script.onload=()=>{clearTimeout(timeout);resolve(true)};script.onerror=()=>{clearTimeout(timeout);resolve(false)};document.head.appendChild(script)
   })}

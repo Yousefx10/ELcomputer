@@ -104,6 +104,7 @@ export function useCheckoutFlow(options) {
   const scheduleQuote = () => {clearTimeout(quoteTimer);quoteTimer=setTimeout(() => {if(addressComplete.value && availablePaymentMethods.value.length) void refreshQuote()},180)}
   const readPending = () => { const retained=readPendingCheckoutForCart(window.localStorage, customerId.value, { id: cartId.value, revision: revision.value });pendingCheckout.value=merchantRiskRetry.value&&retained?.body?.payment_method==='card'?null:retained }
   let checkoutStartedTracked = false
+  let metaCheckoutTracked = false
 
   const address = reactive({ first_name: '', last_name: '', street_address: '', address_line_2: '', city: '', phone: '', email: '', governorate: '' })
 
@@ -163,6 +164,8 @@ export function useCheckoutFlow(options) {
         return false
       }
       quoteError.value = ''
+      // The server values this event from the quote, so it waits for the first one.
+      if (!metaCheckoutTracked && cartId.value) { metaCheckoutTracked = true; emitMetaEvent('InitiateCheckout', { path: '/checkout', cartId: cartId.value }) }
       return true
     } catch (error) {
       if (sequence === quoteSequence) {

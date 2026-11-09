@@ -9,4 +9,4 @@ export const metaBrowserPrivacyAllowed=()=>typeof navigator!=='undefined'&&navig
 export const emitMetaEvent=(eventName,payload={})=>{
  if(typeof window!=='undefined'&&metaBrowserPrivacyAllowed())window.dispatchEvent(new CustomEvent('store-meta-event',{detail:{eventName,...payload}}))
 }
-export const metaAnalyticsNames={product_view:'ViewContent',checkout_started:'InitiateCheckout'}
+export const metaAnalyticsNames={product_view:'ViewContent'}

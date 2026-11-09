@@ -90,3 +90,16 @@ Schema113 authenticated inquiry proof is also accepted only when its transaction
 amount, currency, integration and stored evidence match the verified paid order.
 No signed callback receipt is invented for an inquiry. Unverified status checks
 and unsigned browser responses still produce no Purchase.
+
+## Pixel and Conversions API coverage
+
+The storefront sends its own `PageView` on each route change, with the event ID the
+server also sends. Two SDK flags are set before it loads. `fbq.disablePushState` stops
+the automatic `PageView` on history changes, which has no shared ID and lowers coverage
+in Events Manager. `fbq.allowDuplicatePageViews` stops the SDK dropping the storefront's
+`PageView` as a repeat after the first page.
+
+`InitiateCheckout` waits for the first successful quote because the server values
+the event from that quote. A customer with no complete address sends it once the
+address allows a quote.
+
