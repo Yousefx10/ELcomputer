@@ -4,6 +4,7 @@ import { getSupabaseAdminClient } from '../../../utils/supabaseAdmin'
 import { getPaymobConfig, normalizePaymobCallback, verifyPaymobHmac, hmacMessage } from '../../../utils/payments/paymob.js'
 import { paymentHandler, paymentNoStore, throwPaymentError } from '../../../utils/payments/index.js'
 import { readPaymentCallbackBody } from '../../../utils/payments/body.js'
+import { sendOrderSmsNow } from '../../../utils/sms/instant.js'
 export default paymentHandler(async event => {
   paymentNoStore(event)
   let config
@@ -20,6 +21,7 @@ export default paymentHandler(async event => {
     const result = await getSupabaseAdminClient().rpc('commerce_accept_payment_callback', { p_transaction: transaction })
     // Unknown signed mappings remain durable until intention persistence drains them.
     if (result.error) throw createError({ statusCode: result.error.code === 'P0001' ? 409 : 503, statusMessage: 'Callback could not be reconciled.' })
+    void sendOrderSmsNow(getSupabaseAdminClient(), useRuntimeConfig(event))
     return { received: true }
   } catch (error) {
     if (error?.statusMessage) throw error

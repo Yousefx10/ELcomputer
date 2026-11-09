@@ -53,8 +53,8 @@
           <Transition name="cm-expand">
             <div v-show="summaryOpen" id="cm-mobile-summary" class="cm-card cm-mobile-summary">
               <ul class="cm-lines"><li v-for="item in items" :key="item.cart_key" class="cm-line">
-                <span class="cm-thumb"><img v-if="item.image_url" :src="item.image_url" :alt="item.title" loading="lazy"><span class="cm-qty">{{ item.quantity }}</span></span>
-                <span class="cm-line-text"><span class="cm-line-title">{{ quoteLine(item)?.title || item.title }}</span><span v-if="quoteLine(item)?.variantName || item.variant_name" class="cm-muted">{{ quoteLine(item)?.variantName || item.variant_name }}</span></span>
+                <span class="cm-thumb"><img v-if="item.image_url" :src="item.image_url" :alt="item.title" loading="lazy"></span>
+                <span class="cm-line-text"><span class="cm-line-title">{{ quoteLine(item)?.title || item.title }}</span><span class="cm-muted cm-line-meta">{{ lineMeta(item) }}</span></span>
                 <span class="cm-line-price">{{ formatCurrency(quoteLine(item)?.total ?? item.price * item.quantity) }}</span>
               </li></ul>
             </div>
@@ -197,9 +197,9 @@
         <aside class="cm-card cm-summary" aria-labelledby="cm-summary-title">
           <h2 id="cm-summary-title" class="cm-card-title">{{ $t('common.orderSummary') }} <span class="cm-muted cm-count">{{ $t('checkoutModern.items', { count: itemCount }, itemCount) }}</span></h2>
           <ul class="cm-lines cm-lines-scroll"><li v-for="item in items" :key="item.cart_key" class="cm-line">
-            <span class="cm-thumb"><img v-if="item.image_url" :src="item.image_url" :alt="item.title" loading="lazy"><span class="cm-qty">{{ item.quantity }}</span></span>
+            <span class="cm-thumb"><img v-if="item.image_url" :src="item.image_url" :alt="item.title" loading="lazy"></span>
             <span class="cm-line-text"><span class="cm-line-title">{{ quoteLine(item)?.title || item.title }}</span>
-              <span v-if="quoteLine(item)?.variantName || item.variant_name" class="cm-muted">{{ quoteLine(item)?.variantName || item.variant_name }}</span>
+              <span class="cm-muted cm-line-meta">{{ lineMeta(item) }}</span>
               <ProductOptionSummary :values="quoteLine(item)?.variantOptions || item.variant_options" />
               <span v-if="item.selling_mode === 'preorder'" class="cm-warn">{{ $t('common.preOrderValue', { value0: ((quoteLine(item)?.paymentMode || item.preorder_payment_mode) === 'deposit' ? $t('preorder.depositPercent', { value0: (quoteLine(item)?.depositPercent ?? item.preorder_deposit_percent) }) : $t('common.fullPayment')) }) }}</span>
               <span v-if="quoteLine(item)?.expectedAvailabilityDate || item.expected_availability_date" class="cm-muted">{{ $t('common.expectedValue', { value0: (expectedAvailabilityLabel(quoteLine(item)?.expectedAvailabilityDate || item.expected_availability_date)) }) }}</span></span>
@@ -231,7 +231,10 @@
             <template v-if="isPreorderCart"><div class="cm-total-sub"><dt>{{ $t('common.requiredNow') }}</dt><dd>{{ formatCurrency(quote?.requiredNow || 0) }}</dd></div><div><dt>{{ $t('common.remainingAfterPayment') }}</dt><dd>{{ formatCurrency(quote?.remainingAfterPayment || 0) }}</dd></div></template>
           </dl>
           <p v-if="quoteLoading" class="cm-updating" role="status"><span class="cm-spinner" aria-hidden="true" />{{ $t('checkoutModern.updating') }}</p>
-          <p v-if="quoteError" class="cm-error" role="alert">{{ $uiMessage(quoteError) }} <button v-if="!quoteLoading" type="button" class="cm-link" @click="refreshQuote">{{ $t('checkoutModern.retry') }}</button></p>
+          <div v-if="quoteError" class="cm-notice cm-notice-error cm-summary-alert" role="alert">
+            <Icon name="lucide:circle-alert" size="18" aria-hidden="true" />
+            <div><p>{{ $uiMessage(quoteError) }}</p><p class="cm-summary-alert-actions"><button v-if="!quoteLoading" type="button" class="cm-link" @click="refreshQuote">{{ $t('checkoutModern.retry') }}</button><NuxtLinkLocale to="/cart" class="cm-link">{{ $t('checkoutModern.backToCart') }}</NuxtLinkLocale></p></div>
+          </div>
 
           <button type="button" class="cm-primary cm-primary-desktop" :disabled="primaryDisabled" @click="submit"><span v-if="placingOrder" class="cm-spinner cm-spinner-light" aria-hidden="true" /><Icon v-else-if="paymentChoice === 'apple_pay'" name="lucide:smartphone" size="18" aria-hidden="true" /><Icon v-else name="lucide:lock" size="16" aria-hidden="true" />{{ primaryLabel }}</button>
           <p class="cm-trust"><Icon name="lucide:shield-check" size="15" aria-hidden="true" />{{ $t('checkoutModern.trust') }}</p>
@@ -267,6 +270,11 @@ const {
 const { t } = useI18n()
 
 const picker = ref(false), summaryOpen = ref(false), couponOpen = ref(false)
+// Option and quantity share one quiet line. Placeholder option names stay hidden.
+const lineMeta = item => {
+  const name = String(quoteLine(item)?.variantName || item.variant_name || '').trim()
+  return [/^(default|standard|base|product)$/i.test(name) ? '' : name, t('checkoutModern.quantity', { value0: item.quantity })].filter(Boolean).join(' · ')
+}
 // Card is the default until the customer chooses; methods can arrive after mount.
 const methodTouched = ref(false)
 watch(availablePaymentMethods, methods => {

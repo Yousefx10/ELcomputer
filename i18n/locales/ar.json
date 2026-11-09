@@ -6296,6 +6296,7 @@
   "checkoutModern": {
     "title": "إتمام الطلب",
     "backToCart": "العودة إلى السلة",
+    "quantity": "الكمية {value0}",
     "deliverTo": "التوصيل إلى",
     "delivery": "التوصيل",
     "payment": "الدفع",

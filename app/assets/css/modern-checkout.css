@@ -94,13 +94,17 @@ html.dark .checkout-modern .cm-fee { color: #fbd38d; }
 .checkout-modern .cm-count { font-size: 13px; font-weight: 500; }
 .checkout-modern .cm-lines { display: grid; gap: 14px; margin-top: 14px; }
 .checkout-modern .cm-lines-scroll { max-height: 280px; overflow-y: auto; padding-inline-end: 4px; }
-.checkout-modern .cm-line { display: flex; align-items: center; gap: 12px; }
-.checkout-modern .cm-thumb { position: relative; display: grid; place-items: center; width: 56px; height: 56px; flex-shrink: 0; padding: 5px; border-radius: 10px; background: #fff; border: 1px solid var(--border); }
+.checkout-modern .cm-line { display: flex; align-items: flex-start; gap: 12px; }
+.checkout-modern .cm-thumb { display: grid; place-items: center; width: 60px; height: 60px; flex-shrink: 0; padding: 5px; border-radius: 8px; background: #fff; border: 1px solid var(--border); }
 .checkout-modern .cm-thumb img { width: 100%; height: 100%; object-fit: contain; }
-.checkout-modern .cm-qty { position: absolute; top: -7px; inset-inline-end: -7px; display: grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: var(--text-primary); color: var(--surface); font-size: 11px; font-weight: 750; }
-.checkout-modern .cm-line-text { display: grid; flex: 1; min-width: 0; font-size: 13px; }
+.checkout-modern .cm-line-text { display: grid; flex: 1; gap: 2px; min-width: 0; font-size: 14px; line-height: 1.35; }
+.checkout-modern .cm-line-meta { font-size: 12px; line-height: 1.4; }
+.checkout-modern .cm-summary-alert { margin-top: 12px; font-size: 13px; }
+.checkout-modern .cm-summary-alert > .iconify { flex-shrink: 0; margin-top: 1px; }
+.checkout-modern .cm-summary-alert-actions { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 4px; }
+.checkout-modern .cm-summary-alert .cm-link { min-height: 32px; padding-inline: 0; color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .checkout-modern .cm-line-title { font-weight: 650; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.checkout-modern .cm-line-price { font-size: 13px; font-weight: 700; white-space: nowrap; }
+.checkout-modern .cm-line-price { font-size: 14px; font-weight: 700; line-height: 1.35; white-space: nowrap; }
 .checkout-modern .cm-coupon { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
 .checkout-modern .cm-coupon-form { display: flex; gap: 8px; }
 .checkout-modern .cm-coupon-form input { text-transform: uppercase; min-height: 42px; }

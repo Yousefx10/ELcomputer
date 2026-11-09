@@ -10,6 +10,7 @@ import { getPaymobConfig } from '../../utils/payments/paymob.js'
 import { requireCodCheckoutSchema } from '../../utils/codCheckout'
 import { authorizeNormalCheckout } from '../../utils/normalPurchase.js'
 import { checkoutProfileAddress } from '~/utils/checkoutAddress'
+import { sendOrderSmsNow } from '../../utils/sms/instant.js'
 
 export default defineEventHandler(async event => {
   setHeader(event, 'Cache-Control', 'private, no-store')
@@ -123,6 +124,7 @@ export default defineEventHandler(async event => {
     } catch {
       console.error('Could not record checkout analytics.')
     }
+    if (orderRecord.payment_method === 'cash') void sendOrderSmsNow(supabaseAdmin, runtime)
   }
 
   return {

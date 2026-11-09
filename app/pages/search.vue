@@ -26,7 +26,7 @@
 
       <div class="store-listing-bar">
         <button type="button" class="store-listing-filter" :aria-expanded="filtersOpen" aria-controls="store-search-filters" @click="filtersOpen = !filtersOpen"><Icon name="lucide:sliders-horizontal" size="17" aria-hidden="true" /><span>{{ $t('common.filters') }}</span><span v-if="activeFilterChips.length" class="store-listing-filter-count">{{ activeFilterChips.length }}</span></button>
-        <label class="store-listing-sort"><span class="sr-only">{{ $t('common.sortBy') }}</span><Icon name="lucide:arrow-down-up" size="16" aria-hidden="true" /><select v-model="filters.sortBy" @change="changeSort"><option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ $uiLabel(option.label) }}</option></select></label>
+        <label class="store-listing-sort"><span class="sr-only">{{ $t('common.sortBy') }}</span><Icon name="lucide:arrow-down-up" size="16" aria-hidden="true" /><select v-model="filters.sortBy" @change="changeSort"><option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ $uiLabel(option.label) }}</option></select><Icon name="lucide:chevron-down" size="16" class="store-listing-sort-chevron" aria-hidden="true" /></label>
       </div>
       <p v-if="!pending" class="store-listing-count lg:hidden">{{ $t('search.valueProductvalueFound', { value0: (totalCount), value1: (totalCount === 1 ? '' : $uiPluralSuffix('s')) }) }}</p>
 

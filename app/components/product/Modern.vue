@@ -138,6 +138,7 @@ const thumb = computed(() => { const url = galleryImages.value[0]?.url || produc
                 <span class="pm-price"><bdi>{{ price(currentPrice) }}<template v-if="hasPriceRange"> – {{ price(priceRange.maximum) }}</template></bdi></span>
                 <del v-if="savingsInfo.amount > 0"><bdi>{{ price(product.old_price) }}</bdi></del>
                 <span v-if="savingsInfo.amount > 0" class="pm-save">{{ $t('product.saveAmount', { value0: price(savingsInfo.amount) }) }}</span>
+                <p v-if="!showVariantChoices && selectedVariant && meaningfulVariantName" class="pm-single-option">{{ $t('common.option') }} <strong>{{ selectedVariant.name }}</strong></p>
               </div>
               <p v-if="!stockIndependentSale" class="pm-stock" :data-state="stockState"><span class="pm-stock-dot" aria-hidden="true" />{{ $uiLabel(stockLabel) }}</p>
               <p v-if="backorderNotice && !stockIndependentSale" class="pm-note" role="note">{{ backorderNotice }}</p>
@@ -156,7 +157,6 @@ const thumb = computed(() => { const url = galleryImages.value[0]?.url || produc
             <ProductVariantOptions v-if="showVariantChoices" :key="product.id" :variants="productVariants" :selected-id="selectedVariantId" :color-choices="hasColorChoices"
               :allow-backorder="allowOutOfStockPurchases" :preorder="isPreorder" :stock-independent="stockIndependentSale"
               :preview="getVariantPreview" :color="getVariantColor" :stock-label="variantStockLabel" @select="selectVariant" />
-            <p v-else-if="selectedVariant && meaningfulVariantName" class="pm-single-option">{{ $t('common.option') }} <strong>{{ selectedVariant.name }}</strong></p>
 
             <div ref="buyBox" class="pm-buy">
               <div v-if="premiumPurchasingEnabled && !isComingSoon" class="pm-qty" :aria-label="$t('common.quantity')">
@@ -176,8 +176,8 @@ const thumb = computed(() => { const url = galleryImages.value[0]?.url || produc
               <div class="pm-assure" data-product-warranty><span class="pm-assure-icon" aria-hidden="true"><Icon name="lucide:shield-check" size="18" /></span><div><strong>{{ $t('warranty.title') }}</strong><span>{{ warranty.warranty_status === 'included' ? $t(warrantyDurationKey({ value: warranty.warranty_duration_value, unit: warranty.warranty_duration_unit }), { value: warranty.warranty_duration_value }) : $t(warranty.warranty_status === 'none' ? 'warranty.none' : 'warranty.unavailable') }}</span></div></div>
               <nav v-if="policies.length" class="pm-policies" :aria-label="$t('productPage.support')"><NuxtLinkLocale v-for="item in policies" :key="item.id" :to="item.url">{{ item.label }}<Icon name="lucide:arrow-up-right" size="14" aria-hidden="true" /></NuxtLinkLocale></nav>
               <ProductPremiumHelp />
+              <ProductPremiumActions :key="`share-${product.id}`" :product="product" mode="share" />
             </div>
-            <ProductPremiumActions :key="`share-${product.id}`" :product="product" mode="share" />
             <ProductBuyWithIt :key="`buy-${product.id}`" :product-id="product.id" :items="compatible" />
           </section>
         </div>
