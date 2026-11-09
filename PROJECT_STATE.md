@@ -9,10 +9,29 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E362 is the latest milestone (phone search, cash mark, category pictures). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E363 is the latest milestone (hero restored, iOS search zoom). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E363 — HOME-HERO-RESTORE-01 LIVE, iOS search zoom stopped — 9 November 2026
+
+Owner: "i still see a slightly zoom when open search, on iphone safari. plus, the hero banner, is broken ... please fix the hero banner, or bring it back like it was! and investigate for the zoom that happens when search text input focuses. finish and deploy."
+Release 57f45b157f09622b (commit 87f4c56 on product-modern, release28/, not pushed) installed 19:44:43 UTC, pause 4.1 s, app only, schema 142.
+Verify HERO_SEARCH_INSTALLED_NATURAL_MON_PASS 19:52 UTC; 9637 assets match. The first verify ran before the next monitor check and reported AWAITING; the read-only rerun passed.
+Rollback: point current back to releases/cbeb3ce78dea6484 and restart.
+
+Hero cause: E350 (HOME-DESIGN-01) gave banners one fixed shape per screen (20:9 desktop, square phone image). Neither live banner has a phone image, so phones showed the whole banner as a 161 px strip with its text repeated underneath. Desktops under 1440 px got a shorter banner than before.
+Hero fix: the pre-E350 layout is back. Wide screens have a 410 px banner row beside the two tiles. Phones show the banner art with its text under it. Banners still fill their box (the cover default from E350 stays), so the gray space does not return.
+Below 1280 px the banner spans the row at 2:1 with the tiles under it. In the old two-column layout the 2560x1120 Discord banner lost its text edge at 1200 px, and tablets had empty space under the banner. A phone image uploaded in the Dashboard still shows square.
+Compared locally against a build of the pre-E350 hero at 1440, 1366, 1280, 1200, 1100, 820 and 390 px, using the live banners. Live after install: 920x410 at 1440, 812x410 at 1280, phone hero 322 px.
+
+Search zoom investigation: in phone emulation at 375, 393 and 430 px the field computes to 16 px, no page is wider than the screen on /, /products or /cart, and no ancestor is transformed or zoomed. Our sizes do not trigger Safari's focus zoom, so the remaining zoom comes from Safari itself, for example its page zoom set under 100%. No real iPhone or iOS Simulator was available.
+Search zoom fix: on iPhone, iPad and iPod the viewport gets maximum-scale=1 after load. WebKit clamps focus zoom to it and still allows pinch zoom on iOS. Android, desktop and Mac keep the old tag, so their pinch zoom is unchanged. Checked live by user agent.
+
+Tests: hero and search files 59/59 pass, including the hero browser test in Chrome and WebKit. Across 30 related files the only test that passes on the live commit and not the new one is the renamed hero test, whose new version passes. Browser files that need a build were rerun on both release exports with built output: identical results, with no test passing on live only.
+Worktree: work-e363 (branch e363-hero-search) was fast-forwarded into product-modern. The Dashboard refresh session's 45 uncommitted files in source were not touched or included.
+Not yet proven: the zoom fix on a real iPhone.
 
 # E362 — PHONE-SEARCH-TOP-01 LIVE, cash checkout mark, category pictures — 9 November 2026
 
