@@ -312,6 +312,39 @@ A small shared kit built from existing components and tokens, with no new UI lib
 page actions, section with save bar, data table (table on desktop, rows on phone),
 filter bar, stat tile, status badge, empty state, error state with Retry, confirm dialog.
 
+### Owner direction, 10 November 2026: modern and very easy (DASH-UX-01)
+
+The owner wants the Dashboard to feel modern and very easy, not just tidy. Their example:
+payment methods as cards with each method's name and logo, grey when off, coloured and
+marked active when clicked, in place of plain checkboxes. This is a direction with
+examples, not a fixed design. It applies across the rebuild:
+
+- Choices become clickable option cards or clear switches, not bare checkboxes and
+  selects. Candidates: payment methods, order flow modes, couriers, page layouts,
+  consent mode, product selling mode and publish state.
+- Off is grey and quiet. On is coloured and clearly marked, with the item's real logo
+  where one exists (payment logos are already uploaded for the footer).
+- One tap does one thing. Saving stays explicit wherever money, customers or stock change.
+- Menus and pages are rearranged (Phase 3) and the screens redesigned (Phase 4), not
+  only consolidated. The identity may change where it makes the work easier.
+- Kept: EN/AR, RTL, Light/Dark/System, phone width, real logos only, no invented
+  content, no flashy gradients, and accessible controls (keyboard, focus, screen readers).
+
+It must not look AI-made (owner, 10 November). Simple and creative, not the template
+look every generated dashboard shares. To avoid:
+
+- Rows of identical cards, each with a coloured icon square, a big number and a caption.
+- Pastel gradients, glow, glass effects, purple-blue themes, sparkles or emoji.
+- A caption under every heading, and phrases like "Manage your … with ease" or
+  "at a glance". A label names the thing; a sentence appears only when it prevents a mistake.
+- An icon on every row and button. Icons only where they speed recognition.
+- The same layout on every page. Each screen is shaped by its job: a queue, a form,
+  a table or a single switch.
+
+To aim for: clear type hierarchy, one accent colour, the store's real data and logos,
+generous but even spacing, and small details made for this store's daily work.
+Every new screen is checked against this list before it is shown to the owner.
+
 ## 5. Phases
 
 Each phase is a separate release with its own approval. The release follows section 4 of
@@ -356,6 +389,10 @@ you say otherwise.
 
 ### Phase 2 (DASH-R2): Permissions and safe saves. One migration plus app.
 
+Status, 10 November 2026: commit 83a377d, release31 built and qualified, not deployed (E367). PDC tariff drafts
+stay under Edit settings; governorate prices use the new shipping keys.
+
+
 - Add permission keys for reviews, CRM, returns, courier and delivery prices, inventory
   pages and user management. Map them from today's access so nobody loses access.
 - Switch those RLS policies from `is_active_admin()` to `has_admin_permission(...)`.
@@ -387,9 +424,11 @@ you say otherwise.
 - **Tests:** every old URL redirects. Menu per mode and permission set. Browser matrix.
 - **Rollback:** previous app release.
 
-### Phase 4 (DASH-R4): Design consolidation. App only.
+### Phase 4 (DASH-R4): Redesign. App only.
 
 - The shared kit. Gradients out. One corner and spacing scale.
+- Option cards and switches in place of checkboxes and selects (DASH-UX-01), starting
+  with payment methods. Each card shows real on/off and checkout state.
 - Payments, Meta tracking, SMS, Email, After-Sales Claims and Quick Setup on shared parts.
 - Phone header. Dark mode through variables.
 - **Integrations:** none.
