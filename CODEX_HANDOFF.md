@@ -9,10 +9,23 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E367 is the latest milestone (Dashboard Phase 2, DASH-R2, committed and built as release31, not deployed; E366 is live). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E368 is the latest milestone (Dashboard Phase 2, DASH-R2, live as release31, schema 143). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E368 — DASH-R2 LIVE: Dashboard Phase 2, named permissions and safe Settings saves — 10 November 2026
+
+Owner: "Deploy it".
+Release 1674220b1764fbe3 (commit 83a377d, release31/, not pushed) installed 10:20:49 UTC with migration 20261110100000_dashboard_named_permissions: schema 143, pause 3.1 s, one app restart, no provider calls.
+Prepare confirmed production still held the five function bodies the migration replaces and all 16 replaced policies. The migration swapped exactly those 16 policies for 49; every other policy and function stayed the same. There were no non-owner staff accounts, so the backfill changed nobody's access.
+Verify DASH_R2_INSTALLED_NATURAL_MON_PASS 10:29 UTC; 10018 assets match; the new Settings route answers 401 through Caddy; packet consumed complete.
+Rollback: run release31/rollback-policies.sql, then point current back to releases/934ea9172dbc66bd and restart.
+
+Live, signed in as the owner, nothing saved: Payment methods status lines read correctly, with the space. Users shows the new permission groups. Shipping (2 companies), CRM (1 supplier), Product reviews and Returns load without errors.
+A Daftra-mode cash quote for Cairo, run in a rolled-back transaction, priced as before: delivery 45, cash fee 16, total 3061. Nothing was committed.
+Not yet seen live: a Settings save through the new route. The owner's next save is the first; a refused save asks for a reload.
+Found: permission group titles on the Users screen show in English in Arabic (all groups, not only the new ones). The template prints group.title untranslated; small fix for a later release.
 
 # E367 — DASH-R2 BUILT: Dashboard Phase 2, named permissions and safe Settings saves, release31 ready for approval — 10 November 2026
 

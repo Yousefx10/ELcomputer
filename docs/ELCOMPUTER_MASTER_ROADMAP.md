@@ -9,10 +9,23 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E367 is the latest milestone (Dashboard Phase 2, DASH-R2, committed and built as release31, not deployed; E366 is live). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E368 is the latest milestone (Dashboard Phase 2, DASH-R2, live as release31, schema 143). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E368 — DASH-R2 LIVE: Dashboard Phase 2, named permissions and safe Settings saves — 10 November 2026
+
+Owner: "Deploy it".
+Release 1674220b1764fbe3 (commit 83a377d, release31/, not pushed) installed 10:20:49 UTC with migration 20261110100000_dashboard_named_permissions: schema 143, pause 3.1 s, one app restart, no provider calls.
+Prepare confirmed production still held the five function bodies the migration replaces and all 16 replaced policies. The migration swapped exactly those 16 policies for 49; every other policy and function stayed the same. There were no non-owner staff accounts, so the backfill changed nobody's access.
+Verify DASH_R2_INSTALLED_NATURAL_MON_PASS 10:29 UTC; 10018 assets match; the new Settings route answers 401 through Caddy; packet consumed complete.
+Rollback: run release31/rollback-policies.sql, then point current back to releases/934ea9172dbc66bd and restart.
+
+Live, signed in as the owner, nothing saved: Payment methods status lines read correctly, with the space. Users shows the new permission groups. Shipping (2 companies), CRM (1 supplier), Product reviews and Returns load without errors.
+A Daftra-mode cash quote for Cairo, run in a rolled-back transaction, priced as before: delivery 45, cash fee 16, total 3061. Nothing was committed.
+Not yet seen live: a Settings save through the new route. The owner's next save is the first; a refused save asks for a reload.
+Found: permission group titles on the Users screen show in English in Arabic (all groups, not only the new ones). The template prints group.title untranslated; small fix for a later release.
 
 # E367 — DASH-R2 BUILT: Dashboard Phase 2, named permissions and safe Settings saves, release31 ready for approval — 10 November 2026
 
@@ -10969,7 +10982,7 @@ source/requirement inspection, not hosted acceptance or provider verification.
 | DASH-01 | Settings opens Store Settings without nested sidebar menus | P2 | PLANNED | Post-Beta navigation-only; preserve settings permissions/pages/direct routes | One direct Settings entry; all configuration still reachable within existing settings surfaces; EN/AR/RTL/mobile/active-state access intact | E38; L1 requirement6; E20 | 2026-10-25 | Map current navigation/settings keys and propose compact direct entry; delete no settings feature |
 | DASH-02 | Overview Store Activity and separate Live on Store tile | P2 | PLANNED | Post-Beta; existing CustomerExperience/Overview data and permissions | Reused Store Activity on Overview plus small distinct live tile; accurate timestamped values, responsive themes/locales, bounded requests/subscriptions | E38; L1 requirement7; FUT-04 | 2026-10-25 | Reuse existing source/component contracts and set refresh/query budget; no invented live counts |
 | DASH-R1 | Dashboard Phase 1: screens match the live setup (payments, stock, copy, titles, monitor, raw errors) | P1 | DEPLOYED 934ea9172dbc66bd (release30, E366) | App only; rollback to e1790020f01ceb85 | Options that cannot work are hidden or marked; EN/AR, RTL, themes and phone width kept; no setting or permission change | E364; E365; E366; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | Fix the missing space in the payment status line with the next release |
-| DASH-R2 | Dashboard Phase 2: named permissions for reviews, CRM, returns, inventory, courier prices and admin users; server-side Settings saves with audit | P1 | COMMITTED 83a377d, RELEASE31 QUALIFIED, NOT DEPLOYED | Deploy needs the owner's words; one migration, schema 143 | No staff lockout; RLS and HTTP 401/403 matrix; conflict-checked Settings saves with server audit | E367; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | Owner decides on deploying release31 |
+| DASH-R2 | Dashboard Phase 2: named permissions for reviews, CRM, returns, inventory, courier prices and admin users; server-side Settings saves with audit | P1 | DEPLOYED 1674220b1764fbe3 (release31, E368) | Schema 143; rollback with release31/rollback-policies.sql then 934ea9172dbc66bd | No staff lockout; RLS and HTTP 401/403 matrix; conflict-checked Settings saves with server audit | E367; E368; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | Watch the first live Settings save; translate Users group titles in a later release |
 | DASH-R3 | Dashboard Phase 3: menu from 21 to 9 entries, merged duplicates, one parcel weight, order queues (includes DASH-01) | P2 | PLANNED | After DASH-R1; old URLs redirect | Every old URL works; permissions per item; both ERP modes | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Starts only after the owner approves it |
 | DASH-R4 | Dashboard Phase 4: full redesign with option cards and switches instead of checkboxes (DASH-UX-01), shared parts, no gradients, one corner scale, dark tokens | P2 | PLANNED | Page by page with screenshots | No visual regressions in EN/AR, light/dark, 1440/390 | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Starts only after the owner approves it |
 | DASH-R5 | Dashboard Phase 5: product editor tabs, Settings split, Home rebuild (includes DASH-02), order panel | P2 | PLANNED | Keep product save, editor, media, listing and bulk contracts | Existing editor/listing/bulk/media suites pass | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Starts only after the owner approves it |

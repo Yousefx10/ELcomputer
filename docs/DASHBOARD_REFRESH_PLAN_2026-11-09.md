@@ -389,7 +389,7 @@ you say otherwise.
 
 ### Phase 2 (DASH-R2): Permissions and safe saves. One migration plus app.
 
-Status, 10 November 2026: commit 83a377d, release31 built and qualified, not deployed (E367). PDC tariff drafts
+Status, 10 November 2026: live as release31 1674220b1764fbe3, schema 143 (E368). PDC tariff drafts
 stay under Edit settings; governorate prices use the new shipping keys.
 
 
