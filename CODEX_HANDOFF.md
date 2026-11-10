@@ -9,10 +9,20 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E373 is the latest milestone (DASH-R4 batch 2, committed and built as release34, not deployed; E372 is live). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E374 is the latest milestone (DASH-R4 batch 2 live as release34, schema 143). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E374 — DASH-R4 BATCH 2 LIVE: Settings loading state, remaining switches, corner scale — 10 November 2026
+
+Owner: "Deploy it".
+Release 99bc694136bc545c (commit 11c99b4, release34/, not pushed) installed 19:58:39 UTC, pause 3.1 s, one app restart, app only, schema 143, no provider calls.
+Verify DASH_R4B_INSTALLED_NATURAL_MON_PASS 20:07 UTC; 10416 assets match; the Settings save route still answers 401 through Caddy; packet consumed complete.
+Rollback: point current back to releases/495f68f018109851 and restart; no database change to undo.
+
+Live, signed in as the owner, nothing saved: Settings shows "Loading settings…" for the first moment, then the stored values (image cache on with "One day", infinite scroll on). The Users form shows a switch per permission group and account status. Payment methods in Arabic shows the cards on and off as stored, right to left.
+Seen, not new in this release: the permission group cards on Users draw dark borders and dividers. A bare Tailwind "border" takes the text colour in Tailwind 4. To fix in the next Dashboard batch.
 
 # E373 — DASH-R4 BUILT: Dashboard redesign, batch 2 (loading state, switches, corner scale), release34 ready for approval — 10 November 2026
 

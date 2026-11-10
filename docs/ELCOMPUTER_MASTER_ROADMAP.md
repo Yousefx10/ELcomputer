@@ -9,10 +9,20 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E373 is the latest milestone (DASH-R4 batch 2, committed and built as release34, not deployed; E372 is live). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E374 is the latest milestone (DASH-R4 batch 2 live as release34, schema 143). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E374 — DASH-R4 BATCH 2 LIVE: Settings loading state, remaining switches, corner scale — 10 November 2026
+
+Owner: "Deploy it".
+Release 99bc694136bc545c (commit 11c99b4, release34/, not pushed) installed 19:58:39 UTC, pause 3.1 s, one app restart, app only, schema 143, no provider calls.
+Verify DASH_R4B_INSTALLED_NATURAL_MON_PASS 20:07 UTC; 10416 assets match; the Settings save route still answers 401 through Caddy; packet consumed complete.
+Rollback: point current back to releases/495f68f018109851 and restart; no database change to undo.
+
+Live, signed in as the owner, nothing saved: Settings shows "Loading settings…" for the first moment, then the stored values (image cache on with "One day", infinite scroll on). The Users form shows a switch per permission group and account status. Payment methods in Arabic shows the cards on and off as stored, right to left.
+Seen, not new in this release: the permission group cards on Users draw dark borders and dividers. A bare Tailwind "border" takes the text colour in Tailwind 4. To fix in the next Dashboard batch.
 
 # E373 — DASH-R4 BUILT: Dashboard redesign, batch 2 (loading state, switches, corner scale), release34 ready for approval — 10 November 2026
 
@@ -11058,7 +11068,7 @@ source/requirement inspection, not hosted acceptance or provider verification.
 | DASH-R2 | Dashboard Phase 2: named permissions for reviews, CRM, returns, inventory, courier prices and admin users; server-side Settings saves with audit | P1 | DEPLOYED 1674220b1764fbe3 (release31, E368) | Schema 143; rollback with release31/rollback-policies.sql then 934ea9172dbc66bd | No staff lockout; RLS and HTTP 401/403 matrix; conflict-checked Settings saves with server audit | E367; E368; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | Watch the first live Settings save; translate Users group titles in a later release |
 | DASH-R3 | Dashboard Phase 3: menu from 21 to 9 entries, Classic retired, order queues, Returns and claims, Settings home (includes DASH-01) | P2 | DEPLOYED bad6633ec37f9522 (release32, E370) | App only; rollback to 1674220b1764fbe3 | Every older URL works; permissions per entry; both ERP modes; EN/AR, themes, phone | E369; E370; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | Next phase: DASH-R4 redesign when the owner approves it |
 | DASH-WEIGHT-01 | One parcel weight for Confirm Orders, automatic booking and reverse pickups | P3 | PLANNED | Needs a migration: reverse pickups read shipping_provider_settings.default_weight_kg in a database function | One value, edited in one place; both live values are 1 kg today | E369 | 2026-11-10 | Starts when the owner approves it |
-| DASH-R4 | Dashboard Phase 4: full redesign with option cards and switches instead of checkboxes (DASH-UX-01), shared parts, no gradients, one corner scale, dark tokens | P2 | BATCH 1 DEPLOYED (E372); BATCH 2 COMMITTED 11c99b4, RELEASE34 QUALIFIED, NOT DEPLOYED | App only; deploy needs the owner's words | No visual regressions in EN/AR, light/dark, 1440/390 | E371; E372; E373; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | Owner decides on deploying release34 |
+| DASH-R4 | Dashboard Phase 4: full redesign with option cards and switches instead of checkboxes (DASH-UX-01), shared parts, no gradients, one corner scale, dark tokens | P2 | BATCHES 1 AND 2 DEPLOYED (E372, E374: release34 99bc694136bc545c) | App only; rollback to 495f68f018109851 | No visual regressions in EN/AR, light/dark, 1440/390 | E371 to E374; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | Next: bare-border fix, then DASH-R5 (product editor, Settings split, Home) when the owner approves |
 | DASH-R5 | Dashboard Phase 5: product editor tabs, Settings split, Home rebuild (includes DASH-02), order panel | P2 | PLANNED | Keep product save, editor, media, listing and bulk contracts | Existing editor/listing/bulk/media suites pass | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Starts only after the owner approves it |
 | DASH-R6 | Dashboard Phase 6: new features, each approved on its own | P3 | PLANNED | After DASH-R1 to R5 | Per feature | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Owner picks features |
 | DASH-UX-01 | Owner design direction 10 Nov: modern and very easy; clickable option cards (grey off, coloured with real logo when on) instead of checkboxes; menus rearranged and screens redesigned | P1 | FIRST DESIGN APPROVED 10 NOV (E371) | Applies to DASH-R3 to DASH-R5; examples, not a fixed design | Fewer clicks, clear on/off state, EN/AR, RTL, themes, phone, accessible controls | DASHBOARD_REFRESH_PLAN_2026-11-09 section 4 | 2026-11-10 | Show the owner a first option-card design before building it widely |
