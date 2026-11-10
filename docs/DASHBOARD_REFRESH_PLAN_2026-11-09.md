@@ -412,6 +412,10 @@ stay under Edit settings; governorate prices use the new shipping keys.
 
 ### Phase 3 (DASH-R3): Menu and page arrangement. App, with small API filters.
 
+Status, 10 November 2026: commit 5e41968, release32 built and qualified, not deployed (E369). One parcel weight moved
+to its own step (DASH-WEIGHT-01) because it needs a migration.
+
+
 - The new menu from section 3, including DASH-01.
 - Merge duplicates where the change is navigation: one Payments settings page, Returns and
   claims, Customers, Team under Settings.
@@ -458,13 +462,14 @@ DOC-01 storage usage, images in Pages and Help, and one support inbox.
 ## 6. Decisions for you
 
 1. Which phase should I start? I recommend Phase 1, then Phase 2.
-2. Retire the Classic Dashboard layout?
-3. Merge CRM tickets into one support inbox?
-4. One "Returns and claims" area?
+2. Retire the Classic Dashboard layout? Answered 10 November: yes (DASH-R3).
+3. Merge CRM tickets into one support inbox? Answered 10 November: group them under
+   Customers now, merge later.
+4. One "Returns and claims" area? Answered 10 November: one entry under Orders with two tabs.
 5. Methods that cannot work: hide them, or show them off with a reason?
 6. Bank transfer is on in Settings but not offered at checkout. Turn it off? This changes
    a production setting, so it needs your words.
-7. Move Quick Setup under Settings > Advanced?
+7. Move Quick Setup under Settings > Advanced? Answered 10 November: yes.
 8. Are Serialized items and Scan item used in Daftra mode? What about the 50 test units?
 9. Do you still see an image URL box anywhere? If so, which screen?
 
