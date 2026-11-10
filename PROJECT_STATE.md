@@ -9,10 +9,20 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E369 is the latest milestone (Dashboard Phase 3, DASH-R3 menu, committed and built as release32, not deployed; E368 is live). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E370 is the latest milestone (Dashboard Phase 3, DASH-R3 menu, live as release32, schema 143). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E370 — DASH-R3 LIVE: Dashboard Phase 3, new menu and page arrangement — 10 November 2026
+
+Owner: "Deploy it".
+Release bad6633ec37f9522 (commit 5e41968, release32/, not pushed) installed 14:03:54 UTC, pause 3.8 s, one app restart, app only, schema 143, no provider calls.
+Prepare and the read-only check ran at 13:57 UTC; install followed after a pause on the owner's side, well inside the packet deadline.
+Verify DASH_R3_INSTALLED_NATURAL_MON_PASS 14:11 UTC; 10146 assets match; the Settings save route still answers 401 through Caddy; packet consumed complete.
+Rollback: point current back to releases/1674220b1764fbe3 and restart; no database change to undo.
+
+Live, signed in as the owner, nothing saved: the menu shows the nine entries with Orders open and current. Orders shows the queue tabs with real counts (To confirm 0, Ready 1, With courier 0, Problems 0); the Ready tab lists only ready-to-deliver orders. The Settings home shows Store, Shipping and messages, Team and records, and Advanced. After-Sales Claims shows the Returns and Claims tabs under "Returns and claims". Arabic and right-to-left read correctly on the menu and the Settings home.
 
 # E369 — DASH-R3 BUILT: Dashboard Phase 3, new menu and page arrangement, release32 ready for approval — 10 November 2026
 

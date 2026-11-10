@@ -412,7 +412,7 @@ stay under Edit settings; governorate prices use the new shipping keys.
 
 ### Phase 3 (DASH-R3): Menu and page arrangement. App, with small API filters.
 
-Status, 10 November 2026: commit 5e41968, release32 built and qualified, not deployed (E369). One parcel weight moved
+Status, 10 November 2026: live as release32 bad6633ec37f9522 (E370). One parcel weight moved
 to its own step (DASH-WEIGHT-01) because it needs a migration.
 
 
