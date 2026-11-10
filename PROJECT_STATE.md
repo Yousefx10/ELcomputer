@@ -9,10 +9,20 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E371 is the latest milestone (Dashboard Phase 4 batch 1, DASH-R4 redesign, committed and built as release33, not deployed; E370 is live). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E372 is the latest milestone (Dashboard Phase 4 batch 1, DASH-R4 redesign, live as release33, schema 143). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E372 — DASH-R4 BATCH 1 LIVE: shared kit, option cards, switches, phone header — 10 November 2026
+
+Owner: "Deploy it".
+Release 495f68f018109851 (commit fd57db4, release33/, not pushed) installed 19:22:13 UTC, pause 3.7 s, one app restart, app only, schema 143, no provider calls.
+Verify DASH_R4_INSTALLED_NATURAL_MON_PASS 19:31 UTC; 10282 assets match; the Settings save route still answers 401 through Caddy; packet consumed complete.
+Rollback: point current back to releases/bad6633ec37f9522 and restart; no database change to undo.
+
+Live, signed in as the owner, nothing saved: Payment methods shows card, bank transfer and cash on, InstaPay off, with the Visa, Mastercard and cash marks and the same checkout states as before. Order flow shows paid orders Automatic and cash on delivery Review first, with "status follows the courier" on, matching the stored settings. Overview and Orders show the plain stat tiles. At 390 px the page titles show in full in English and Arabic, with no sideways scroll.
+Seen: while Settings first loads, every card briefly shows Off until the stored settings arrive; the old toggles behaved the same. A loading state for Settings belongs to batch 2.
 
 # E371 — DASH-R4 BUILT: Dashboard redesign, batch 1 (shared kit, option cards, switches), release33 ready for approval — 10 November 2026
 

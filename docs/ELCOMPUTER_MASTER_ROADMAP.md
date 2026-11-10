@@ -9,10 +9,20 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E371 is the latest milestone (Dashboard Phase 4 batch 1, DASH-R4 redesign, committed and built as release33, not deployed; E370 is live). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E372 is the latest milestone (Dashboard Phase 4 batch 1, DASH-R4 redesign, live as release33, schema 143). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E372 — DASH-R4 BATCH 1 LIVE: shared kit, option cards, switches, phone header — 10 November 2026
+
+Owner: "Deploy it".
+Release 495f68f018109851 (commit fd57db4, release33/, not pushed) installed 19:22:13 UTC, pause 3.7 s, one app restart, app only, schema 143, no provider calls.
+Verify DASH_R4_INSTALLED_NATURAL_MON_PASS 19:31 UTC; 10282 assets match; the Settings save route still answers 401 through Caddy; packet consumed complete.
+Rollback: point current back to releases/bad6633ec37f9522 and restart; no database change to undo.
+
+Live, signed in as the owner, nothing saved: Payment methods shows card, bank transfer and cash on, InstaPay off, with the Visa, Mastercard and cash marks and the same checkout states as before. Order flow shows paid orders Automatic and cash on delivery Review first, with "status follows the courier" on, matching the stored settings. Overview and Orders show the plain stat tiles. At 390 px the page titles show in full in English and Arabic, with no sideways scroll.
+Seen: while Settings first loads, every card briefly shows Off until the stored settings arrive; the old toggles behaved the same. A loading state for Settings belongs to batch 2.
 
 # E371 — DASH-R4 BUILT: Dashboard redesign, batch 1 (shared kit, option cards, switches), release33 ready for approval — 10 November 2026
 
@@ -11033,7 +11043,7 @@ source/requirement inspection, not hosted acceptance or provider verification.
 | DASH-R2 | Dashboard Phase 2: named permissions for reviews, CRM, returns, inventory, courier prices and admin users; server-side Settings saves with audit | P1 | DEPLOYED 1674220b1764fbe3 (release31, E368) | Schema 143; rollback with release31/rollback-policies.sql then 934ea9172dbc66bd | No staff lockout; RLS and HTTP 401/403 matrix; conflict-checked Settings saves with server audit | E367; E368; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | Watch the first live Settings save; translate Users group titles in a later release |
 | DASH-R3 | Dashboard Phase 3: menu from 21 to 9 entries, Classic retired, order queues, Returns and claims, Settings home (includes DASH-01) | P2 | DEPLOYED bad6633ec37f9522 (release32, E370) | App only; rollback to 1674220b1764fbe3 | Every older URL works; permissions per entry; both ERP modes; EN/AR, themes, phone | E369; E370; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | Next phase: DASH-R4 redesign when the owner approves it |
 | DASH-WEIGHT-01 | One parcel weight for Confirm Orders, automatic booking and reverse pickups | P3 | PLANNED | Needs a migration: reverse pickups read shipping_provider_settings.default_weight_kg in a database function | One value, edited in one place; both live values are 1 kg today | E369 | 2026-11-10 | Starts when the owner approves it |
-| DASH-R4 | Dashboard Phase 4: full redesign with option cards and switches instead of checkboxes (DASH-UX-01), shared parts, no gradients, one corner scale, dark tokens | P2 | BATCH 1 COMMITTED fd57db4, RELEASE33 QUALIFIED, NOT DEPLOYED | App only; deploy needs the owner's words | No visual regressions in EN/AR, light/dark, 1440/390 | E371; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | Owner decides on deploying release33; batch 2 covers product screens and the corner scale |
+| DASH-R4 | Dashboard Phase 4: full redesign with option cards and switches instead of checkboxes (DASH-UX-01), shared parts, no gradients, one corner scale, dark tokens | P2 | BATCH 1 DEPLOYED 495f68f018109851 (release33, E372) | App only; rollback to bad6633ec37f9522 | No visual regressions in EN/AR, light/dark, 1440/390 | E371; E372; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | Batch 2: product screens, corner scale, Settings loading state, when the owner approves |
 | DASH-R5 | Dashboard Phase 5: product editor tabs, Settings split, Home rebuild (includes DASH-02), order panel | P2 | PLANNED | Keep product save, editor, media, listing and bulk contracts | Existing editor/listing/bulk/media suites pass | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Starts only after the owner approves it |
 | DASH-R6 | Dashboard Phase 6: new features, each approved on its own | P3 | PLANNED | After DASH-R1 to R5 | Per feature | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Owner picks features |
 | DASH-UX-01 | Owner design direction 10 Nov: modern and very easy; clickable option cards (grey off, coloured with real logo when on) instead of checkboxes; menus rearranged and screens redesigned | P1 | FIRST DESIGN APPROVED 10 NOV (E371) | Applies to DASH-R3 to DASH-R5; examples, not a fixed design | Fewer clicks, clear on/off state, EN/AR, RTL, themes, phone, accessible controls | DASHBOARD_REFRESH_PLAN_2026-11-09 section 4 | 2026-11-10 | Show the owner a first option-card design before building it widely |
