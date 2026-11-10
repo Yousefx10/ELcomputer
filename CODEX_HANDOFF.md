@@ -9,10 +9,23 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E374 is the latest milestone (DASH-R4 batch 2 live as release34, schema 143). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E375 is the latest milestone (Dashboard border colour fix, release35 469fdd04e5a11169 built and qualified, not deployed; E374 is live). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E375 — DASH-R4 BUILT: Dashboard borders use the theme colour, release35 ready for approval — 10 November 2026
+
+Owner: "Fix the borders".
+Then: "Commit and build". Commit 794a182 on product-modern (on top of 11c99b4, live 99bc694136bc545c), not pushed. Release35 469fdd04e5a11169 (11810 entries) built and qualified: COMPILED_RETAINED_ARTIFACT_PASS, 10545 asset and 19 API checks. App only, schema 143; no database, setting or provider change. Not deployed.
+
+Cause: Tailwind 4 draws a border without a colour class in the text colour, so plain "border", "border-t" and "divide" lines in older Dashboard screens showed near black (seen on the Users permission cards in E374).
+Fix: one base-layer rule in app/assets/css/main.css. On pages that hold the Dashboard, a border without its own colour uses the theme border token (--border, light in light mode and darker in dark mode). It covers dialogs teleported to the page body. Any border colour class still wins, and storefront pages are unchanged.
+
+Tests: the shared-kit browser test now checks a plain border inside the Dashboard and in a dialog outside it against the theme token (EN/AR, light/dark, 390/1440). Kit 9/9, payment cards 9/9, sidebar 9/9 and the DASH-R1 pages 17/17 all pass against CSS from a fresh isolated build. Typecheck exit 0, build complete.
+Deploy: release35/operator.mjs prepare, check, approve "<owner words>", apply, verify. Generator release-tools/make-release35.py (copy of make-release34.py; kind dash_r4c_v1).
+Rollback after deploy: point current back to releases/99bc694136bc545c and restart; no database change to undo.
+Next: deploy only with the owner's words, then a signed-in look at the Users permission cards in light and dark mode.
 
 # E374 — DASH-R4 BATCH 2 LIVE: Settings loading state, remaining switches, corner scale — 10 November 2026
 
