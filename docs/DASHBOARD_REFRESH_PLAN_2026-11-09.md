@@ -430,6 +430,10 @@ to its own step (DASH-WEIGHT-01) because it needs a migration.
 
 ### Phase 4 (DASH-R4): Redesign. App only.
 
+Status, 10 November 2026: the owner approved the first design (payment methods as option cards).
+Batch 1 is commit fd57db4, built and qualified as release33, not deployed (E371).
+
+
 - The shared kit. Gradients out. One corner and spacing scale.
 - Option cards and switches in place of checkboxes and selects (DASH-UX-01), starting
   with payment methods. Each card shows real on/off and checkout state.
