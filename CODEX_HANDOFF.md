@@ -9,10 +9,20 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E375 is the latest milestone (Dashboard border colour fix, release35 469fdd04e5a11169 built and qualified, not deployed; E374 is live). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E376 is the latest milestone (Dashboard border colour fix live as release35 469fdd04e5a11169). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E376 — DASH-R4 LIVE: Dashboard borders use the theme colour — 10 November 2026
+
+Owner: "Deploy, next time deploy is with commit and build".
+Release 469fdd04e5a11169 (commit 794a182, release35/, not pushed) installed 20:30:24 UTC, pause 3.2 s, one app restart, app only, schema 143, no provider calls.
+Verify DASH_R4C_INSTALLED_NATURAL_MON_PASS 20:38 UTC; 10545 assets match; the Settings save route still answers 401 through Caddy; packet consumed complete.
+Rollback: point current back to releases/99bc694136bc545c and restart; no database change to undo.
+
+Live, signed in as the owner, nothing saved: on Settings > Team, plain borders on the Dashboard now resolve to the theme border colour. The permission group cards and their dividers are light grey in light mode and dark slate in dark mode (dark checked with a temporary page class; the owner's theme choice was not changed).
+Standing instruction from this message: an owner "Commit and build" for an app-only Dashboard release now continues through deploy, verify, live checks and docs. A migration, a setting change, payments or provider work, a failed build or a newly failing test still stops for the owner. A push still needs the owner to ask.
 
 # E375 — DASH-R4 BUILT: Dashboard borders use the theme colour, release35 ready for approval — 10 November 2026
 
