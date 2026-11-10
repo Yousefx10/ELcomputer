@@ -431,7 +431,8 @@ to its own step (DASH-WEIGHT-01) because it needs a migration.
 ### Phase 4 (DASH-R4): Redesign. App only.
 
 Status, 10 November 2026: the owner approved the first design (payment methods as option cards).
-Batch 1 is live as release33 495f68f018109851 (E372).
+Batch 1 is live as release33 495f68f018109851 (E372). Batch 2 is commit 11c99b4,
+built and qualified as release34, not deployed (E373).
 
 
 - The shared kit. Gradients out. One corner and spacing scale.
