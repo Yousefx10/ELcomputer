@@ -9,10 +9,18 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E380 is the latest milestone (DASH-R6 Customers live as release39 78638873d63c40f8). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E381 is the latest milestone (DASH-R6 CRM: release40 apply stopped before staging, production unchanged on release39; release41 625f508e06c88b49 ready, waiting for the owner). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E381 — DASH-R6 CRM: release40 apply stopped before staging, production unchanged; release41 ready — 11 November 2026
+
+Owner: "Continue with CRM", then "Commit and build" (deploys under the 10 Nov standing instruction).
+Commit 3ade67a on product-modern (on top of b780a8a), not pushed. Release40 e645022f97c9cd4a qualified (11196 asset and 19 API checks); prepare and the read-only check passed; the owner go-ahead was recorded.
+Apply started 09:16:52 UTC and stopped at 09:17:11 with a database client "timeout expired" during the read before staging. No staged release, no migration, no cutover: inspect shows current still releases/78638873d63c40f8 (release39), no release40 stage and no receipts. The release40 packet is consumed and must never be replayed. Two read-only checks at 09:18 and 09:19 passed, so the database link is back.
+Release41 625f508e06c88b49 is the same commit in a fresh workspace (release-tools/make-release41.py, predecessor 78638873d63c40f8), built and qualified (11196 asset and 19 API checks). A failed apply stops for the owner: the retry waits for the owner's go-ahead.
+What CRM changes: contacts as Suppliers and Customers tabs with counts, search and Add in one row, an always-open list, the form on request and details in a side panel; Calls and tickets with a period row, three standard tiles and the actions beside the contact finder (the fixed-timezone sentence is gone).
 
 # E380 — DASH-R6 CUSTOMERS LIVE: one list card and a customer side panel — 11 November 2026
 
