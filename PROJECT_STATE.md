@@ -9,10 +9,20 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E383 is the latest milestone (DASH-R6 Live chat live as release43 9ddd9768f3390daf). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E384 is the latest milestone (DASH-R6 Catalog live as release44 ae008e8a436e73a8, with the Live chat style fix). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E384 — DASH-R6 CATALOG LIVE as release44 ae008e8a436e73a8, with the Live chat style fix — 11 November 2026
+
+Owner: "Start Catalog", then "Commit and build" (deploys under the 10 Nov standing instruction).
+Commit 8970a8b on product-modern (on top of 85b09e2), not pushed. App only, schema 143, no migration, no API change.
+Catalog: Categories, Brands and Reviews get one toolbar (search, count, Add); the add/edit form opens only on Add or Edit, has a close button and closes after saving; the list stays open with compact rows, quieter Edit and an icon Delete that still asks first; on phones the row actions take their own line. Reviews uses rating choices (All, 5 to 1) instead of a select whose labels said "star/stars" in English, and the delete prompt is translated (dashboard.catalog.deleteReviewForValue). Save, delete, permissions, caching and admin logs are unchanged. Import / Export is unchanged (catalog transfer and import safety contracts).
+Live chat style regression from release43 (E383), found while testing Catalog and confirmed read-only in production: its component styles sat in @layer components, and Nuxt can inline page styles before main.css, which ordered components below base, so the preflight reset removed borders and padding (buttons and the search box measured 0 px). Function was unaffected. Each scoped style now declares Tailwind's full layer order (properties, theme, base, components, utilities) first; the Catalog and Live chat browser tests assert the 1 px borders and failed against the old CSS.
+Local checks: typecheck 0, build 0; new dashboard-catalog-browser 25/25 (three tabs, EN/AR, light/dark, 390/1440); dashboard-live-chat-browser 9/9; all other dashboard browser tests, navigation, category-localization, brand-pages and live-chat-foundation pass.
+Release44 (release-tools/make-release44.py from release43, predecessor 9ddd9768f3390daf) built and qualified: 11586 asset and 19 API checks, no production writes. Prepare (seal 13b4a0d7…, start_by 2026-11-12 01:50:56 UTC) and the read-only check passed; the owner go-ahead was recorded; apply ran once 13:51:31–13:53:31 UTC: DASH_R6G_INSTALLED, schema 143, one app restart, 3.19 s pause, product and checkout styles still modern, no provider calls. Verify at 13:53:50 awaited the natural monitor pass; verify at 14:01:46 after the 14:00 pass: DASH_R6G_INSTALLED_NATURAL_MON_PASS, public HTTP pass, database preserved at schema 143, 11586 assets, no production writes.
+Read-only live check (English, light): Categories shows 8 categories with thumbnails, the toolbar and no open form, Edit buttons with 1 px borders and 12 px padding; Brands shows 10 of 24; Reviews shows the six rating choices, no select and the empty state (no reviews yet). Live chat in a 420 px same-origin frame: Filters 1 px border and 12 px padding, search box 1 px border, nothing selected. Nothing was saved, deleted or changed.
 
 # E383 — DASH-R6 LIVE CHAT LIVE as release43 9ddd9768f3390daf — 11 November 2026
 
