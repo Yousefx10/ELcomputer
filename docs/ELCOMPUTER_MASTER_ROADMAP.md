@@ -9,10 +9,20 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E382 is the latest milestone (DASH-R6 Support tickets live as release42 fde349a3da8eb51e). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E383 is the latest milestone (DASH-R6 Live chat live as release43 9ddd9768f3390daf). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E383 — DASH-R6 LIVE CHAT LIVE as release43 9ddd9768f3390daf — 11 November 2026
+
+Owner: "Start Live chat", then "Commit and build" (deploys under the 10 Nov standing instruction).
+Commit 85b09e2 on product-modern (on top of 6dd4217), not pushed. App only, schema 143, no migration, no API change.
+Layout and display only; the realtime, read-marker, claim, assign, transfer, close, reopen, order-link and ticket logic is unchanged. Availability is an Online, Away or Offline switch with a connection dot; inbox views are tabs with counts (zero hidden); one contact search with reference, agent, customer type, order and dates behind Filters (the customer-UUID field is gone); compact rows with an unread badge; the composer has Reply or Internal note, an attach button and send; details tabs use proper labels; order statuses show as labels, totals are formatted and payment status is translated.
+Fixed: on wide screens the details column carried only xl:row-start-1, so grid placement put it first (Details, Inbox, then the conversation in the narrow column). It is now pinned with xl:col-start-3, and the browser test checks the reading order in English and Arabic. The same order-status label now shows on support tickets (the E382 leftover).
+Local checks: typecheck 0, build 0; new dashboard-live-chat-browser 9/9 (EN/AR, light/dark, 390/1440, column order, phone inbox and back); dashboard-support-browser 17/17; all other dashboard browser tests, navigation, support-tickets-api and live-chat foundation, attachments, settings and ticket-conversion pass.
+Release43 (release-tools/make-release43.py from release42, predecessor fde349a3da8eb51e) built and qualified: 11456 asset and 19 API checks, no production writes. Prepare (seal 9368be27…, start_by 2026-11-12 01:01:53 UTC) and the read-only check passed; the owner go-ahead was recorded; apply ran once 13:02:27–13:04:08 UTC: DASH_R6F_INSTALLED, schema 143, one app restart, 4.14 s pause, product and checkout styles still modern, no provider calls. Verify at 13:04:24 awaited the natural monitor pass; verify at 13:12:18 after the 13:10 pass: DASH_R6F_INSTALLED_NATURAL_MON_PASS, public HTTP pass, database preserved at schema 143, 11456 assets, no production writes.
+Read-only live check at phone width (a 420 px same-origin frame, because a wide Live chat page opens the first chat and records a read marker): the new inbox, seven view tabs, search, Filters closed, availability on Offline and "Updates: live", no errors, nothing selected. Every view is empty in production today, so the wide-screen column order could not be seen on real data. The only non-GET request was the shell's usual analytics identity call; no chat writes.
 
 # E382 — DASH-R6 SUPPORT TICKETS LIVE as release42 fde349a3da8eb51e — 11 November 2026
 
