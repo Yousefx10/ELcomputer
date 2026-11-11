@@ -9,10 +9,21 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E379 is the latest milestone (DASH-R6 Products list live as release38 bba26666165965f1). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E380 is the latest milestone (DASH-R6 Customers live as release39 78638873d63c40f8). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E380 — DASH-R6 CUSTOMERS LIVE: one list card and a customer side panel — 11 November 2026
+
+Owner: "Start Customers", then "Commit and build" (deploys under the 10 Nov standing instruction).
+Commit b780a8a on product-modern (on top of c587818), not pushed. Release39 78638873d63c40f8 (12340 entries) qualified: COMPILED_RETAINED_ARTIFACT_PASS, 11067 asset and 19 API checks. Installed 08:32:50 UTC, pause 3.3 s, one app restart, app only, schema 143, no provider calls. Verify DASH_R6C_INSTALLED_NATURAL_MON_PASS 08:40 UTC; packet consumed complete.
+Rollback: point current back to releases/bba26666165965f1 and restart; no database change to undo.
+
+What changed: the Customers view drops its accordion and two count tiles. One card holds the title and total, the active count, search and clickable rows (name and email, status and acceptance pills, joined, wallet only when not zero) with paging. A customer opens in a side panel like an order: contact (tel and mailto links), address, orders (facts and recent orders that open the order panel), shopping activity and account status. Disable, enable and delete keep their handlers; the permission gap noted in DASH-R2 (users.view can edit customers) is unchanged and still listed.
+Tests: new Customers browser test; all Dashboard suites and customer-access pass.
+Live, signed in as the owner, nothing changed: 25 customers in one card with no tiles or accordion; a customer opened in the panel with orders, activity and the two account buttons; the close button had focus and Escape closed it.
+Next: the rest of the Customers menu (CRM contacts, support tickets, live chat, calls and tickets, activity history).
 
 # E379 — DASH-R6 PRODUCTS LIST LIVE: status tabs, one filter row, bulk bar on demand — 11 November 2026
 
