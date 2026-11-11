@@ -9,10 +9,27 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E377 is the latest milestone (DASH-R5 live as release36 292983ee33961707: Home, order panel, editor tabs, Duplicate, Settings split). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E378 is the latest milestone (DASH-R6 Orders area live as release37 5fb5499078e75009). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E378 — DASH-R6 ORDERS LIVE: order panel, one-row filters, theme-true dark styles, Returns list, claims tabs — 11 November 2026
+
+Owner asked whether every Dashboard page was redesigned; the honest audit said no (about 20 screens kept older layouts). Owner: "Yes, start with Orders", then "Continue", then "Commit and build" (deploys under the 10 Nov standing instruction).
+Commit 888f265 on product-modern (on top of b941484), not pushed. Release37 5fb5499078e75009 (12079 entries) qualified: COMPILED_RETAINED_ARTIFACT_PASS, 10807 asset and 19 API checks. Installed 06:54:13 UTC, pause 4.0 s, one app restart, app only, schema 143, no provider calls. Verify DASH_R6A_INSTALLED_NATURAL_MON_PASS 07:03 UTC; packet consumed complete.
+Rollback: point current back to releases/292983ee33961707 and restart; no database change to undo.
+
+What changed:
+- Order panel: one header (number, status, date, PDF, close icon); items and totals first; customer and delivery side by side with tappable phone and email; courier status; order info with real labels ("Cash on delivery", "Payment pending", the shipping company). Empty coupon and zero discount lines are hidden.
+- Orders list: search, one date choice (presets or a custom range), reset and refresh in one row.
+- Tailwind dark: now follows the chosen theme (html.dark) instead of the computer's setting. A light Dashboard on a dark computer showed dark blocks (payment monitoring, SMS, Email; also storefront checkout status, transfer and account pages).
+- Returns: the list leads with Create return (Daftra: Record return request); the form opens above it; the all-caps count tiles are gone. Claims: All claims and Communications as sub-tabs. Payments: attempts above setup; checkout health as standard tiles.
+- Confirm Orders unchanged (rebuilt in E358). It was not opened live: opening it claims the packing screen when a work session is active.
+
+Tests: new Returns browser test; order panel, kit (dark computer emulated), Payments and all Dashboard suites pass.
+Live, signed in as the owner, nothing saved: payment monitoring is light on the light theme; one filter row; an order opened in the panel with items, totals, a tel link and the icon close, and Escape cleared ?order=; Returns shows the list with Record return request; Claims shows the two sub-tabs; Payments shows Payment checks, attempts, then setup.
+Next: redesign the Products list, then Customers and CRM (owner-approved order).
 
 # E377 — DASH-R5 LIVE: Home, order panel, product editor tabs, Duplicate, Settings split — 11 November 2026
 
@@ -11110,7 +11127,7 @@ source/requirement inspection, not hosted acceptance or provider verification.
 | DASH-WEIGHT-01 | One parcel weight for Confirm Orders, automatic booking and reverse pickups | P3 | PLANNED | Needs a migration: reverse pickups read shipping_provider_settings.default_weight_kg in a database function | One value, edited in one place; both live values are 1 kg today | E369 | 2026-11-10 | Starts when the owner approves it |
 | DASH-R4 | Dashboard Phase 4: full redesign with option cards and switches instead of checkboxes (DASH-UX-01), shared parts, no gradients, one corner scale, dark tokens | P2 | BATCHES 1 AND 2 AND BORDER FIX DEPLOYED (E372, E374, E376: release35 469fdd04e5a11169) | App only; rollback to 99bc694136bc545c | No visual regressions in EN/AR, light/dark, 1440/390 | E371 to E376; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-10 | DASH-R5 (product editor, Settings split, Home) when the owner approves |
 | DASH-R5 | Dashboard Phase 5: product editor tabs, Settings split, Home rebuild (includes DASH-02), order panel; owner added Duplicate product | P2 | DEPLOYED (E377: release36 292983ee33961707) | Kept product save, editor, media, listing and bulk contracts; app only; rollback to 469fdd04e5a11169 | Existing editor/listing/bulk/media suites pass; new Home, order panel, editor, Settings and Duplicate suites | E377; DASHBOARD_REFRESH_PLAN_2026-11-09; product-editor-safety.md | 2026-11-11 | Owner use; optional Settings composable split by area |
-| DASH-R6 | Dashboard Phase 6: new features, each approved on its own | P3 | PLANNED | After DASH-R1 to R5 | Per feature | DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-09 | Owner picks features |
+| DASH-R6 | Dashboard Phase 6: page-by-page redesign of the remaining screens (owner, 11 Nov), then new features | P2 | ORDERS AREA DEPLOYED (E378: release37 5fb5499078e75009) | App only; rollback to 292983ee33961707 | EN/AR, light/dark, 390/1440 browser tests per screen | E378; DASHBOARD_REFRESH_PLAN_2026-11-09 | 2026-11-11 | Products list next, then Customers and CRM, Returns done; feature candidates stay listed |
 | DASH-UX-01 | Owner design direction 10 Nov: modern and very easy; clickable option cards (grey off, coloured with real logo when on) instead of checkboxes; menus rearranged and screens redesigned | P1 | FIRST DESIGN APPROVED 10 NOV (E371) | Applies to DASH-R3 to DASH-R5; examples, not a fixed design | Fewer clicks, clear on/off state, EN/AR, RTL, themes, phone, accessible controls | DASHBOARD_REFRESH_PLAN_2026-11-09 section 4 | 2026-11-10 | Show the owner a first option-card design before building it widely |
 | ERP-01 | Daftara API connectivity, mappings and full data audit | LAST / FINAL-FIN | DEFERRED / ORIGINAL EVIDENCE PRESERVED | E140 ERP/Daftra accounting integration last, not shipment eligibility | Retain original read/write capability/mapping/pagination/idempotency/recovery scope and approval boundaries; existing ownership remains enforced | E140; E38; L1 requirement8; FUT-08; E20; DTR-30/35 | 2026-10-29 owner priority reset; no provider audit | Resume scoped read-only audit in FINAL-FIN after migration/storage; no booking dependency |
 | ERP-02 | Local/Daftara mode compatibility and backend ownership enforcement | LAST / FINAL-FIN | DEFERRED / CURRENT MODE GUARDS RETAINED | E140 new mode-switch/accounting integration work last; current built-in ownership remains authoritative | Preserve original compatibility/API/UI/SQL ownership tests and historical local data; no silent fallback or duplicate accounting | E140; E38; L1 requirement9; FUT-08; E20; DTR-30/35 | 2026-10-29 owner priority reset; no mode/credential/data changes | Resume matrix/repair only in FINAL-FIN; existing correct mode enforcement is never deferred |

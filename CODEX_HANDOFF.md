@@ -9,10 +9,27 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E377 is the latest milestone (DASH-R5 live as release36 292983ee33961707: Home, order panel, editor tabs, Duplicate, Settings split). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E378 is the latest milestone (DASH-R6 Orders area live as release37 5fb5499078e75009). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E378 — DASH-R6 ORDERS LIVE: order panel, one-row filters, theme-true dark styles, Returns list, claims tabs — 11 November 2026
+
+Owner asked whether every Dashboard page was redesigned; the honest audit said no (about 20 screens kept older layouts). Owner: "Yes, start with Orders", then "Continue", then "Commit and build" (deploys under the 10 Nov standing instruction).
+Commit 888f265 on product-modern (on top of b941484), not pushed. Release37 5fb5499078e75009 (12079 entries) qualified: COMPILED_RETAINED_ARTIFACT_PASS, 10807 asset and 19 API checks. Installed 06:54:13 UTC, pause 4.0 s, one app restart, app only, schema 143, no provider calls. Verify DASH_R6A_INSTALLED_NATURAL_MON_PASS 07:03 UTC; packet consumed complete.
+Rollback: point current back to releases/292983ee33961707 and restart; no database change to undo.
+
+What changed:
+- Order panel: one header (number, status, date, PDF, close icon); items and totals first; customer and delivery side by side with tappable phone and email; courier status; order info with real labels ("Cash on delivery", "Payment pending", the shipping company). Empty coupon and zero discount lines are hidden.
+- Orders list: search, one date choice (presets or a custom range), reset and refresh in one row.
+- Tailwind dark: now follows the chosen theme (html.dark) instead of the computer's setting. A light Dashboard on a dark computer showed dark blocks (payment monitoring, SMS, Email; also storefront checkout status, transfer and account pages).
+- Returns: the list leads with Create return (Daftra: Record return request); the form opens above it; the all-caps count tiles are gone. Claims: All claims and Communications as sub-tabs. Payments: attempts above setup; checkout health as standard tiles.
+- Confirm Orders unchanged (rebuilt in E358). It was not opened live: opening it claims the packing screen when a work session is active.
+
+Tests: new Returns browser test; order panel, kit (dark computer emulated), Payments and all Dashboard suites pass.
+Live, signed in as the owner, nothing saved: payment monitoring is light on the light theme; one filter row; an order opened in the panel with items, totals, a tel link and the icon close, and Escape cleared ?order=; Returns shows the list with Record return request; Claims shows the two sub-tabs; Payments shows Payment checks, attempts, then setup.
+Next: redesign the Products list, then Customers and CRM (owner-approved order).
 
 # E377 — DASH-R5 LIVE: Home, order panel, product editor tabs, Duplicate, Settings split — 11 November 2026
 
