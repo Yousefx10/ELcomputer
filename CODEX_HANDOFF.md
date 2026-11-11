@@ -9,10 +9,52 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E384 is the latest milestone (DASH-R6 Catalog live as release44 ae008e8a436e73a8, with the Live chat style fix). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E385 is the latest milestone (PDC city matching fixed, release45 20d55e2ba493c8e1, schema 144). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E385 — PDC CITY MATCHING FIXED: release45 20d55e2ba493c8e1, schema 144 — 11 November 2026
+
+Owner report: a paid Apple Pay order showed "Courier action could not complete. Check the saved booking before
+retrying." and got neither a PDC label nor a Daftra bill. Owner: "investigate and fix the problem and deploy
+directly", then "deploy!". The owner then made that PDC shipment and Daftra bill by hand; neither is attached on the site.
+Courier cause: checkout saves the reviewed checkout governorate from the dropdown ("Behira"). The PDC city table,
+seeded 28 Aug with PDC's own names, files the same city under "Al Behaira". pdc_order_eligibility and
+pdc_checkout_delivery compared governorate text exactly, so 189 of 381 checkout cities (15 governorates plus the
+Cairo 2, Giza 2 and Alexandria 2 areas) could never be booked, and checkout refused cash on delivery there
+("Selected courier destination is unavailable."). Card and Apple Pay orders were accepted and failed at booking.
+The reviewed aliases already existed in private.delivery_location_governorates (schema 103, 29 Oct); the courier
+rules never used them. The server replaced every database refusal with one generic message.
+Bill cause: the order's product (open box, unpublished, no SKU) has no Daftra link: "Link this product to Daftra".
+Fix: commit c8fb79f on product-modern (fast-forward over 8970a8b), not pushed. Migration
+20261111150000_pdc_governorate_aliases: private.pdc_city_destination(governorate, city) tries the exact name first
+(unchanged), then the reviewed names of the same governorate; two PDC cities stay ambiguous; no grants.
+pdc_order_eligibility and pdc_checkout_delivery use it (anchor-patched). App: booking refusals in staff words
+(EN/AR, courierRefusal.*), unknown errors stay generic; the automatic-booking waiting list uses the same words.
+Evidence: live rehearsal in a rolled-back transaction: 190 cities unchanged, 189 now resolve to one PDC city,
+2 still have none (Damietta Al Gedida, El Menia Algedida have no PDC city), 0 changed or lost; the reported order
+resolved to PDC city 102. New tests pdc-governorate-aliases-native and courier-refusals pass. 68 related test
+files: 590 pass vs 583 on live 8970a8b, no live pass lost (live-sales-release hangs on both trees). Browser tests
+(Confirm Orders, order panel, manual COD, checkout address): 70 pass, 11 historical failures on both release44 and release45.
+Release45 (release-tools/make-release45.py: release44 scripts plus release31's migration step; ADDED
+pdc_city_destination, CHANGED pdc_order_eligibility and pdc_checkout_delivery): typecheck 0, build 0, 11,713 asset
+and 19 API checks. Prepare (seal 80ae1f9c…) and two read-only checks passed. Apply 20:16:23 UTC: E385_INSTALLED,
+schema 144, one restart, 4.4 s pause, 0 provider calls. Verify NATURAL_MON_PASS 20:25:44 UTC; 11,713 hosted assets
+match; the Behira/Kom Hamada lookup returns PDC city 102.
+Rollback: point current back to releases/ae008e8a436e73a8 and restart (the older app works with schema 144). To
+restore exact-name matching too, run release45/rollback-courier-aliases.sql first (owner OK).
+Open:
+- COURIER-ATTACH-01: the reported order has no courier job on the site; automatic booking stopped at its 8-try
+  cap. "Book shipment" on that order would now book a second PDC shipment. Owner to attach the manual AWB in the
+  courier panel; that also starts tracking and courier SMS.
+- DAFTRA-LINK-03: two stopped bills (two orders: the open-box keyboard, likely Daftra 555, and the GO W190 mouse,
+  not in Daftra). Saving any product link retries them. The site adopts a Daftra invoice whose PO number is the
+  website order number, otherwise it creates one, so set the manual bill's PO number first. 81 published options
+  are unlinked: the 75 to create and 4 questions from 8 Nov, plus 2 new laptop stands with matching Daftra names.
+  Comparison: daftra-link-recheck-20261111/unlinked-now.csv (outside the repo).
+- COURIER-REVERSE-PREFILL-01 (found, not changed): shipping_claim_view prefills the return pickup city with the
+  same exact match; staff pick the city by hand for those 189 cities.
 
 # E384 — DASH-R6 CATALOG LIVE as release44 ae008e8a436e73a8, with the Live chat style fix — 11 November 2026
 
