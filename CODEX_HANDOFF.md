@@ -9,10 +9,21 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E378 is the latest milestone (DASH-R6 Orders area live as release37 5fb5499078e75009). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E379 is the latest milestone (DASH-R6 Products list live as release38 bba26666165965f1). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E379 — DASH-R6 PRODUCTS LIST LIVE: status tabs, one filter row, bulk bar on demand — 11 November 2026
+
+Owner: "Start Products list", then "Commit and build" (deploys under the 10 Nov standing instruction).
+Commit c587818 on product-modern (on top of 888f265), not pushed. Release38 bba26666165965f1 (12209 entries) qualified: COMPILED_RETAINED_ARTIFACT_PASS, 10937 asset and 19 API checks. Installed 07:47:09 UTC, pause 4.3 s, one app restart, app only, schema 143, no provider calls. Verify DASH_R6B_INSTALLED_NATURAL_MON_PASS 07:55 UTC; packet consumed complete.
+Rollback: point current back to releases/5fb5499078e75009 and restart; no database change to undo.
+
+What changed: All / Published / Drafts tabs (same status URL value) replace the Visibility select; Add product and Refresh sit beside them; search, category, brand, selling mode, stock (when tracked) and sort share one row. The bulk toolbar shows only while a selection, confirmation, pending command, error or result exists; select-this-page moved to the Product header (desktop) and the results line (phones). Rows show a status pill, SKU and option count only when present or above one, and the selling mode only when not normal; the Options column and Edit link are gone (the title opens the editor). The Items link stays for serialized products (owner question on Daftra serialized items still open). Import/Export sits at the foot. Listing and bulk docs note the layout; query, permission, command and recovery contracts are unchanged.
+Tests: new Products list browser test (11); product-list, product-bulk-recovery (54) and all Dashboard suites pass; the known product-bulk PostgREST case fails identically on the live source.
+Live, signed in as the owner, nothing saved: 25 of 644 products with the tabs and no "No SKU" lines; Drafts set ?status=drafts and showed drafts; ticking a product showed the bulk bar and unticking hid it.
+Next: Customers and CRM.
 
 # E378 — DASH-R6 ORDERS LIVE: order panel, one-row filters, theme-true dark styles, Returns list, claims tabs — 11 November 2026
 
