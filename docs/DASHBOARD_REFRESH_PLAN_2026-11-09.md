@@ -448,6 +448,11 @@ release34 99bc694136bc545c (E374).
 
 ### Phase 5 (DASH-R5): The heavy screens. App only.
 
+Status, 11 November 2026: live as release36 292983ee33961707 (E377), with the owner's Duplicate
+product button. The Settings script now sits unchanged in one composable; splitting it by area is
+a possible follow-up.
+
+
 - Product editor in tabs, keeping `docs/product-save-safety.md`,
   `docs/product-editor-safety.md` and `docs/media-safety.md` intact.
 - Settings split into one component per section. The 4,693-line file goes away.

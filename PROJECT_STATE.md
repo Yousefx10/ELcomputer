@@ -9,10 +9,27 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E376 is the latest milestone (Dashboard border colour fix live as release35 469fdd04e5a11169). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E377 is the latest milestone (DASH-R5 live as release36 292983ee33961707: Home, order panel, editor tabs, Duplicate, Settings split). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E377 — DASH-R5 LIVE: Home, order panel, product editor tabs, Duplicate, Settings split — 11 November 2026
+
+Owner: "Start DASH-R5"; Home design approved with "Looks good, continue"; then "continue with batch 3, and before that i want to have a 'duplicate' button, to clone an product for easy edit"; then "Commit and build" (which deploys under the 10 Nov standing instruction).
+Commit b941484 on product-modern (on top of 794a182), not pushed. Release36 292983ee33961707 (11947 entries) built and qualified: COMPILED_RETAINED_ARTIFACT_PASS, 10676 asset and 19 API checks. Installed 00:33:48 UTC, pause 3.8 s, one app restart, app only, schema 143, no provider calls. Verify DASH_R5_INSTALLED_NATURAL_MON_PASS 00:42 UTC; packet consumed complete.
+Rollback: point current back to releases/469fdd04e5a11169 and restart; no database change to undo.
+
+What changed:
+- Home (DASH-02): four tiles (to confirm, ready to ship, problems, today's sales), the orders waiting for confirmation, seven days of sales, store activity and a small live visitor tile. Failed parts show "—" and the error, never a made-up zero. Orders overview left the menu; its old link opens Orders.
+- Orders: an order opens in a side panel with its own link (?order=). The four count tiles are gone; the queue tabs keep the counts and now read "To confirm" and "Ready" (they showed lower case since DASH-R3).
+- Product editor: header (title, status, View in store) and tabs Details, Options and prices, Images, Specifications, SEO, Presentation. Panels stay mounted; Details, Options and SEO share the existing save; an error opens its tab. Daftra warehouse is a read-only line.
+- Duplicate: copies the saved product as a Draft through the existing atomic create, then specifications, features and images section by section. Never copies stock, cost, SKUs, publication, ERP links, reviews or presentation. No migration.
+- Settings: the 4,049-line page is a ~200-line shell, one composable with the unchanged script and 19 section components; desktop shows the section list on the left.
+
+Tests: new Home, order panel, editor, Settings and Duplicate suites pass; related Dashboard, product, media, catalog and order suites pass. Seven failures (dashboard-access, dashboard-reads, product-save-database case 3, product-bulk and catalog-transfer PostgREST cases, storefront-footer, storefront-payments) fail identically on the live release35 source.
+Live, signed in as the owner, nothing saved: Home shows real tiles, queue, chart and activity; the live tile filled in after reload (the first request right after the restart hit its 5-second limit). An order opened in the right-side panel with ?order= and Escape closed it. A product opened on Details with six tabs, Duplicate and View in store; Options showed the Daftra warehouse line. Settings > Search engines showed the left section list.
+Next: owner use; possible follow-up to split the Settings composable by area. DASH-WEIGHT-01 and DASH-R6 wait for the owner.
 
 # E376 — DASH-R4 LIVE: Dashboard borders use the theme colour — 10 November 2026
 
