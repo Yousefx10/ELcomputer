@@ -9,10 +9,22 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E381 is the latest milestone (DASH-R6 CRM live as release41 625f508e06c88b49, after release40's apply stopped before staging). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E382 is the latest milestone (DASH-R6 Support tickets live as release42 fde349a3da8eb51e). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E382 — DASH-R6 SUPPORT TICKETS LIVE as release42 fde349a3da8eb51e — 11 November 2026
+
+Owner: "Start Support tickets", then "Commit and build" (deploys under the 10 Nov standing instruction).
+Commit 6dd4217 on product-modern (on top of 3ade67a), not pushed. App only, schema 143, no migration.
+List: status tabs All, Needs attention (with its count), In progress, Waiting for customer, Resolved and Closed; one search box for subject, customer name, email, mobile or a SUP- reference; priority in the row; category, assignee and dates behind Filters; Reset only when something is set; compact rows with a priority pill only for high and urgent. The count tile, the live chat button (the sidebar has Live Chat) and the order-UUID field are gone.
+Ticket: one conversation with internal notes tinted; the reply box under it with Reply or Internal note, an attach button and send; history collapsed, translated and showing assignees by name; side column with Manage (Save only after a change) and one details card (customer email and phone links, order facts with payment labels, source chat). Customer text is bidi-isolated for Arabic.
+API: GET /api/admin-support/tickets accepts status=attention (same statuses as needsAttentionCount) and q (sanitised; or-filter over subject, customer name, email and mobile, plus the reference number when numeric). Read-only filters; no write path changed. The local test client now unquotes or() values as PostgREST does.
+Local checks: typecheck 0, build 0; new dashboard-support-browser 17/17 (EN/AR, light/dark, 390/1440) and support-tickets-api 1/1 on the real schema; all other dashboard browser tests, navigation, help-support-database and live-chat-ticket-conversion pass. Pre-existing and unchanged: sms-api 2 and ui-localization 1 (dynamic keys in untouched files).
+Release42 (release-tools/make-release42.py from release41, predecessor 625f508e06c88b49) built and qualified: 11326 asset and 19 API checks, no production writes. Prepare (seal 0656af42…, start_by 2026-11-12 00:24:03 UTC) and the read-only check passed; the owner go-ahead was recorded; apply ran once 12:24:45–12:26:38 UTC: DASH_R6E_INSTALLED, schema 143, one app restart, 5.70 s pause, product and checkout styles still modern, no provider calls. Verify at 12:26:54 awaited the natural monitor pass; verify at 12:34:54 after the 12:30 pass: DASH_R6E_INSTALLED_NATURAL_MON_PASS, public HTTP pass, database preserved at schema 143, 11326 assets, no production writes.
+Read-only live check (English, light, desktop): the list shows the six tabs, one search box and Filters closed; Needs attention lists nothing, matching its count of 0; searching "hello" and "SUP-000001" each find the one ticket and a nonsense search shows the empty state, with no errors. The ticket page shows the thread, the reply box with Reply and Internal note, Save disabled until a change, the details card and history. No sideways scroll. Nothing was saved, sent or changed.
+Known leftover (pre-existing, not a regression): the ticket's related order shows the raw order status (for example ready_to_deliver). Fix with the next batch.
 
 # E381 — DASH-R6 CRM LIVE as release41 625f508e06c88b49 (release40 apply stopped before staging first) — 11 November 2026
 
