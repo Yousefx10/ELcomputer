@@ -9,10 +9,21 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E387 is the latest milestone (Orders edit key, release46 aa1bb58ef23d1f76, schema 145). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E388 is the latest milestone (DASH-R6 Reports live as release47 1dde76e358e77635, schema 145). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E388 — DASH-R6 REPORTS LIVE as release47 1dde76e358e77635 — 12 November 2026
+
+Owner: "Yes start Reports !", then "Commit and build" (deploys under the 10 Nov standing instruction).
+Commit f075097 on product-modern (on top of 90ae046 from E387), not pushed. App only, no migration, no API change; schema stays 145.
+Sales reports: one Overview card with Today, This week and This month (calendar periods from dashboard_get_analysis_overview) and three tiles with the signed change against the named period; one chart card with metric tabs, a range choice (custom dates on request), a 2 px line, a hover and arrow-key readout with a guide line and a "Show data" table. The plot reads left to right in both languages, so Arabic dates now follow the line (they ran opposite before). Customer feedback: a 7, 30 or 90 day choice and refresh; four headline tiles with short translated details and the existing translated definitions on hover; store activity in one grid without icons or captions. English leaks on the Arabic dashboard are translated ("yesterday", " units", "to" in the date range, the card captions and definitions, the live-visitor line, dwell-time units via Intl.DurationFormat); the Arabic NPS sign reads +42. Data loading is unchanged.
+Release scripts: release47 copies release44's app-only scripts (not release45/46's migration steps) with predecessor aa1bb58ef23d1f76, base 90ae046 and previous artifact release46/artifact; every schema check is lifted from 143 to 145 (history.length, schema_before/schema, the remote scope check, the install receipt and PRESERVED_SCHEMA145), and the generator refuses to finish if any 142–144 check remains.
+Local checks: typecheck 0, build 0; new dashboard-reports-browser 17/17 (EN/AR, light/dark, 390/1440); all other dashboard browser tests (order panel 14 after E387), truthful screens, theme, permissions and navigation pass.
+Release47 (release-tools/make-release47.py) built and qualified: 11973 asset and 19 API checks, no production writes. Prepare confirmed the live history at 145 (seal 4fee153b…, start_by 2026-11-12 20:51:17 UTC); the read-only check passed; the owner go-ahead was recorded; apply ran once 08:51:50–08:53:15 UTC: DASH_R6H_INSTALLED, schema 145, one app restart, 5.66 s pause, product and checkout styles still modern, no provider calls. Verify at 08:53:29 awaited the natural monitor pass; verify at 09:01:15 after the 09:00 pass: DASH_R6H_INSTALLED_NATURAL_MON_PASS, public HTTP pass, database preserved at schema 145, 11973 assets, no production writes.
+Read-only live check (English, light, desktop): Sales reports shows the three period choices, today's tiles (EGP 2,160.00, −52% vs yesterday), seven metric tabs (Daftra mode hides Stock and Expenses), 13 orders over the last 7 days, the plot left to right, the data table, 1 px button and select borders, and a hover readout (Nov 11 · 5) with the guide line. Customer feedback shows 30 days selected, four tiles with details (NPS +100 from 1 response, returning 2.7%, cart abandonment 88%, repeat 0%), eight activity metrics and no stat cards. Nothing was changed.
+Follow-ups (small, next batch): before hydration the server-rendered range select shows its first option (Year) until the client sets Last 7 days, so use v-model; the NPS detail says "1 responses" (needs singular and plural). dashboard_get_analysis_overview still hard-codes Africa/Cairo, which is deployment-specific in reusable SQL.
 
 # E387 — ORDERS EDIT KEY LIVE: release46 aa1bb58ef23d1f76, schema 145 — 12 November 2026
 
