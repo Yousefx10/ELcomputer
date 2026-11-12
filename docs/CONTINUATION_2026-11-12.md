@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (12 November 2026, after E390):
+Live state (12 November 2026, after E391):
 
 | Item | Value |
 |---|---|
-| Live app release | `e1476bb8338f3917` (release50, E390) |
-| Source commit | `a6eb7f2` on branch `product-modern` (local only, see section 2) |
+| Live app release | `83c9ec8a89976b6e` (release51, E391) |
+| Source commit | `65e5a85` on branch `product-modern` (local only, see section 2) |
 | Database schema | 145 (latest migration `20261112100000_direct_order_status`, from E387) |
-| Previous release for rollback | `a51c541fe9d0f883` (release49, Email/SMS) |
+| Previous release for rollback | `e1476bb8338f3917` (release50, Daftra ERP pages) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Always re-check this before acting: the handoff's section 2 and the newest roadmap entry may have moved on
@@ -246,6 +246,7 @@ Every release below is app only (no migration) unless stated, and every one was 
 | DASH-R6 Reports | E388, release47 `1dde76e358e77635`, `f075097` | Sales reports: Today / This week / This month tiles with signed change, chart with metric tabs, hover and keyboard readout, data table, left-to-right plot in Arabic. Customer feedback: translated details, one activity grid. First release on top of conversation A's release46 (schema 145). |
 | DASH-R6 Email/SMS | E389, release49 `a51c541fe9d0f883`, `748a87d` | One header row with tabs and provider status; shared token stylesheet `app/assets/css/dashboard-messaging.css`; SMS history status pills. Fixed: the SMS marketing and transactional sections never rendered (wrong component names); the owner approved showing them. Release48 had stopped before staging on a transient critical monitor pass. Also Reports polish (range select, NPS singular). |
 | DASH-R6 Daftra ERP pages | E390, release50 `e1476bb8338f3917`, `a6eb7f2` | One header row with tabs, ERP settings and Refresh; global `app/assets/css/dashboard-erp.css`; Overview figures; Invoices and Stock tables (rows on phones) with Paid/Part paid/Unpaid/Draft and order links; Sync queue status tabs with counts (read-only `status` filter and counts added to `/api/admin-erp/dashboard`); Product links tabs, filter row and compact rows. Daftra calls unchanged. Checked live read-only in the owner's Chrome. |
+| DASH-R6 built-in ERP pages | E391, release51 `83c9ec8a89976b6e`, `65e5a85` | Shared header row (`DashboardBuiltInErpHead`) for Purchase invoices, Sales invoices, Warehouses, Treasury and Employees; open lists, forms on request with labels; Treasury tabs; translated movement and transaction types, statuses and frequencies. Calls unchanged. Built-in mode is not active on this store, so live it still redirects to the Daftra page; checked by the local browser test. |
 
 Owner decisions already answered (10 November): retire Classic (yes); group CRM tickets and Support
 under Customers now and merge into one inbox later; one "Returns and claims" entry under Orders with
@@ -255,7 +256,7 @@ two tabs; Quick Setup under Settings > Advanced.
 
 The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in that order:
 
-1. **ERP pages.** The Daftra pages are done (E390). Still to do: the built-in pages below (second batch). In Daftra mode the menu group "Daftra ERP" has: ERP overview, Invoices, Stock and
+1. **ERP pages.** Done: Daftra pages (E390) and built-in pages (E391). In Daftra mode the menu group "Daftra ERP" has: ERP overview, Invoices, Stock and
    costs, Sync queue, Product links (`/dashboard/erp?tab=...`). In built-in mode the group "Built-in
    ERP" has Purchase invoices, Sales invoices, Warehouses (`/dashboard/commerce`), All transactions,
    Supplier payments, Customer receipts, Salary payments (`/dashboard/treasury`), and Employees
@@ -330,17 +331,17 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   if any old target or old schema check is left. The build script runs the generator with the full
   commit from `git rev-parse <short>`, then `git archive` of that commit into `releaseN/source`, copies
   `node_modules`, then `build.mjs`, `package.mjs` and `canonical.py`.
-- The next app-only release after E390, exactly (check first that nothing newer went live and that
-  `release51` does not exist):
-  copy `make-release50.py` to `make-release51.py` and `build-release50.sh` to `build-release51.sh`, then set
-  `src = release50`, `dst = release51`;
-  `THIS = 'a6eb7f22122acdad3a247df2303fe8282eb6caec'` (release50's commit),
-  `PRED_OLD = 'a51c541fe9d0f883'` (release50's predecessor), `BASE_OLD = '748a87d3f641fc624c0bf7eb325b28040975c623'`
-  (release50's base); `PRED = 'e1476bb8338f3917'` (release50), `BASE_NEW = 'a6eb7f22122acdad3a247df2303fe8282eb6caec'`;
-  kind names `DASH_R6J` → `DASH_R6K` (and the leftover check adds `6j`); the `build.mjs` and `operator.mjs`
-  pairs replace `rev-parse','a6eb7f2'`; the previous artifact pair becomes `/release49/artifact'` →
-  `/release50/artifact'`; schema stays 145. In `build-release51.sh` set `git rev-parse <new short commit>`
-  and the folder names to release51. (release50 was made exactly this way from release49.)
+- The next app-only release after E391, exactly (check first that nothing newer went live and that
+  `release52` does not exist):
+  copy `make-release51.py` to `make-release52.py` and `build-release51.sh` to `build-release52.sh`, then set
+  `src = release51`, `dst = release52`;
+  `THIS = '65e5a854a151162531e8ffe7b2a452e1e6915239'` (release51's commit),
+  `PRED_OLD = 'e1476bb8338f3917'` (release51's predecessor), `BASE_OLD = 'a6eb7f22122acdad3a247df2303fe8282eb6caec'`
+  (release51's base); `PRED = '83c9ec8a89976b6e'` (release51), `BASE_NEW = '65e5a854a151162531e8ffe7b2a452e1e6915239'`;
+  kind names `DASH_R6K` → `DASH_R6L` (and the leftover check adds `6k`); the `build.mjs` and `operator.mjs`
+  pairs replace `rev-parse','65e5a85'`; the previous artifact pair becomes `/release50/artifact'` →
+  `/release51/artifact'`; schema stays 145. In `build-release52.sh` set `git rev-parse <new short commit>`
+  and the folder names to release52. (release50 and release51 were made exactly this way.)
 - Schema checks: the scripts check the live schema history length (`history.length`), the plan's
   `schema_before`/`schema`, the remote scope check, the install receipt and the label
   `PRESERVED_SCHEMA145`. When another session adds a migration, every one of those must be lifted to the
@@ -434,7 +435,7 @@ sideways scroll, measured styles (for example `getComputedStyle(button).borderTo
 no external requests, no writes (no POST/PATCH/DELETE unless the test means it), no page errors and,
 since E389, no "Failed to resolve component" warnings.
 
-Current Dashboard tests (all passing at E390): erp 44, catalog 25, crm 13, customers 9, home 14, kit 9,
+Current Dashboard tests (all passing at E391): erp 44, builtin-erp 43, catalog 25, crm 13, customers 9, home 14, kit 9,
 live-chat 9, menu 9, messaging 19, option-cards 9, order-panel 14, product-editor 17, products 11,
 reports 17, returns 10, settings 11, support 17, truthful-browser 17, truthful-screens 6, theme 4,
 permissions 7, navigation 8. API tests used: dashboard-erp-api 1, support-tickets-api 1, help-support-database 9,
