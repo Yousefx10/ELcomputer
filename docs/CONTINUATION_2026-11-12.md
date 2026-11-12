@@ -47,15 +47,15 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state at the time of writing (12 November 2026, after E389):
+Live state (12 November 2026, after E390):
 
 | Item | Value |
 |---|---|
-| Live app release | `a51c541fe9d0f883` (release49, E389) |
-| Source commit | `748a87d` on branch `product-modern` (local only, see section 2) |
+| Live app release | `e1476bb8338f3917` (release50, E390) |
+| Source commit | `a6eb7f2` on branch `product-modern` (local only, see section 2) |
 | Database schema | 145 (latest migration `20261112100000_direct_order_status`, from E387) |
-| Previous release for rollback | `1dde76e358e77635` (release47, Reports) |
-| Docs branch | `claude/handoffs-20261108`, last docs commit `586efc2` |
+| Previous release for rollback | `a51c541fe9d0f883` (release49, Email/SMS) |
+| Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Always re-check this before acting: the handoff's section 2 and the newest roadmap entry may have moved on
 if another session continued.
@@ -245,6 +245,7 @@ Every release below is app only (no migration) unless stated, and every one was 
 | DASH-R6 Catalog | E384, release44 `ae008e8a436e73a8`, `8970a8b` | Categories, Brands, Reviews: one toolbar, form on request, compact rows, rating chips, translated delete prompt. Also fixed release43's Live chat style regression (see 7.4). |
 | DASH-R6 Reports | E388, release47 `1dde76e358e77635`, `f075097` | Sales reports: Today / This week / This month tiles with signed change, chart with metric tabs, hover and keyboard readout, data table, left-to-right plot in Arabic. Customer feedback: translated details, one activity grid. First release on top of conversation A's release46 (schema 145). |
 | DASH-R6 Email/SMS | E389, release49 `a51c541fe9d0f883`, `748a87d` | One header row with tabs and provider status; shared token stylesheet `app/assets/css/dashboard-messaging.css`; SMS history status pills. Fixed: the SMS marketing and transactional sections never rendered (wrong component names); the owner approved showing them. Release48 had stopped before staging on a transient critical monitor pass. Also Reports polish (range select, NPS singular). |
+| DASH-R6 Daftra ERP pages | E390, release50 `e1476bb8338f3917`, `a6eb7f2` | One header row with tabs, ERP settings and Refresh; global `app/assets/css/dashboard-erp.css`; Overview figures; Invoices and Stock tables (rows on phones) with Paid/Part paid/Unpaid/Draft and order links; Sync queue status tabs with counts (read-only `status` filter and counts added to `/api/admin-erp/dashboard`); Product links tabs, filter row and compact rows. Daftra calls unchanged. Signed-in live view not yet looked at (the session's browser was signed out). |
 
 Owner decisions already answered (10 November): retire Classic (yes); group CRM tickets and Support
 under Customers now and merge into one inbox later; one "Returns and claims" entry under Orders with
@@ -254,7 +255,7 @@ two tabs; Quick Setup under Settings > Advanced.
 
 The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in that order:
 
-1. **ERP pages.** In Daftra mode the menu group "Daftra ERP" has: ERP overview, Invoices, Stock and
+1. **ERP pages.** The Daftra pages are done (E390). Still to do: the built-in pages below (second batch). In Daftra mode the menu group "Daftra ERP" has: ERP overview, Invoices, Stock and
    costs, Sync queue, Product links (`/dashboard/erp?tab=...`). In built-in mode the group "Built-in
    ERP" has Purchase invoices, Sales invoices, Warehouses (`/dashboard/commerce`), All transactions,
    Supplier payments, Customer receipts, Salary payments (`/dashboard/treasury`), and Employees
@@ -329,17 +330,17 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   if any old target or old schema check is left. The build script runs the generator with the full
   commit from `git rev-parse <short>`, then `git archive` of that commit into `releaseN/source`, copies
   `node_modules`, then `build.mjs`, `package.mjs` and `canonical.py`.
-- The next app-only release after E389, exactly (check first that nothing newer went live and that
-  `release50` does not exist; an old folder named `release5` is unrelated):
-  copy `make-release49.py` to `make-release50.py` and `build-release49.sh` to `build-release50.sh`, then set
-  `src = release49`, `dst = release50`;
-  `THIS = '748a87d3f641fc624c0bf7eb325b28040975c623'` (release49's commit),
-  `PRED_OLD = '1dde76e358e77635'` (release49's predecessor), `BASE_OLD = 'f0750973ab681a1b0418aa681075fb29e0942e01'`
-  (release49's base); `PRED = 'a51c541fe9d0f883'` (release49), `BASE_NEW = '748a87d3f641fc624c0bf7eb325b28040975c623'`;
-  kind names `DASH_R6I` → `DASH_R6J` (and the leftover check adds `6i`); the `build.mjs` and `operator.mjs`
-  pairs replace `rev-parse','748a87d'`; the previous artifact pair becomes `/release47/artifact'` →
-  `/release49/artifact'`; schema stays 145. In `build-release50.sh` set `git rev-parse <new short commit>`
-  and the folder names to release50.
+- The next app-only release after E390, exactly (check first that nothing newer went live and that
+  `release51` does not exist):
+  copy `make-release50.py` to `make-release51.py` and `build-release50.sh` to `build-release51.sh`, then set
+  `src = release50`, `dst = release51`;
+  `THIS = 'a6eb7f22122acdad3a247df2303fe8282eb6caec'` (release50's commit),
+  `PRED_OLD = 'a51c541fe9d0f883'` (release50's predecessor), `BASE_OLD = '748a87d3f641fc624c0bf7eb325b28040975c623'`
+  (release50's base); `PRED = 'e1476bb8338f3917'` (release50), `BASE_NEW = 'a6eb7f22122acdad3a247df2303fe8282eb6caec'`;
+  kind names `DASH_R6J` → `DASH_R6K` (and the leftover check adds `6j`); the `build.mjs` and `operator.mjs`
+  pairs replace `rev-parse','a6eb7f2'`; the previous artifact pair becomes `/release49/artifact'` →
+  `/release50/artifact'`; schema stays 145. In `build-release51.sh` set `git rev-parse <new short commit>`
+  and the folder names to release51. (release50 was made exactly this way from release49.)
 - Schema checks: the scripts check the live schema history length (`history.length`), the plan's
   `schema_before`/`schema`, the remote scope check, the install receipt and the label
   `PRESERVED_SCHEMA145`. When another session adds a migration, every one of those must be lifted to the
@@ -433,10 +434,10 @@ sideways scroll, measured styles (for example `getComputedStyle(button).borderTo
 no external requests, no writes (no POST/PATCH/DELETE unless the test means it), no page errors and,
 since E389, no "Failed to resolve component" warnings.
 
-Current Dashboard tests (all passing at E389): catalog 25, crm 13, customers 9, home 14, kit 9,
+Current Dashboard tests (all passing at E390): erp 44, catalog 25, crm 13, customers 9, home 14, kit 9,
 live-chat 9, menu 9, messaging 19, option-cards 9, order-panel 14, product-editor 17, products 11,
 reports 17, returns 10, settings 11, support 17, truthful-browser 17, truthful-screens 6, theme 4,
-permissions 7, navigation 8. API tests used: support-tickets-api 1, help-support-database 9,
+permissions 7, navigation 8. API tests used: dashboard-erp-api 1, support-tickets-api 1, help-support-database 9,
 live-chat-* tests.
 
 ### 8.3 Known failures that are not regressions
@@ -444,7 +445,10 @@ live-chat-* tests.
 These fail the same way on the live commit; success means no test that passed now fails:
 dashboard-access, dashboard-reads, product-bulk case 4, catalog-transfer case 10 (the "actual PostgREST"
 cases), product-save-database case 3, storefront-footer, storefront-payments (checkout cases),
-sms-api (2 subtests), ui-localization (1, dynamic keys in untouched files).
+sms-api (2 subtests), ui-localization (1, dynamic keys in untouched files), daftra-erp-database (cases 5
+and 8: "Unrecognized tables found" and the outage checkout, checked against 748a87d at E390).
+Run native PostgreSQL tests one file at a time: a second run's `pkill -f email-audit-pg` kills the first
+run's database (seen at E390 as a false daftra-costs-create failure).
 
 ### 8.4 Live checks (read-only)
 
