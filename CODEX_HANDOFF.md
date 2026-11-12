@@ -9,10 +9,34 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E385 is the latest milestone (PDC city matching fixed, release45 20d55e2ba493c8e1, schema 144). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E386 is the latest milestone (Daftra catalog linked: 122 links, 71 products created in Daftra; live app is release45 20d55e2ba493c8e1, schema 144). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E386 — DAFTRA CATALOG LINKED: 122 links, 71 products created in Daftra — 12 November 2026
+
+Owner: "the products in dashboard and not listed in daftara, can you count them ... compare if they're related ...
+then do a merge or add them singley", then chose "Create all 72" and four same-model links. No release, no schema change.
+Count before: 663 active site options (263 published), 187 linked; Daftra 336 products, 172 linked. Daftra's live
+catalog (read through the owner's Dashboard session, 04:17 UTC) equals the 8 Nov backup: no product added, renamed or removed.
+Merges (02:00 UTC, erp_save_product_links as on 8 Nov, dry run first): 118 options, 103 by unique code and 15 by
+name; no price gap over 20%, no Daftra product used twice; 115 of them belong to unpublished products.
+Owner-chosen links (04:20 UTC, POST /api/admin-erp/product-links in the owner's session): Kujira MP905 Beige -> 547,
+Rapoo M300L White -> 575, Fantech PRO63 MK912 -> 404, open-box MINI60 HE pro -> 555.
+Created in Daftra (04:22-04:47 UTC, POST /api/admin-erp/product-create one at a time, owner's session): 71 published
+options whose model numbers appear in no Daftra name, code or barcode. Daftra ids 576-646, all intents confirmed,
+each linked. One request returned 502 before any Daftra write (no intent recorded) and succeeded on retry; the loop
+then paced 4 s per item. The Rapoo M300L White was linked instead of created.
+After: 380 links; 4 published options unlinked (AULA F75 Reaper Switch, AULA MINI60 HE pro at 1,899, Fantech HE68 PRO
+MK922, the second Fantech WGC3 listing); 42 Daftra products have no site option; 254 unpublished options stay
+unlinked on purpose. No bill waits for a product link. Files: daftra-link-recheck-20261111/ (outside the repo).
+Found:
+- DAFTRA-DUP-INVOICE-01: linking the open-box keyboard let the waiting bill run. No Daftra invoice carried the
+  website order number as PO number, so the site created and issued its own invoice (04:22 UTC). The owner's manual
+  invoice for the same order also exists. Owner to void one in Daftra; keep the site's to get the website bill.
+- DAFTRA-PAY-METHOD-01: Settings -> ERP has no Daftra payment method (online and cash on delivery). Every paid
+  order's bill stops at "Choose the Daftra payment method in Settings -> ERP." Saving the methods retries them.
 
 # E385 — PDC CITY MATCHING FIXED: release45 20d55e2ba493c8e1, schema 144 — 11 November 2026
 
