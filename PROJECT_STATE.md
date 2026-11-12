@@ -37,8 +37,10 @@ Found:
   Dashboard: it is the order's only invoice; the owner had not made one by hand.
 - COURIER-ATTACH-01 (closed): the owner's manual PDC airway bill was attached through the Dashboard's attach route
   (12 Nov). The order has its courier job, so "Book shipment" can no longer book a second shipment.
-- DAFTRA-PAY-METHOD-01: Settings -> ERP has no Daftra payment method (online and cash on delivery). Every paid
-  order's bill stops at "Choose the Daftra payment method in Settings -> ERP." Saving the methods retries them.
+- DAFTRA-PAY-METHOD-01 (closed 12 Nov): the owner set the online and cash on delivery methods and treasuries.
+  The retries recorded both card payments in Daftra (06:20 and 06:22 UTC), made the bill PDFs and emailed them.
+  Cash invoices are paid when PDC reports Delivered. Still open: DAFTRA-CANCEL-01, a cancelled cash order whose
+  Daftra invoice was already issued; the owner cancels or credits it in Daftra by hand.
 
 # E385 — PDC CITY MATCHING FIXED: release45 20d55e2ba493c8e1, schema 144 — 11 November 2026
 
