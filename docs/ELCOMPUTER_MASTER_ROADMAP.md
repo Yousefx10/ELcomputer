@@ -9,10 +9,44 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E386 is the latest milestone (Daftra catalog linked: 122 links, 71 products created in Daftra; live app is release45 20d55e2ba493c8e1, schema 144). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E387 is the latest milestone (Orders edit key, release46 aa1bb58ef23d1f76, schema 145). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E387 — ORDERS EDIT KEY LIVE: release46 aa1bb58ef23d1f76, schema 145 — 12 November 2026
+
+Owner: Confirm, Cancel and Return an order "without the packing session", from a key button on the Orders
+page, no password or extra confirmation; "if not, once you finish deploy directly." Chose: Confirm also books
+PDC; Return is a new Returned status.
+Commits 903a702 and 90ae046 on product-modern (fast-forward over c8fb79f), not pushed.
+- Permission dashboard.orders.direct ("Confirm, cancel or return orders directly", needs Orders). The owner role
+  holds every permission; staff only when granted in Staff access. Not tied to an email.
+- Orders page: "Edit orders" key (off on each visit). With it on, an opened order shows Confirm, Cancel order and
+  Return, one click each, with the result in the panel (EN/AR).
+- Migration 20261112100000_direct_order_status: Returned status; private.order_direct_changes (who, action,
+  from, to); public.order_direct_status (server role only) checks the permission, locks the order, allows Confirm
+  from pending payment, processing or on hold before packing, Cancel from any open status, Return from confirmed,
+  shipped or delivered; closes an open packing session; existing triggers still decide card payment, stock,
+  pre-order, courier and SMS rules. pdc_order_eligibility accepts a direct Confirm in place of packing evidence.
+- POST /api/admin-orders/:id/direct-status: Confirm then books PDC at the Order flow parcel weight through the
+  same staff booking as Confirm Orders, when the order's courier is PDC; a refusal shows in plain words.
+- Customers: a returned order shows "Order returned" and sits with cancelled and refunded orders.
+Cancel keeps today's effects: the customer's cancellation SMS; unpaid card stock released. It does not refund a
+paid card order, cancel a PDC shipment at PDC, or cancel an issued Daftra invoice (DAFTRA-CANCEL-01 style).
+Evidence: live rehearsal in a rolled-back transaction (constraint, function grants, refusals; no order changed).
+New tests order-direct-status-native (5 subtests: permission, Confirm with PDC at 1 kg and no video, Return,
+Cancel by a granted editor, SQL grants), order-direct-status, account-orders updated, and a browser subtest for the
+key. 82 related files: no live pass lost; manual-cod-pdc-native's three label subtests time out on this machine on
+both trees. Browser: 73 vs 72 passes, the new subtest the only difference.
+Release46 (release-tools/make-release46.py from release45; ADDED order_direct_status, CHANGED
+pdc_order_eligibility). A first build from 903a702 was prepared but never applied; it is kept as
+release-tools/release46-superseded-903a702. Rebuilt from 90ae046: typecheck 0, build 0, 11,844 asset and 19 API
+checks. Prepare (seal a24acb4f…) and check read-only. Apply 07:54:15 UTC: E387_INSTALLED, schema 145, one restart,
+4.2 s pause, 0 provider calls. Verify NATURAL_MON_PASS 08:03:39 UTC, 11,844 hosted assets match. Live look: the key
+shows; a placed cash order offers Confirm and Cancel order, Return disabled. No action was pressed.
+Rollback: point current back to releases/20d55e2ba493c8e1 and restart (works with schema 145); to restore the
+packing-video rule too, run release46/rollback-direct-status.sql first (owner OK).
 
 # E386 — DAFTRA CATALOG LINKED: 122 links, 71 products created in Daftra — 12 November 2026
 
