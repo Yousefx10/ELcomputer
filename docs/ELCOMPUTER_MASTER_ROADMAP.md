@@ -9,10 +9,18 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E388 is the latest milestone (DASH-R6 Reports live as release47 1dde76e358e77635, schema 145). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E389 is the latest milestone (DASH-R6 Email/SMS: release48 apply stopped before staging on a critical monitor pass, production unchanged on release47; release49 a51c541fe9d0f883 ready, waiting for the owner). Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E389 — DASH-R6 EMAIL/SMS: release48 apply stopped before staging on a critical monitor pass, production unchanged; release49 ready — 12 November 2026
+
+Owner: "Start Email/SMS", then — asked whether to ship with the SMS marketing and transactional sections showing — "Yes, commit and build".
+Commit 748a87d on product-modern (on top of f075097), not pushed. App only, no migration, schema 145. Email and SMS get tabs and the provider status in one row, panels, fields and buttons from a global app/assets/css/dashboard-messaging.css on the theme tokens (dark mode follows the app theme; the SMS child sections get the same styles), and SMS history rows with status pills. Bindings, permissions and save or send calls are unchanged. Found in production: the SMS page used <SmsMarketingControls> and <SmsTransactionalControls>, which Nuxt registers as DashboardSmsMarketingControls and DashboardSmsTransactionalControls, so neither section had rendered since 4 Nov (Marketing > SMS marketing was blank); the names are fixed, which the owner approved. An app-wide scan found no other unresolved component tags. Reports polish: the range select uses v-model; the NPS detail has a singular form.
+Local checks: typecheck 0, build 0; new dashboard-messaging-browser 19/19 (fails on any unresolved component); all dashboard browser tests, truthful screens, theme, permissions, navigation and payment-monitor-settings pass; sms-api keeps its 2 pre-existing failures.
+Release48 9fa90800dea09308 (make-release48.py from release47, predecessor 1dde76e358e77635) qualified (12103 asset and 19 API checks); prepare and the read-only check passed with the payment monitor at WARNING and 8 known unverified-payment exceptions; the owner's words were recorded. Apply 09:59:43–10:00:40 UTC: the read-only check and database read passed, then the host refused to stage with MON_CRITICAL_STOP: the 10:00 monitor pass had gone CRITICAL with a ninth exception, "Store access check failed". No stage, migration or cutover: inspect shows current still releases/1dde76e358e77635 (release47), no stage and no receipts. The release48 packet is consumed and must never be replayed.
+The 10:15 monitor pass returned to WARNING with the same 8 exceptions and no store-access alert, so the failure was transient (like E381's database timeout). Release49 a51c541fe9d0f883 is the same commit in a fresh workspace (make-release49.py, predecessor 1dde76e358e77635), built and qualified (12103 asset and 19 API checks). A failed apply stops for the owner: the retry waits for the owner's go-ahead.
 
 # E388 — DASH-R6 REPORTS LIVE as release47 1dde76e358e77635 — 12 November 2026
 
