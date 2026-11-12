@@ -32,9 +32,11 @@ After: 380 links; 4 published options unlinked (AULA F75 Reaper Switch, AULA MIN
 MK922, the second Fantech WGC3 listing); 42 Daftra products have no site option; 254 unpublished options stay
 unlinked on purpose. No bill waits for a product link. Files: daftra-link-recheck-20261111/ (outside the repo).
 Found:
-- DAFTRA-DUP-INVOICE-01: linking the open-box keyboard let the waiting bill run. No Daftra invoice carried the
-  website order number as PO number, so the site created and issued its own invoice (04:22 UTC). The owner's manual
-  invoice for the same order also exists. Owner to void one in Daftra; keep the site's to get the website bill.
+- DAFTRA-DUP-INVOICE-01 (closed, no duplicate): linking the open-box keyboard let the waiting bill run, and the
+  site created and issued Daftra invoice 00359 (04:22 UTC). Checked Daftra's invoices since 10 Nov through the
+  Dashboard: it is the order's only invoice; the owner had not made one by hand.
+- COURIER-ATTACH-01 (closed): the owner's manual PDC airway bill was attached through the Dashboard's attach route
+  (12 Nov). The order has its courier job, so "Book shipment" can no longer book a second shipment.
 - DAFTRA-PAY-METHOD-01: Settings -> ERP has no Daftra payment method (online and cash on delivery). Every paid
   order's bill stops at "Choose the Daftra payment method in Settings -> ERP." Saving the methods retries them.
 
