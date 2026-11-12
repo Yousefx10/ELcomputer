@@ -245,7 +245,7 @@ Every release below is app only (no migration) unless stated, and every one was 
 | DASH-R6 Catalog | E384, release44 `ae008e8a436e73a8`, `8970a8b` | Categories, Brands, Reviews: one toolbar, form on request, compact rows, rating chips, translated delete prompt. Also fixed release43's Live chat style regression (see 7.4). |
 | DASH-R6 Reports | E388, release47 `1dde76e358e77635`, `f075097` | Sales reports: Today / This week / This month tiles with signed change, chart with metric tabs, hover and keyboard readout, data table, left-to-right plot in Arabic. Customer feedback: translated details, one activity grid. First release on top of conversation A's release46 (schema 145). |
 | DASH-R6 Email/SMS | E389, release49 `a51c541fe9d0f883`, `748a87d` | One header row with tabs and provider status; shared token stylesheet `app/assets/css/dashboard-messaging.css`; SMS history status pills. Fixed: the SMS marketing and transactional sections never rendered (wrong component names); the owner approved showing them. Release48 had stopped before staging on a transient critical monitor pass. Also Reports polish (range select, NPS singular). |
-| DASH-R6 Daftra ERP pages | E390, release50 `e1476bb8338f3917`, `a6eb7f2` | One header row with tabs, ERP settings and Refresh; global `app/assets/css/dashboard-erp.css`; Overview figures; Invoices and Stock tables (rows on phones) with Paid/Part paid/Unpaid/Draft and order links; Sync queue status tabs with counts (read-only `status` filter and counts added to `/api/admin-erp/dashboard`); Product links tabs, filter row and compact rows. Daftra calls unchanged. Signed-in live view not yet looked at (the session's browser was signed out). |
+| DASH-R6 Daftra ERP pages | E390, release50 `e1476bb8338f3917`, `a6eb7f2` | One header row with tabs, ERP settings and Refresh; global `app/assets/css/dashboard-erp.css`; Overview figures; Invoices and Stock tables (rows on phones) with Paid/Part paid/Unpaid/Draft and order links; Sync queue status tabs with counts (read-only `status` filter and counts added to `/api/admin-erp/dashboard`); Product links tabs, filter row and compact rows. Daftra calls unchanged. Checked live read-only in the owner's Chrome. |
 
 Owner decisions already answered (10 November): retire Classic (yes); group CRM tickets and Support
 under Customers now and merge into one inbox later; one "Returns and claims" entry under Orders with
@@ -452,7 +452,9 @@ run's database (seen at E390 as a false daftra-costs-create failure).
 
 ### 8.4 Live checks (read-only)
 
-Use Chrome with the owner's session. Open pages and read DOM and computed styles; do not click save,
+Use Chrome with the owner's session (the Claude in Chrome extension must be signed in to the same Claude
+account as the app; the built-in browser has no Dashboard sign-in). Open pages and read DOM and computed
+styles; do not click save,
 send, delete, claim or anything that writes. Known traps:
 
 - Never open Confirm Orders live (it claims the packing screen).
@@ -461,6 +463,8 @@ send, delete, claim or anything that writes. Known traps:
   `src=/dashboard/live-chat`); resizing the Chrome window may not take effect.
 - Measure real styles (borders, padding) of new controls; presence of elements is not enough (E383's
   style regression passed a presence check).
+- The Dashboard animates colour changes (0.2 s): after toggling the dark class, wait before reading
+  colours, or the old colour is reported.
 - Payment monitor: read it under Payments; "View alerts" is a disclosure, safe to open.
 
 ---
