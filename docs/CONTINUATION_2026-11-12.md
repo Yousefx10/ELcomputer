@@ -284,6 +284,9 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   off with a reason; 6) Bank transfer is on in Settings but not offered at checkout: turn it off (a
   production setting, needs the owner's words); 8) are Serialized items and Scan item used in Daftra
   mode, and what about the 50 test units; 9) does an image URL box still appear anywhere.
+- **Old WordPress wallet, passwords and Google sign-in (E396):** planned in
+  [legacy-accounts-wallet-plan.md](legacy-accounts-wallet-plan.md). 13 customers, 1,069 EGP. Owner decisions
+  first; nothing changed in production. Private evidence: `legacy-wallet-login-review-20261114/`.
 - **DASH-WEIGHT-01:** two parcel weights (Order flow vs PDC default weight); waits for the owner.
 - **Permission gap still open:** the `customer-users` routes let `users.view` edit and delete store
   customers. Noted, not changed.
