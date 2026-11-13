@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (13 November 2026, after E393):
+Live state (13 November 2026, after E394):
 
 | Item | Value |
 |---|---|
-| Live app release | `0c7c8e5bf80e52f7` (release54, E393) |
-| Source commit | `c5804fd` (local only, see section 2) |
-| Database schema | 145 (latest migration `20261112100000_direct_order_status`, from E387) |
-| Previous release for rollback | `f4c6d1fcd3130d5f` (release53, Documents details-pane fix) |
+| Live app release | `bababc92b672de25` (release55, E394) |
+| Source commit | `4718968` (local only, see section 2) |
+| Database schema | 146 (latest migration `20261113100000_hot_offers`, from E394) |
+| Previous release for rollback | `0c7c8e5bf80e52f7` (release54, Store content sections) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Always re-check this before acting: the handoff's section 2 and the newest roadmap entry may have moved on
@@ -339,6 +339,11 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   `BASE_NEW = 'c5804fd2b34a943c2f64a2b4549658b47ad5eff8'`; names `DASH_R6N` → `DASH_R6O` (leftover check adds `6n`);
   `rev-parse','c5804fd'`; previous artifact `/release53/artifact'` → `/release54/artifact'`; schema 145.
   (release50 to release54 were made exactly this way.)
+- Release55 `bababc92b672de25` is live (E394, one migration, schema 146). `make-release55.py` took release54's
+  scripts and release46's single-transaction migration step, with the new `hot_offers` column as the marker.
+  The next app-only release (release56) copies release54's app-only scripts again: `src = release54`,
+  `PRED = 'bababc92b672de25'`, `BASE_NEW = '47189681c372abe8c8c1ab59e9c1a7f740978f11'`, previous artifact
+  `/release55/artifact'`, and every schema check lifted 145 → 146 (see the next point).
 - Schema checks: the scripts check the live schema history length (`history.length`), the plan's
   `schema_before`/`schema`, the remote scope check, the install receipt and the label
   `PRESERVED_SCHEMA145`. When another session adds a migration, every one of those must be lifted to the
