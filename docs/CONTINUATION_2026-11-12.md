@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (13 November 2026, after E394):
+Live state (14 November 2026, after E395):
 
 | Item | Value |
 |---|---|
-| Live app release | `bababc92b672de25` (release55, E394) |
-| Source commit | `4718968` (local only, see section 2) |
+| Live app release | `c1e373d7f325c2b6` (release56, E395) |
+| Source commit | `7cd95b4` (local only, see section 2) |
 | Database schema | 146 (latest migration `20261113100000_hot_offers`, from E394) |
-| Previous release for rollback | `0c7c8e5bf80e52f7` (release54, Store content sections) |
+| Previous release for rollback | `bababc92b672de25` (release55, phone search and Hot offers) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Always re-check this before acting: the handoff's section 2 and the newest roadmap entry may have moved on
@@ -249,6 +249,7 @@ Every release below is app only (no migration) unless stated, and every one was 
 | DASH-R6 built-in ERP pages | E391, release51 `83c9ec8a89976b6e`, `65e5a85` | Shared header row (`DashboardBuiltInErpHead`) for Purchase invoices, Sales invoices, Warehouses, Treasury and Employees; open lists, forms on request with labels; Treasury tabs; translated movement and transaction types, statuses and frequencies. Calls unchanged. Built-in mode is not active on this store, so live it still redirects to the Daftra page; checked by the local browser test. |
 | DASH-R6 Documents, Pages and Help | E392, release52 `907ed4a41353d537`, `5cd327b` | Documents as a full-screen workspace (`dashboardFullBleed` page option; rail, list/grid, details pane or drawer, drop anywhere, video preview); Pages and Help tidied and translated; dark-mode `:global()` selector bug fixed in three components. The details-pane overflow fix found live is release53 `f4c6d1fcd3130d5f` (`2f968e7`), live since E393. |
 | DASH-R6 Store content sections | E393, release54 `0c7c8e5bf80e52f7`, `c5804fd` | One panel per section on `app/assets/css/dashboard-kit.css` (kit-* classes); save row per section (`DashboardSettingsSaveBar`: unsaved/saved, stays in view); hero banners, announcements and links as rows with one-tap switches, editors and add forms on request; offer cards in a grid; search counters and preview; Media library summary line; grouped section list; no Settings-home link in Store content. Saves and writes unchanged. |
+| DASH-R6 Coupons | E395, release56 `c1e373d7f325c2b6`, `7cd95b4` | One panel; coupon rows with a code chip (tap copies), summary, saved status (Active, Scheduled, Ended, Used up, Off) and conditions with limit names; status filters with counts and search; row switch with Save; editor under the row; add form on request with a random code and live summary; `DashboardCouponFields` (Discount, Rules, Dates, Limit to) with product search and category/delivery company lists, ID fields kept as fallback. Validation and writes unchanged. |
 
 Owner decisions already answered (10 November): retire Classic (yes); group CRM tickets and Support
 under Customers now and merge into one inbox later; one "Returns and claims" entry under Orders with
@@ -271,9 +272,11 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
 3. **Store content sections in Settings.** Done (E393). Homepage, Header and footer, Page layouts, Search
    engines, Media library: panels on `app/assets/css/dashboard-kit.css`, a save row per section
    (`DashboardSettingsSaveBar`), rows with editors and add forms on request, grouped section list.
-4. **Not yet redesigned, check with the owner first:** Import / Export (`/dashboard/products/transfer`,
+4. **Coupons.** Done (E395). Settings > Coupons: rows with status, filters and search, editor on request,
+   `DashboardCouponFields` with product search and category/delivery company lists for the limits.
+5. **Not yet redesigned, check with the owner first:** Import / Export (`/dashboard/products/transfer`,
    governed by `docs/catalog-transfer.md` and `docs/catalog-import.md`), Serialized items and Scan item
-   (owner decision 8 below), Meta tracking, Coupons, Confirm Orders (never open it live).
+   (owner decision 8 below), Meta tracking, Confirm Orders (never open it live).
 
 ### 5.4 Open items and follow-ups from conversation B
 
@@ -343,7 +346,13 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   scripts and release46's single-transaction migration step, with the new `hot_offers` column as the marker.
   The next app-only release (release56) copies release54's app-only scripts again: `src = release54`,
   `PRED = 'bababc92b672de25'`, `BASE_NEW = '47189681c372abe8c8c1ab59e9c1a7f740978f11'`, previous artifact
-  `/release55/artifact'`, and every schema check lifted 145 → 146 (see the next point).
+  `/release55/artifact'`, and every schema check lifted 145 → 146 (see the next point). Done: release56
+  `c1e373d7f325c2b6` (Coupons, E395) is live and was made exactly this way (`make-release56.py`).
+- The next app-only release (release57): copy `make-release56.py`, `src = release56`, `dst = release57`;
+  `THIS = '7cd95b4db0fe78fdfb8b7cae5f6d2279099f077e'`, `PRED_OLD = 'bababc92b672de25'`,
+  `BASE_OLD = '47189681c372abe8c8c1ab59e9c1a7f740978f11'`; `PRED = 'c1e373d7f325c2b6'`, `BASE_NEW = THIS`;
+  names `DASH_R6O` → `DASH_R6P` (leftover check adds `6o`); `rev-parse','7cd95b4'`; previous artifact
+  `/release55/artifact'` → `/release56/artifact'`; schema stays 146, so drop the 145 → 146 replacements.
 - Schema checks: the scripts check the live schema history length (`history.length`), the plan's
   `schema_before`/`schema`, the remote scope check, the install receipt and the label
   `PRESERVED_SCHEMA145`. When another session adds a migration, every one of those must be lifted to the
@@ -437,7 +446,7 @@ sideways scroll, measured styles (for example `getComputedStyle(button).borderTo
 no external requests, no writes (no POST/PATCH/DELETE unless the test means it), no page errors and,
 since E389, no "Failed to resolve component" warnings.
 
-Current Dashboard tests (all passing at E393): erp 44, builtin-erp 43, content 26, store-content 17, catalog 25, crm 13, customers 9, home 14, kit 9,
+Current Dashboard tests (all passing at E395): erp 44, builtin-erp 43, content 26, store-content 22, coupons 15, catalog 25, crm 13, customers 9, home 14, kit 9,
 live-chat 9, menu 9, messaging 19, option-cards 9, order-panel 14, product-editor 17, products 11,
 reports 17, returns 10, settings 11, support 17, truthful-browser 17, truthful-screens 6, theme 4,
 permissions 7, navigation 8. API tests used: dashboard-erp-api 1, support-tickets-api 1, help-support-database 9,
