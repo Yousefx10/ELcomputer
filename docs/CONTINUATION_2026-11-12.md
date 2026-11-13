@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (13 November 2026, after E392):
+Live state (13 November 2026, after E393):
 
 | Item | Value |
 |---|---|
-| Live app release | `907ed4a41353d537` (release52, E392); release53 `f4c6d1fcd3130d5f` built and prepared, not applied |
-| Source commit | `5cd327b` live, `2f968e7` = release53 (local only, see section 2) |
+| Live app release | `0c7c8e5bf80e52f7` (release54, E393) |
+| Source commit | `c5804fd` (local only, see section 2) |
 | Database schema | 145 (latest migration `20261112100000_direct_order_status`, from E387) |
-| Previous release for rollback | `83c9ec8a89976b6e` (release51, built-in ERP pages) |
+| Previous release for rollback | `f4c6d1fcd3130d5f` (release53, Documents details-pane fix) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Always re-check this before acting: the handoff's section 2 and the newest roadmap entry may have moved on
@@ -247,7 +247,8 @@ Every release below is app only (no migration) unless stated, and every one was 
 | DASH-R6 Email/SMS | E389, release49 `a51c541fe9d0f883`, `748a87d` | One header row with tabs and provider status; shared token stylesheet `app/assets/css/dashboard-messaging.css`; SMS history status pills. Fixed: the SMS marketing and transactional sections never rendered (wrong component names); the owner approved showing them. Release48 had stopped before staging on a transient critical monitor pass. Also Reports polish (range select, NPS singular). |
 | DASH-R6 Daftra ERP pages | E390, release50 `e1476bb8338f3917`, `a6eb7f2` | One header row with tabs, ERP settings and Refresh; global `app/assets/css/dashboard-erp.css`; Overview figures; Invoices and Stock tables (rows on phones) with Paid/Part paid/Unpaid/Draft and order links; Sync queue status tabs with counts (read-only `status` filter and counts added to `/api/admin-erp/dashboard`); Product links tabs, filter row and compact rows. Daftra calls unchanged. Checked live read-only in the owner's Chrome. |
 | DASH-R6 built-in ERP pages | E391, release51 `83c9ec8a89976b6e`, `65e5a85` | Shared header row (`DashboardBuiltInErpHead`) for Purchase invoices, Sales invoices, Warehouses, Treasury and Employees; open lists, forms on request with labels; Treasury tabs; translated movement and transaction types, statuses and frequencies. Calls unchanged. Built-in mode is not active on this store, so live it still redirects to the Daftra page; checked by the local browser test. |
-| DASH-R6 Documents, Pages and Help | E392, release52 `907ed4a41353d537`, `5cd327b` | Documents as a full-screen workspace (`dashboardFullBleed` page option; rail, list/grid, details pane or drawer, drop anywhere, video preview); Pages and Help tidied and translated; dark-mode `:global()` selector bug fixed in three components. Release53 `f4c6d1fcd3130d5f` (`2f968e7`, details-pane overflow fix found live) is built and prepared but waits for the owner's words. |
+| DASH-R6 Documents, Pages and Help | E392, release52 `907ed4a41353d537`, `5cd327b` | Documents as a full-screen workspace (`dashboardFullBleed` page option; rail, list/grid, details pane or drawer, drop anywhere, video preview); Pages and Help tidied and translated; dark-mode `:global()` selector bug fixed in three components. The details-pane overflow fix found live is release53 `f4c6d1fcd3130d5f` (`2f968e7`), live since E393. |
+| DASH-R6 Store content sections | E393, release54 `0c7c8e5bf80e52f7`, `c5804fd` | One panel per section on `app/assets/css/dashboard-kit.css` (kit-* classes); save row per section (`DashboardSettingsSaveBar`: unsaved/saved, stays in view); hero banners, announcements and links as rows with one-tap switches, editors and add forms on request; offer cards in a grid; search counters and preview; Media library summary line; grouped section list; no Settings-home link in Store content. Saves and writes unchanged. |
 
 Owner decisions already answered (10 November): retire Classic (yes); group CRM tickets and Support
 under Customers now and merge into one inbox later; one "Returns and claims" entry under Orders with
@@ -267,9 +268,9 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
    what is sent to Daftra.
 2. **Documents, Pages and Help.** Done (E392). Documents (`/dashboard/documents`, files and packing videos),
    Store content > Pages (`/dashboard/pages`), Help Center (`/dashboard/help`).
-3. **Store content sections still in Settings**: Homepage, Header and footer, Page layouts, Search
-   engines, Media library. They were converted to the shared kit in DASH-R4 and split in DASH-R5, but not
-   redesigned page by page.
+3. **Store content sections in Settings.** Done (E393). Homepage, Header and footer, Page layouts, Search
+   engines, Media library: panels on `app/assets/css/dashboard-kit.css`, a save row per section
+   (`DashboardSettingsSaveBar`), rows with editors and add forms on request, grouped section list.
 4. **Not yet redesigned, check with the owner first:** Import / Export (`/dashboard/products/transfer`,
    governed by `docs/catalog-transfer.md` and `docs/catalog-import.md`), Serialized items and Scan item
    (owner decision 8 below), Meta tracking, Coupons, Confirm Orders (never open it live).
@@ -332,15 +333,12 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   if any old target or old schema check is left. The build script runs the generator with the full
   commit from `git rev-parse <short>`, then `git archive` of that commit into `releaseN/source`, copies
   `node_modules`, then `build.mjs`, `package.mjs` and `canonical.py`.
-- Release53 (`f4c6d1fcd3130d5f`, commit `2f968e7`) is built, qualified and prepared but not applied: it needs the
-  owner's words (its packet's start_by is 2026-11-14 00:39:52 UTC; after that, prepare a fresh packet in a new
-  folder). The next new app-only release after it: copy `make-release53.py` to `make-release54.py` (and the build
-  script), `src = release53`, `dst = release54`; `THIS = '2f968e77a49e99053ebfc9a2f8df5b9c6dc14b0b'`,
-  `PRED_OLD = '907ed4a41353d537'`, `BASE_OLD = '5cd327b0c51369c0a466a5b3d17541d5dfcc9f59'`; `PRED = 'f4c6d1fcd3130d5f'`,
-  `BASE_NEW = '2f968e77a49e99053ebfc9a2f8df5b9c6dc14b0b'`; names `DASH_R6M` → `DASH_R6N` (leftover check adds `6m`);
-  `rev-parse','2f968e7'`; previous artifact `/release52/artifact'` → `/release53/artifact'`; schema 145. This assumes
-  release53 went live first; if it did not, build from release52 instead (predecessor 907ed4a41353d537).
-  (release50 to release53 were made exactly this way.)
+- Release53 and release54 are live (E393). The next app-only release: copy `make-release54.py` to `make-release55.py`
+  (and the build script), `src = release54`, `dst = release55`; `THIS = 'c5804fd2b34a943c2f64a2b4549658b47ad5eff8'`,
+  `PRED_OLD = 'f4c6d1fcd3130d5f'`, `BASE_OLD = '2f968e77a49e99053ebfc9a2f8df5b9c6dc14b0b'`; `PRED = '0c7c8e5bf80e52f7'`,
+  `BASE_NEW = 'c5804fd2b34a943c2f64a2b4549658b47ad5eff8'`; names `DASH_R6N` → `DASH_R6O` (leftover check adds `6n`);
+  `rev-parse','c5804fd'`; previous artifact `/release53/artifact'` → `/release54/artifact'`; schema 145.
+  (release50 to release54 were made exactly this way.)
 - Schema checks: the scripts check the live schema history length (`history.length`), the plan's
   `schema_before`/`schema`, the remote scope check, the install receipt and the label
   `PRESERVED_SCHEMA145`. When another session adds a migration, every one of those must be lifted to the
@@ -434,7 +432,7 @@ sideways scroll, measured styles (for example `getComputedStyle(button).borderTo
 no external requests, no writes (no POST/PATCH/DELETE unless the test means it), no page errors and,
 since E389, no "Failed to resolve component" warnings.
 
-Current Dashboard tests (all passing at E392): erp 44, builtin-erp 43, content 26, catalog 25, crm 13, customers 9, home 14, kit 9,
+Current Dashboard tests (all passing at E393): erp 44, builtin-erp 43, content 26, store-content 17, catalog 25, crm 13, customers 9, home 14, kit 9,
 live-chat 9, menu 9, messaging 19, option-cards 9, order-panel 14, product-editor 17, products 11,
 reports 17, returns 10, settings 11, support 17, truthful-browser 17, truthful-screens 6, theme 4,
 permissions 7, navigation 8. API tests used: dashboard-erp-api 1, support-tickets-api 1, help-support-database 9,
