@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (14 November 2026, after E401):
+Live state (14 November 2026, after E402):
 
 | Item | Value |
 |---|---|
-| Live app release | `dda84e69ed01604a` (release61, E401 Meta tracking; mobile wallets from E399 closed) |
-| Source commit | `82deb2e` on `product-modern` (fast-forwarded from `dash-r6-meta-tracking`; local only, see section 2) |
-| Database schema | 148 (latest migration `20261114200000_wallet_any_method`, from E398) |
-| Previous release for rollback | `647ed8a54ca140c4` (release60, E400 Import / Export) |
+| Live app release | `d556a53daca1bfac` (release62, E402 item tracking and Hot offers look; mobile wallets from E399 closed) |
+| Source commit | `ab2f10a` on `product-modern` (fast-forwarded from `dash-r6-serial-hot`; local only, see section 2) |
+| Database schema | 149 (latest migration `20261114230000_item_tracking`, from E402) |
+| Previous release for rollback | `dda84e69ed01604a` (release61, E401 Meta tracking) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Mobile wallets: switched on with UIG `5904481` at 06:52 UTC, then closed at 07:22 UTC because Paymob refused that
@@ -255,6 +255,7 @@ Every release below is app only (no migration) unless stated, and every one was 
 | DASH-R6 Coupons | E395, release56 `c1e373d7f325c2b6`, `7cd95b4` | One panel; coupon rows with a code chip (tap copies), summary, saved status (Active, Scheduled, Ended, Used up, Off) and conditions with limit names; status filters with counts and search; row switch with Save; editor under the row; add form on request with a random code and live summary; `DashboardCouponFields` (Discount, Rules, Dates, Limit to) with product search and category/delivery company lists, ID fields kept as fallback. Validation and writes unchanged. |
 | DASH-R6 Import / Export | E400, release60 `647ed8a54ca140c4`, `8bb9107` | Export panel with format and scope option cards, a link back to Products, the 250 note and its own errors; import steps (file, review, apply), warehouse beside a file area that takes drops, file rules folded; review counts as chips, All / Problems / Changes row filters (opens on Problems), stacked rows on phones; apply box with state title, counts, progress, larger confirmations and outcomes. Requests, limits and receipts unchanged; Products list bar unchanged. |
 | DASH-R6 Meta tracking | E401, release61 `dda84e69ed01604a`, `82deb2e` | Saved-state line (browser, server with no-token warning, consent, Test Events); one settings panel: Browser pixel with consent option cards, Conversions API with token pill and a locking remove option, Advanced kept open while editing; save row with unsaved/saved/errors and "Load saved settings" on a stale revision; recent events with counts by state, time, attempts and a draft-safe Refresh. Request and token rules unchanged. |
+| Item tracking and Hot offers look | E402, release62 `d556a53daca1bfac`, `ab2f10a` | Serialized items: "How items are identified" (Store labels or Daftra codes, settings save); Register labels in Daftra mode with immediate printing; Daftra codes list with stock and "Use Daftra codes"; Scan item finds product codes; migration `20261114230000_item_tracking` (schema 149). Hot offers: band and badge colours, fire/shine title effects with a motion switch, preview; compositor-only, on-screen only, reduced-motion still. |
 
 Owner decisions already answered (10 November): retire Classic (yes); group CRM tickets and Support
 under Customers now and merge into one inbox later; one "Returns and claims" entry under Orders with
@@ -283,15 +284,16 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
    review row filters, apply box; the `docs/catalog-transfer.md` and `docs/catalog-import.md` contracts unchanged.
 6. **Meta tracking.** Done (E401). `/dashboard/marketing`: saved-state line, one settings panel with a save row,
    stale-save recovery, recent events; `docs/meta-commerce-tracking.md` unchanged.
-7. **Not yet redesigned, check with the owner first:** Serialized items and Scan item (owner decision 8
-   below), Confirm Orders (never open it live).
+7. **Serialized items and Scan item.** Done (E402): the admin chooses Store labels or Daftra codes; see the
+   source repo's `docs/item-tracking.md`. Migration `20261114230000_item_tracking` (schema 149).
+8. **Not redesigned:** Confirm Orders (never open it live).
 
 ### 5.4 Open items and follow-ups from conversation B
 
 - **Owner decisions still open** (plan section 6): 5) methods that cannot work: hide them or show them
   off with a reason; 6) Bank transfer is on in Settings but not offered at checkout: turn it off (a
-  production setting, needs the owner's words); 8) are Serialized items and Scan item used in Daftra
-  mode, and what about the 50 test units; 9) does an image URL box still appear anywhere.
+  production setting, needs the owner's words); 8) answered 14 Nov: Serialized items and Scan item work with Daftra, both ways, admin chooses (E402);
+  the 50 test units still need a decision; 9) does an image URL box still appear anywhere.
 - **Old WordPress wallet, passwords and Google sign-in (E396):** planned in
   [legacy-accounts-wallet-plan.md](legacy-accounts-wallet-plan.md). 13 customers, 1,069 EGP. Owner decisions
   first; nothing changed in production. Private evidence: `legacy-wallet-login-review-20261114/`.
@@ -378,7 +380,13 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   names `DASH_R6Q` → `DASH_R6R` (leftover check adds `r6q`); `rev-parse','82deb2e'`; previous artifact
   `/release60/artifact'` → `/release61/artifact'`; schema 148.
 - The wallet switch (`wallet-switch-e399` and its `close/`) reads `../release59` and stops when another release is
-  current. Point the fresh copy at the newest release (now `../release61`) before the next switch.
+  current, and it expects schema 148. Point the fresh copy at the newest release (now `../release62`) and schema 149
+  before the next switch.
+- Release62 `d556a53daca1bfac` (E402) is a migration release made with `make-release62.py` (release61's app scripts,
+  release58's migration operator, schema 148 → 149). The next app-only release (release63): take release61's
+  app-only scripts (`make-release61.py` pattern) with `PRED = 'd556a53daca1bfac'`,
+  `BASE_NEW = 'ab2f10af71ed5e569c2f0dc126d266c7c827eb90'`, previous artifact `/release62/artifact'`, and every
+  schema check lifted 148 → 149 (history.length, schema_before/schema, remote scope, receipt, PRESERVED_SCHEMA149).
 - Schema checks: the scripts check the live schema history length (`history.length`), the plan's
   `schema_before`/`schema`, the remote scope check, the install receipt and the label
   `PRESERVED_SCHEMA145`. When another session adds a migration, every one of those must be lifted to the
@@ -472,7 +480,7 @@ sideways scroll, measured styles (for example `getComputedStyle(button).borderTo
 no external requests, no writes (no POST/PATCH/DELETE unless the test means it), no page errors and,
 since E389, no "Failed to resolve component" warnings.
 
-Current Dashboard tests (all passing at E401): erp 44, builtin-erp 43, content 26, store-content 22, coupons 15, transfer 13, meta 13, catalog 25, crm 13, customers 9, home 14, kit 9,
+Current Dashboard tests (all passing at E402): erp 44, builtin-erp 43, content 26, store-content 23, coupons 15, transfer 13, meta 13, items 14, catalog 25, crm 13, customers 9, home 14, kit 9,
 live-chat 9, menu 9, messaging 19, option-cards 9, order-panel 14, product-editor 17, products 11,
 reports 17, returns 10, settings 11, support 17, truthful-browser 17, truthful-screens 6, theme 4,
 permissions 7, navigation 8. API tests used: dashboard-erp-api 1, support-tickets-api 1, help-support-database 9,
