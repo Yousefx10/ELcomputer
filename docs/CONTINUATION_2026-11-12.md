@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (14 November 2026, after E395):
+Live state (14 November 2026, after E398):
 
 | Item | Value |
 |---|---|
-| Live app release | `c1e373d7f325c2b6` (release56, E395) |
-| Source commit | `7cd95b4` (local only, see section 2) |
-| Database schema | 146 (latest migration `20261113100000_hot_offers`, from E394) |
-| Previous release for rollback | `bababc92b672de25` (release55, phone search and Hot offers) |
+| Live app release | `5827bfd63032aab4` (release58, E398) |
+| Source commit | `477b183` on `product-modern` (fast-forwarded from `e397-legacy-wallet`; local only, see section 2) |
+| Database schema | 148 (latest migration `20261114200000_wallet_any_method`, from E398) |
+| Previous release for rollback | `43c618f7085ff646` (release57, E397 old-website accounts and wallet) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Always re-check this before acting: the handoff's section 2 and the newest roadmap entry may have moved on

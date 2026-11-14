@@ -9,10 +9,31 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E397 is the latest release (old-website accounts, old passwords and the customer wallet live as release57 43c618f7085ff646, one migration, schema 147; 513 old customers have accounts, 13 wallets total 1,069 EGP). E398 (wallet with card and Apple Pay, coverage setting, old-password fix) is built and waits for the owner. E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E398 is the latest release (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E398 — WALLET WITH CARD AND APPLE PAY, COVERAGE SETTING, OLD-PASSWORD FIX, FULL-DELIVERY GOVERNORATES, DAFTRA BUTTON ROUTE, GREEN HOT OFFERS LIVE as release58 5827bfd63032aab4 (one migration, schema 148) — 14 November 2026
+
+Owner: "instead of 5 failures attempts, make them 10. in dashboard, there should be a setting to chose where WALLET can pay delivery or fees or just products. you should enable paying by WALLET + any other payment method." Then: "a payment support is 20 egp fixed amount, not current value, plus a 'cairo / giza' pay the full delivery amount with no delivery discount. (should be controlled from dashboard)", the Daftra "Refresh stock" 403, the COD reconcile message, and "for 'Hot offers' can you make background green?". Asked "Deploy release58 with its migration, including the Daftra stock refresh route?": "Deploy release58".
+Commits a7d0d5b and 477b183 on e397-legacy-wallet (worktree work-e397); product-modern fast-forwarded to 477b183. Not pushed. Migration 20261114200000_wallet_any_method:
+- old passwords work only while the account keeps the stored password it was created with (fingerprint; 509 backfilled);
+- ten failures lock an old account;
+- site_settings.wallet_payment_coverage (products, products_delivery, everything);
+- card and Apple Pay checkouts hold their wallet amount until paid or two hours after expiry; the paid order debits it; cash orders and staff debits respect holds;
+- card orders carry wallet_amount;
+- courier zone pricing accepts a full_price governorate list.
+App: Settings > Payment methods "What the wallet can pay"; wallet switch for cash and card; held amount on Account > Wallet; a "Store support" switch per governorate in courier pricing; ERP queue buttons post to /api/admin-erp/jobs (Caddy holds /sync); clearer COD cash note; green Hot offers band.
+Local: typecheck 0, build 0. legacy-wallet-native 22/22, including a full card + wallet payment through the payment-first fixture. shipping-zone-pricing 7/7, dashboard-erp-browser 44/44, storefront-hot-offers-browser 10/10. Card checkout, merchant retry, Daftra checkout, customer cart, cash-after-card, Dashboard settings and customers, Modern checkout: same as af66b95.
+Deploy: built and qualified (13287 asset and 19 API checks); prepare and check passed. Owner's words recorded. Apply ran once:
+- migration committed 00:25:01 UTC (E398_SCHEMA148_COMMITTED, fingerprints equal the expected count, wallets unchanged);
+- E398_INSTALLED 00:25:24 UTC, one restart, 3.1 s pause, no provider calls.
+Verify 1 returned AWAITING. Verify 2 passed at 00:34:04 UTC: E398_INSTALLED_NATURAL_MON_PASS, MIGRATED_SCHEMA148, 13287 assets.
+Public probes: /api/admin-erp/jobs reaches the app; the old-password route answers 401 legacy:invalid.
+Settings (owner's words): Dashboard > Shipping > Fast Shipping: support 25 → 20; Cairo and Giza support off. Read-only check: Cairo 70, Giza 70, Alexandria 55.
+Live check (read-only, owner's Chrome): the homepage Hot offers row is on the green band with its sale products.
+Rollback: point current at releases/43c618f7085ff646 (release57) and restart. The older app sends the wallet only for cash and ignores the coverage setting, so the database can stay. Next migration release copies make-release58.py: predecessor 5827bfd63032aab4, base 477b183, schema 148 → 149.
 
 # E397 — OLD-WEBSITE ACCOUNTS, OLD PASSWORDS AND THE CUSTOMER WALLET LIVE as release57 43c618f7085ff646 (one migration, schema 147); 513 ACCOUNTS READY — 14 November 2026
 
