@@ -47,19 +47,18 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (14 November 2026, after E398):
+Live state (14 November 2026, after E399):
 
 | Item | Value |
 |---|---|
-| Live app release | `5827bfd63032aab4` (release58, E398) |
-| Source commit | `477b183` on `product-modern` (fast-forwarded from `e397-legacy-wallet`; local only, see section 2) |
+| Live app release | `9c2eff838f163fc9` (release59, E399; mobile wallets closed) |
+| Source commit | `8d19219` on `product-modern` (fast-forwarded from `e399-mobile-wallet`; local only, see section 2) |
 | Database schema | 148 (latest migration `20261114200000_wallet_any_method`, from E398) |
-| Previous release for rollback | `43c618f7085ff646` (release57, E397 old-website accounts and wallet) |
+| Previous release for rollback | `5827bfd63032aab4` (release58, E398 wallet with card and delivery support) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
-Built, not deployed: release59 `9c2eff838f163fc9` (E399 Paymob mobile wallets, commit `8d19219` on branch
-`e399-mobile-wallet`, app only, schema 148) and its wallet switch `product-modern-20261107/wallet-switch-e399`.
-Both wait for the owner's wallet integration ID and go-ahead.
+Prepared, not applied: the wallet switch `product-modern-20261107/wallet-switch-e399` for UIG `5904481`
+(Paymob in_store channel). It waits for the owner to confirm the integration works online.
 
 Always re-check this before acting: the handoff's section 2 and the newest roadmap entry may have moved on
 if another session continued.
