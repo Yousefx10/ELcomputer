@@ -9,10 +9,37 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E396 is the latest entry (a plan for old WordPress wallet balances, old passwords and Google sign-in; no production change). E395 is the latest release (DASH-R6 Coupons redesign live as release56 c1e373d7f325c2b6, app only, schema 146, after phone search and Hot offers went live as release55 in E394). Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E397 is the latest release (old-website accounts, old passwords and the customer wallet live as release57 43c618f7085ff646, one migration, schema 147; 513 old customers have accounts, 13 wallets total 1,069 EGP). E398 (wallet with card and Apple Pay, coverage setting, old-password fix) is built and waits for the owner. E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E397 — OLD-WEBSITE ACCOUNTS, OLD PASSWORDS AND THE CUSTOMER WALLET LIVE as release57 43c618f7085ff646 (one migration, schema 147); 513 ACCOUNTS READY — 14 November 2026
+
+Owner, after the E396 plan: "commit, and do the plan, create accounts for them all, confirm their emails. allow them to use the balance. they should have the ability to login/ change password. let me know how to connect to google again? can you check for me which google auth was used?". Then, asked "Deploy release57 with the legacy_accounts_wallet migration, then load data and create the accounts?": "Deploy with migration".
+Commits 1684a34, 491f450, af66b95 on branch e397-legacy-wallet (worktree work-e397, on top of 7cd95b4), not pushed. Details: docs/legacy-accounts-wallet-plan.md.
+Migration 20261114120000_legacy_accounts_wallet:
+- private legacy_accounts table (WordPress hash, Google ID, opening balance; no role access);
+- wallet balance table and append-only ledger;
+- customer_orders.wallet_amount;
+- wallet step in checkout review;
+- order trigger: debit on placing, return once on cancel or refund;
+- service functions for old-password checks, linking, owner tools and staff changes, and customer_wallet() for signed-in customers.
+App:
+- POST /api/auth/legacy-sign-in, plus a login fallback and a new returning-customer note (EN/AR);
+- Account > Wallet activity and Account > Profile password form;
+- checkout "Use wallet balance" switch and a "Paid from wallet" line;
+- Dashboard customer wallet block and the owner card "Customers from the previous website".
+Local: typecheck 0, build 0; legacy-wallet-native 14/14; affected plain and browser tests match 7cd95b4 (one raw-message finding fixed; the customers browser test was extended to 9/9 and found a focus bug, fixed).
+Deploy: built and qualified (13155 asset and 19 API checks); prepare and the read-only check passed. Owner's words recorded. Apply ran once:
+- migration committed 23:40:47 UTC (E397_SCHEMA147_COMMITTED; every post-check passed);
+- E397_INSTALLED 23:41:00 UTC, one restart, 4.2 s pause, no provider calls.
+Verify 1 returned AWAITING. Verify 2 passed: E397_INSTALLED_NATURAL_MON_PASS, MIGRATED_SCHEMA147, 13155 assets.
+Data: private load operator (legacy-wallet-login-review-20261114/legacy-load.mjs). The dry run passed; apply committed 23:49:55 UTC: 513 rows, 513 hashes, 162 Google IDs, 13 balances totalling 1,069.00 EGP.
+Accounts: the owner card in the owner's Chrome created 509 accounts and linked 4 existing ones. All 513 have confirmed emails and profiles; store customers went from 33 to 542. 13 wallets total 1,069.00 EGP, and the profile mirror matches.
+Found after deploy: Supabase gives every new account a random stored password, so the old-password check would have cleared hashes on the first try. Read-only check: 0 cleared. Fixed in E398.
+Google: the old site used Nextend Social Login with one Web client in Google Cloud project 1049727855627. Site Kit was connected by the store's Gmail account (in the private evidence). Any Google account works for a new client; customers match by email.
+Rollback: point current at releases/c1e373d7f325c2b6 (release56) and restart. The older app never sends use_wallet, so the database can stay.
 
 # E396 — PLAN: OLD WORDPRESS WALLET BALANCES, OLD PASSWORDS AND GOOGLE SIGN-IN (investigation only, no production change) — 14 November 2026
 

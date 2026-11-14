@@ -1,7 +1,124 @@
 # Old WordPress accounts, wallet balances and Google sign-in: plan
 
 14 November 2026. Task IDs: `LEGACY-LOGIN-01`, `LEGACY-WALLET-01`, `AUTH-GOOGLE-01`.
-Status: investigated and planned. Nothing has changed in production.
+Status: built as E397 (see "What was built"). The plan below is kept as written.
+
+## What was built (E397)
+
+Owner, after the plan: "commit, and do the plan, create accounts for them all, confirm their
+emails. allow them to use the balance. they should have the ability to login/ change password."
+
+The work is in commits `1684a34` and `491f450`, with migration `20261114120000_legacy_accounts_wallet`.
+
+**Database**
+- A private `customer_history_private.legacy_accounts` table holds, per approved old customer:
+  the WordPress hash, the Google ID and the opening balance.
+- `private.customer_wallets` holds one balance per customer. `private.customer_wallet_entries` is
+  an append-only ledger with five kinds: `legacy_opening`, `order_payment`, `order_refund`,
+  `staff_credit`, `staff_debit`.
+- One writer function posts every change. It is idempotent by kind and reference, never lets a
+  balance go below zero, and keeps `customer_profiles.wallet_balance` in step.
+
+**Sign-in and passwords**
+- `POST /api/auth/legacy-sign-in`. The login page calls it only after Supabase says the
+  credentials are invalid.
+- On a match, the old password becomes the account's own, the hash is cleared, and the page
+  signs in with a one-time token.
+- This works only while the account has no password of its own.
+- Five failures lock the old account for 15 minutes, and each IP address has a limit.
+- Account > Profile has a password form that works for every account.
+
+**Accounts**
+- An owner-only card in Dashboard Customers ("Customers from the previous website") creates the
+  accounts in batches through the Admin API.
+- New accounts get a confirmed email and no password, and no email is sent.
+- Existing confirmed accounts are linked instead.
+- Linking also connects the old orders and adds the old balance once.
+
+**Wallet at checkout**
+- The wallet works with cash on delivery and pays for products only.
+- Delivery and fees are paid on delivery, and the courier always collects at least 1 EGP.
+- The amount is part of the order discount and is also kept in `customer_orders.wallet_amount`,
+  so the Daftra invoice, the courier cash amount and the cash fee stay consistent with no
+  provider code change.
+- Placing the order debits the wallet in the same transaction. Cancelling or refunding returns
+  it once.
+
+**Dashboard and pages**
+- The customer panel shows the wallet, and staff with `users.manage` can add or take money with
+  a reason (audited).
+- Account > Wallet lists the activity.
+- Orders and the printed invoice show "Paid from wallet".
+
+**Live as release57 `43c618f7085ff646` (14 November, schema 147).**
+- The migration was committed at 23:40:47 UTC and the app installed at 23:41:00 UTC.
+- The second verify passed (`E397_INSTALLED_NATURAL_MON_PASS`).
+- The data load (23:49:55 UTC) put 513 rows into the private table: 513 hashes, 162 Google IDs and
+  13 opening balances totalling 1,069.00 EGP.
+- The owner card created 509 accounts and linked 4 existing ones. All 513 have confirmed emails
+  and profiles.
+- 13 wallets total 1,069.00 EGP, and the profile mirror matches.
+
+**Found after deploy.** Supabase gives every new account a random stored password. The old-password
+check treated any stored password as the customer's own, so the first attempt would clear the hash.
+- Nobody had tried yet: 0 hashes cleared at the check.
+- E398 fixes this. The old password works only while the account keeps the stored password it was
+  created with.
+
+## E398: wallet with every live method, coverage setting, sign-in fixes
+
+Owner: "instead of 5 failures attempts, make them 10. in dashboard, there should be a setting to
+chose where WALLET can pay delivery or fees or just products. you should enable paying by WALLET +
+any other payment method."
+
+Built in commit `a7d0d5b` with migration `20261114200000_wallet_any_method`:
+
+**Sign-in**
+- Each linked old account keeps a fingerprint of its stored password. The old password works
+  only while that fingerprint still matches.
+- The 509 created accounts were backfilled.
+- Ten failures, not five, now lock an old account for 15 minutes.
+
+**Coverage setting**
+- Settings > Payment methods > "What the wallet can pay": Products (default), Products and
+  delivery, or Everything.
+- The chosen method always pays something: 5 EGP for card, 1 EGP for cash on delivery.
+- With "products and delivery" or "everything", the Daftra invoice discount can exceed the item
+  subtotal. The Daftra sync checks totals and stops with a manual message if Daftra disagrees.
+
+**Card and Apple Pay with the wallet**
+- An open card checkout holds its wallet amount: until two hours after it expires, and always
+  while a payment is uncertain or under review.
+- The paid order debits the hold. Cash on delivery and staff debits cannot use held money.
+- If a payment arrives after a hold lapsed and the money was spent meanwhile, the checkout goes
+  to the existing staff review (`paid_order_requires_recovery`). The card payment is never lost.
+
+InstaPay and bank transfer are off on the site, so they don't use the wallet.
+
+Also in E398, from the owner's next message: "a payment support is 20 egp fixed amount, not current value,
+plus a 'cairo / giza' pay the full delivery amount with no delivery discount (should be controlled from
+dashboard)", the Daftra refresh 403, the reconcile message, and a green Hot offers row.
+- **Delivery support.** Each courier's zone pricing (Dashboard > Shipping > courier > prices by governorate)
+  has a "Store support" switch per governorate. Off means the customer pays the full fee.
+  - The database fee function and its validator accept the new `full_price` list.
+  - Live today: Fast Shipping support is 25 EGP. Cairo and Giza are zone 1: 60 + 14% = 68.40, rounded to 70,
+    minus 25, so customers pay 45.
+  - Wanted: support 20, with Cairo and Giza paying the full 70. The owner's words name this. It is a
+    Dashboard setting after deploy, not a code change.
+- **Daftra stock refresh 403.** Caddy holds `/api/admin-erp/sync` (all methods, plain "Unavailable"). This
+  is left over from the earlier ingress policy that held endpoints calling Daftra.
+  - The refresh, process and retry buttons on Dashboard > Daftra ERP never reached the app.
+  - They now post to `/api/admin-erp/jobs`, which the edge admits, with the same handler and permissions.
+  - Stock refresh only queues a job; the server's ERP worker runs it against Daftra.
+- **"Reconcile this order in its external accounting system."** The COD cash block on a cash order says
+  this while Daftra is the store's ERP: the site's cash steps aren't the accounting record, Daftra is.
+  It now reads "Daftra keeps this order's accounts. Record the cash and its deposit in Daftra."
+- **Hot offers** sits on a green band in light and dark mode, on phones and desktop.
+
+**Still not built**
+- Automatic Google-ID matching for changed emails. The IDs are stored for staff.
+- A server-side Turnstile check on the old-password route.
+- A job that deletes unused old hashes after a set time.
 
 Owner's request: "in the old wordpress site, users had money inside 'wallet' plugin,
 i want to migrate their old balance to current nuxt project ... give it back to same
@@ -78,6 +195,17 @@ encrypted with the project backup key.
 ## The plan
 
 ### 1. Google sign-in (AUTH-GOOGLE-01): settings only, owner steps
+
+**The old site's Google client.** Nextend Social Login used one Web OAuth client, and the backup
+confirms it.
+- Its Google Cloud project number is `1049727855627`.
+- Its redirect URI was `https://elcomputer.net/wp-login.php?loginSocial=google`.
+- Linking by email was on.
+
+Search for that project number in Google Cloud > APIs & Services > Credentials, signed in with the
+Google account that set it up. The client secret stays in the backup and was not read out. Google
+shows a secret once, so add a new secret to the client if needed. A new project also works: Google
+account IDs are the same in every project.
 
 1. **Google Cloud.** Reuse the old site's Google project if you still have it, or create one.
    - Set the OAuth consent screen to External and In production.
@@ -181,6 +309,13 @@ needs its own review, local qualification and approval, and must stop for any pr
 | 5 | W2 wallet at checkout | Separate release and approval |
 
 ### Decisions for the owner
+
+Decided on 14 November:
+- 1: yes, create them now.
+- 2: yes, mark the emails confirmed.
+- 3: "allow them to use the balance". Built for cash on delivery first.
+
+Items 4–6 are still open.
 
 1. **Create accounts for all 513 old customers now** (recommended), or only when each one first
    signs in. Creating now makes balances, history and password reset work immediately.
