@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (14 November 2026, after E399):
+Live state (14 November 2026, after E400):
 
 | Item | Value |
 |---|---|
-| Live app release | `9c2eff838f163fc9` (release59, E399; mobile wallets closed) |
-| Source commit | `8d19219` on `product-modern` (fast-forwarded from `e399-mobile-wallet`; local only, see section 2) |
+| Live app release | `647ed8a54ca140c4` (release60, E400 Import / Export; mobile wallets from E399 closed) |
+| Source commit | `8bb9107` on `product-modern` (fast-forwarded from `dash-r6-import-export`; local only, see section 2) |
 | Database schema | 148 (latest migration `20261114200000_wallet_any_method`, from E398) |
-| Previous release for rollback | `5827bfd63032aab4` (release58, E398 wallet with card and delivery support) |
+| Previous release for rollback | `9c2eff838f163fc9` (release59, E399 mobile wallets, closed) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Mobile wallets: switched on with UIG `5904481` at 06:52 UTC, then closed at 07:22 UTC because Paymob refused that
@@ -253,6 +253,7 @@ Every release below is app only (no migration) unless stated, and every one was 
 | DASH-R6 Documents, Pages and Help | E392, release52 `907ed4a41353d537`, `5cd327b` | Documents as a full-screen workspace (`dashboardFullBleed` page option; rail, list/grid, details pane or drawer, drop anywhere, video preview); Pages and Help tidied and translated; dark-mode `:global()` selector bug fixed in three components. The details-pane overflow fix found live is release53 `f4c6d1fcd3130d5f` (`2f968e7`), live since E393. |
 | DASH-R6 Store content sections | E393, release54 `0c7c8e5bf80e52f7`, `c5804fd` | One panel per section on `app/assets/css/dashboard-kit.css` (kit-* classes); save row per section (`DashboardSettingsSaveBar`: unsaved/saved, stays in view); hero banners, announcements and links as rows with one-tap switches, editors and add forms on request; offer cards in a grid; search counters and preview; Media library summary line; grouped section list; no Settings-home link in Store content. Saves and writes unchanged. |
 | DASH-R6 Coupons | E395, release56 `c1e373d7f325c2b6`, `7cd95b4` | One panel; coupon rows with a code chip (tap copies), summary, saved status (Active, Scheduled, Ended, Used up, Off) and conditions with limit names; status filters with counts and search; row switch with Save; editor under the row; add form on request with a random code and live summary; `DashboardCouponFields` (Discount, Rules, Dates, Limit to) with product search and category/delivery company lists, ID fields kept as fallback. Validation and writes unchanged. |
+| DASH-R6 Import / Export | E400, release60 `647ed8a54ca140c4`, `8bb9107` | Export panel with format and scope option cards, a link back to Products, the 250 note and its own errors; import steps (file, review, apply), warehouse beside a file area that takes drops, file rules folded; review counts as chips, All / Problems / Changes row filters (opens on Problems), stacked rows on phones; apply box with state title, counts, progress, larger confirmations and outcomes. Requests, limits and receipts unchanged; Products list bar unchanged. |
 
 Owner decisions already answered (10 November): retire Classic (yes); group CRM tickets and Support
 under Customers now and merge into one inbox later; one "Returns and claims" entry under Orders with
@@ -277,9 +278,10 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
    (`DashboardSettingsSaveBar`), rows with editors and add forms on request, grouped section list.
 4. **Coupons.** Done (E395). Settings > Coupons: rows with status, filters and search, editor on request,
    `DashboardCouponFields` with product search and category/delivery company lists for the limits.
-5. **Not yet redesigned, check with the owner first:** Import / Export (`/dashboard/products/transfer`,
-   governed by `docs/catalog-transfer.md` and `docs/catalog-import.md`), Serialized items and Scan item
-   (owner decision 8 below), Meta tracking, Confirm Orders (never open it live).
+5. **Import / Export.** Done (E400). `/dashboard/products/transfer`: export cards, import steps with file drop,
+   review row filters, apply box; the `docs/catalog-transfer.md` and `docs/catalog-import.md` contracts unchanged.
+6. **Not yet redesigned, check with the owner first:** Serialized items and Scan item (owner decision 8
+   below), Meta tracking, Confirm Orders (never open it live).
 
 ### 5.4 Open items and follow-ups from conversation B
 
@@ -359,6 +361,15 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   `BASE_OLD = '47189681c372abe8c8c1ab59e9c1a7f740978f11'`; `PRED = 'c1e373d7f325c2b6'`, `BASE_NEW = THIS`;
   names `DASH_R6O` → `DASH_R6P` (leftover check adds `6o`); `rev-parse','7cd95b4'`; previous artifact
   `/release55/artifact'` → `/release56/artifact'`; schema stays 146, so drop the 145 → 146 replacements.
+  (The wallet conversation went on with release57–59 instead; see E397–E399.)
+- Release60 `647ed8a54ca140c4` (Import / Export, E400) is live, made with `make-release60.py` from release59's
+  app-only scripts at schema 148. The next app-only release (release61): copy `make-release60.py`,
+  `src = release60`, `dst = release61`; `THIS = '8bb9107d5c728f6841dc21687c63631170ffd96b'`,
+  `PRED_OLD = '9c2eff838f163fc9'`, `BASE_OLD = '8d19219613dee1b4b0cd9694ce8dd4c525e9315d'`;
+  `PRED = '647ed8a54ca140c4'`, `BASE_NEW = THIS`; names `DASH_R6P` → `DASH_R6Q` (leftover check adds `dash.r6p`);
+  `rev-parse','8bb9107'`; previous artifact `/release59/artifact'` → `/release60/artifact'`; schema 148.
+- The wallet switch (`wallet-switch-e399` and its `close/`) reads `../release59` and stops when another release is
+  current. Point the fresh copy at `../release60` before the next switch.
 - Schema checks: the scripts check the live schema history length (`history.length`), the plan's
   `schema_before`/`schema`, the remote scope check, the install receipt and the label
   `PRESERVED_SCHEMA145`. When another session adds a migration, every one of those must be lifted to the
@@ -452,7 +463,7 @@ sideways scroll, measured styles (for example `getComputedStyle(button).borderTo
 no external requests, no writes (no POST/PATCH/DELETE unless the test means it), no page errors and,
 since E389, no "Failed to resolve component" warnings.
 
-Current Dashboard tests (all passing at E395): erp 44, builtin-erp 43, content 26, store-content 22, coupons 15, catalog 25, crm 13, customers 9, home 14, kit 9,
+Current Dashboard tests (all passing at E400): erp 44, builtin-erp 43, content 26, store-content 22, coupons 15, transfer 13, catalog 25, crm 13, customers 9, home 14, kit 9,
 live-chat 9, menu 9, messaging 19, option-cards 9, order-panel 14, product-editor 17, products 11,
 reports 17, returns 10, settings 11, support 17, truthful-browser 17, truthful-screens 6, theme 4,
 permissions 7, navigation 8. API tests used: dashboard-erp-api 1, support-tickets-api 1, help-support-database 9,
