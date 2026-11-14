@@ -9,10 +9,24 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E398 is the latest release (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E399 (Paymob mobile wallets) is built as release59 9c2eff838f163fc9 and not deployed; it waits for the owner's wallet integration ID and go-ahead. E398 is the latest live release (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E399 — PAYMOB MOBILE WALLETS (VODAFONE CASH, E& MONEY, ORANGE CASH, WE PAY): BUILT AS release59 9c2eff838f163fc9, NOT DEPLOYED — 14 November 2026
+
+Owner: "can you enable the wallet like (vodafone cash, etisalat,etc) with paymob? in paymob settings it's activated and secret key available. put their logo in checkout, and footer. after complete integrations."
+Commit 8d19219 on branch e399-mobile-wallet (worktree work-e397, from 477b183). Not pushed. App only, schema 148, no migration.
+- Checkout: a Mobile wallet option in Modern and Classic. It always opens Paymob's page, where the customer enters the wallet number and confirms on the phone. The fee follows the card fee. Preorders stay card only.
+- Paymob: the wallet has its own integration and intention. Signed callbacks from it are accepted only with a wallet source. Card integrations still refuse wallet sources.
+- Logos: checkout reuses the wallet logos uploaded in Store content > Footer > Payment methods (method "Mobile wallet"). Until then it shows name chips. Footer wallet rows show only while wallets are offered. The project has no official wallet logo files yet.
+- Closed until switched on: wallets open only when the server's Paymob integration list has a live `mobile_wallet` entry. release59 alone changes nothing customers see.
+- Switch: `product-modern-20261107/wallet-switch-e399` adds that one entry to `NUXT_PAYMOB_INTEGRATION_IDS` in `/etc/storefront-feature-policy/apple-availability.env`. It checks a private copy first, then restarts once. Apple Pay and card stay the same. Rollback: restore the stage backup and restart.
+- Build: typecheck and build pass; qualify COMPILED_RETAINED_ARTIFACT_PASS (13418 assets, 19 API checks). Predecessor release58 5827bfd63032aab4.
+- Tests: unit 5/5, native HTTP 5/5 (one paid order from a signed wallet callback), checkout browser 15/15 (EN/AR, phone, dark). The Paymob, checkout, footer, dashboard and wallet suites match the live commit; their older failures are identical on both.
+Waiting for the owner: the Paymob Live mobile wallet integration ID; the go-ahead to deploy release59 and switch wallets on (a production setting and Paymob); the wallet logo files; one real wallet payment after the switch.
+Task IDs: PAY-WALLET-01 (integration), PAY-WALLET-LOGOS-01 (logos).
 
 # E398 — WALLET WITH CARD AND APPLE PAY, COVERAGE SETTING, OLD-PASSWORD FIX, FULL-DELIVERY GOVERNORATES, DAFTRA BUTTON ROUTE, GREEN HOT OFFERS LIVE as release58 5827bfd63032aab4 (one migration, schema 148) — 14 November 2026
 

@@ -57,6 +57,10 @@ Live state (14 November 2026, after E398):
 | Previous release for rollback | `43c618f7085ff646` (release57, E397 old-website accounts and wallet) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
+Built, not deployed: release59 `9c2eff838f163fc9` (E399 Paymob mobile wallets, commit `8d19219` on branch
+`e399-mobile-wallet`, app only, schema 148) and its wallet switch `product-modern-20261107/wallet-switch-e399`.
+Both wait for the owner's wallet integration ID and go-ahead.
+
 Always re-check this before acting: the handoff's section 2 and the newest roadmap entry may have moved on
 if another session continued.
 
