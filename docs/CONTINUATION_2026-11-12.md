@@ -51,14 +51,14 @@ Live state (14 November 2026, after E399):
 
 | Item | Value |
 |---|---|
-| Live app release | `9c2eff838f163fc9` (release59, E399; mobile wallets closed) |
+| Live app release | `9c2eff838f163fc9` (release59, E399; mobile wallets on with Paymob UIG `5904481`) |
 | Source commit | `8d19219` on `product-modern` (fast-forwarded from `e399-mobile-wallet`; local only, see section 2) |
 | Database schema | 148 (latest migration `20261114200000_wallet_any_method`, from E398) |
 | Previous release for rollback | `5827bfd63032aab4` (release58, E398 wallet with card and delivery support) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
-Prepared, not applied: the wallet switch `product-modern-20261107/wallet-switch-e399` for UIG `5904481`
-(Paymob in_store channel). It waits for the owner to confirm the integration works online.
+Applied: the wallet switch `product-modern-20261107/wallet-switch-e399` (UIG `5904481`, Paymob in_store channel).
+A real wallet payment has not been made yet.
 
 Always re-check this before acting: the handoff's section 2 and the newest roadmap entry may have moved on
 if another session continued.
