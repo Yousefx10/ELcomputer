@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (14 November 2026, during E403):
+Live state (14 November 2026, after E403):
 
 | Item | Value |
 |---|---|
-| Live app release | `d556a53daca1bfac` (release62, E402 item tracking and Hot offers look; mobile wallets from E399 closed) |
-| Source commit | `ab2f10a` on `product-modern` (fast-forwarded from `dash-r6-serial-hot`; local only, see section 2) |
-| Database schema | 150 (latest migration `20261114233000_pdc_unbooked_release`, from E403; release63's app cutover waits for the owner) |
-| Previous release for rollback | `dda84e69ed01604a` (release61, E401 Meta tracking) |
+| Live app release | `5ac5d29991c7e7a4` (release63, E403 Edit orders courier panel and "no booking at PDC"; mobile wallets from E399 closed) |
+| Source commit | `76f48fa` on `product-modern` (fast-forwarded from `pdc-no-booking`; local only, see section 2) |
+| Database schema | 150 (latest migration `20261114233000_pdc_unbooked_release`, from E403) |
+| Previous release for rollback | `d556a53daca1bfac` (release62, E402 item tracking) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Mobile wallets: switched on with UIG `5904481` at 06:52 UTC, then closed at 07:22 UTC because Paymob refused that
@@ -256,7 +256,7 @@ Every release below is app only (no migration) unless stated, and every one was 
 | DASH-R6 Import / Export | E400, release60 `647ed8a54ca140c4`, `8bb9107` | Export panel with format and scope option cards, a link back to Products, the 250 note and its own errors; import steps (file, review, apply), warehouse beside a file area that takes drops, file rules folded; review counts as chips, All / Problems / Changes row filters (opens on Problems), stacked rows on phones; apply box with state title, counts, progress, larger confirmations and outcomes. Requests, limits and receipts unchanged; Products list bar unchanged. |
 | DASH-R6 Meta tracking | E401, release61 `dda84e69ed01604a`, `82deb2e` | Saved-state line (browser, server with no-token warning, consent, Test Events); one settings panel: Browser pixel with consent option cards, Conversions API with token pill and a locking remove option, Advanced kept open while editing; save row with unsaved/saved/errors and "Load saved settings" on a stale revision; recent events with counts by state, time, attempts and a draft-safe Refresh. Request and token rules unchanged. |
 | Item tracking and Hot offers look | E402, release62 `d556a53daca1bfac`, `ab2f10a` | Serialized items: "How items are identified" (Store labels or Daftra codes, settings save); Register labels in Daftra mode with immediate printing; Daftra codes list with stock and "Use Daftra codes"; Scan item finds product codes; migration `20261114230000_item_tracking` (schema 149). Hot offers: band and badge colours, fire/shine title effects with a motion switch, preview; compositor-only, on-screen only, reduced-motion still. |
-| Edit orders courier panel, "no booking at PDC" | E403, release63 `5ac5d29991c7e7a4` (cutover pending), `76f48fa` | Edit orders shows the Confirm Orders courier panel (labels, Reconcile, waits for label and bill after Confirm); Reconcile says when PDC has no booking, then a guarded Release frees the order (fresh read-only lookup, an hour old, evidence kept); migration `20261114233000_pdc_unbooked_release` (schema 150). TESTproduct2026 deleted. |
+| Edit orders courier panel, "no booking at PDC" | E403, release63 `5ac5d29991c7e7a4`, `76f48fa` | Edit orders shows the Confirm Orders courier panel (labels, Reconcile, waits for label and bill after Confirm); Reconcile says when PDC has no booking, then a guarded Release frees the order (fresh read-only lookup, an hour old, evidence kept); migration `20261114233000_pdc_unbooked_release` (schema 150). TESTproduct2026 deleted. |
 
 Owner decisions already answered (10 November): retire Classic (yes); group CRM tickets and Support
 under Customers now and merge into one inbox later; one "Returns and claims" entry under Orders with
@@ -382,10 +382,13 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   `/release60/artifact'` → `/release61/artifact'`; schema 148.
 - The wallet switch (`wallet-switch-e399` and its `close/`) reads `../release59` and stops when another release is
   current, and it expects schema 148. Point the fresh copy at the newest release and schema before the next switch:
-  `../release62` with schema 150 until release63's cutover, then `../release63` with schema 150.
+  now `../release63` with schema 150.
 - Release63 `5ac5d29991c7e7a4` (E403) is a migration release made with `make-release63.py` from release62's scripts
-  (schema 149 → 150). Its migration committed; its cutover stopped and is resumed only by `release63/resume.mjs`
-  with the owner's words. A later app-only release takes release61's app-only scripts with every schema check at 150.
+  (schema 149 → 150). Its first apply committed the migration and stopped at the cutover guard. `release63/resume.mjs`
+  (owner: "Yes, resume cutover") finished it. A later app-only release takes release61's app-only scripts with
+  every schema check at 150, predecessor `5ac5d29991c7e7a4`, base `76f48fa`, previous artifact `release63/artifact`.
+- A migration's schema reload can fail a minute-cadence worker run (PDC tracking did at 14:43). The cutover guard then
+  stops on that worker's last result. Check the workers right after a migration commit before any cutover.
 - Release62 `d556a53daca1bfac` (E402) is a migration release made with `make-release62.py` (release61's app scripts,
   release58's migration operator, schema 148 → 149). The next app-only release (release63): take release61's
   app-only scripts (`make-release61.py` pattern) with `PRED = 'd556a53daca1bfac'`,

@@ -9,12 +9,12 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E403 is in progress: the Edit orders courier panel and the guarded "no booking at PDC" release. Its migration is committed (schema 150), but the app cutover to release63 5ac5d29991c7e7a4 stopped at a worker check and waits for the owner's OK. The live app is still release62 d556a53daca1bfac, which works on schema 150. TESTproduct2026 is deleted. Before it, E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E403 is the latest release: the Edit orders courier panel and the guarded "no booking at PDC" release, live as release63 5ac5d29991c7e7a4 (schema 150). The wallet switch must now point at release63 and check schema 150. TESTproduct2026 is deleted, and the stuck 23 Oct test order is released and Completed. Before it, E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
 
-# E403 — EDIT ORDERS COURIER PANEL AND THE "NO BOOKING AT PDC" RELEASE (MIGRATION COMMITTED, SCHEMA 150; APP CUTOVER WAITS FOR THE OWNER); TESTproduct2026 DELETED — 14 November 2026
+# E403 — EDIT ORDERS COURIER PANEL AND THE "NO BOOKING AT PDC" RELEASE LIVE as release63 5ac5d29991c7e7a4 (schema 150); TESTproduct2026 DELETED; TEST ORDER COMPLETED — 14 November 2026
 
 Owner request (the order number is left out):
 > "clean them, 'TESTproduct2026' should be entirely removed. for order [the 23 Oct test order] why i can't change it's status? it was real testing and it stucks for the 'ready' forever. and why when i confirm orders from 'edit orders' i don't get pdc label or pdf bill like normal confirming orders'?"
@@ -97,14 +97,36 @@ Then: "can you pause for now?" and "please continue them all".
 - Kept: the test order's item (title and quantity; it loses only the product link), the audit logs and the image file in Storage.
 - 14 Daftra and label-history guards were off only inside that transaction and are back on. The receipt is in `release-tools`.
 
-**Open, in order.**
-1. The owner's OK for the resume cutover, then verify.
-2. Edit orders: open the test order, then Reconcile booking (the read-only PDC lookup).
-   - If PDC has no booking: Release order, then set it Completed. Edit orders has no Complete action, so this is a reviewed one-off status change with an admin log; no money moves.
-   - If PDC has the booking: Reconcile records the AWB and fetches the label instead.
-3. After the cutover, the wallet switch must read `../release63` and expect schema 150.
+**Resumed and finished.**
+- Owner: "Yes, resume cutover".
+- `resume.mjs` re-ran its read-only check: all workers success, monitor WARNING 8/1. It recorded the words and sent the cutover once.
+- `E403_INSTALLED` at 15:13:35 UTC (pause 4.7 s, one app restart, styles modern/modern).
+- `operator.mjs verify`:
+  - `E403_AWAITING_NATURAL_MON`, 13948 hosted asset hashes match;
+  - then `E403_INSTALLED_NATURAL_MON_PASS` at 15:24:34 UTC.
+- `product-modern` fast-forwarded to `76f48fa`.
 
-**Rollback.** Point `current` at release62 and restart. `release-tools/rollback-pdc-unbooked-release.sql` needs the owner's OK and refuses while release evidence exists.
+**Test order, in the owner's Chrome (Edit orders key on).**
+- The order showed the new courier panel: "Uncertain booking" with Reconcile booking.
+- Reconcile (read-only GetShipmentsStatus) answered "PDC has no booking for this order."
+- Release order, then Yes, release, at 15:26:28 UTC:
+  - the job is now failed, with that message and the dispatch time cleared;
+  - the dispatch record moved to `private.pdc_unbooked_releases`;
+  - admin log `orders.courier.release`.
+- Completed at 15:28:13 UTC by `release-tools/complete-test-order.mjs`, rehearsed with a rollback first:
+  - Why a one-off: Edit orders has no Complete action, and the browser extension blocks reading the session token, so the status route could not be called from the page.
+  - Same checks as the status route (no active packing session), plus guards on the current status, the payment and the release.
+  - Admin log `orders.status.update` under the owner.
+  - Payment unchanged: one succeeded 200-minor attempt, paid 2.00. Status completed sends no SMS, no email and no Daftra job (built-in order).
+
+**Monitor.** WARNING, 8 exceptions, 1 staff item. `current` is release63.
+
+**Open.**
+- The wallet switch must read `../release63` and expect schema 150.
+- A later app-only release takes release61's app-only scripts with every schema check at 150, predecessor `5ac5d29991c7e7a4`, base `76f48fa`.
+- Edit orders still has no Complete action. Add one only if the owner asks.
+
+**Rollback.** Point `current` at release62 `d556a53daca1bfac` and restart (release62 works on schema 150). `release-tools/rollback-pdc-unbooked-release.sql` needs the owner's OK and refuses while release evidence exists.
 
 # E402 — ITEM TRACKING (SERIALIZED ITEMS AND SCAN ITEM IN BOTH ERP MODES) AND THE HOT OFFERS LOOK LIVE as release62 d556a53daca1bfac (one migration, schema 149) — 14 November 2026
 
