@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (15 November 2026, after E405):
+Live state (15 November 2026, after E407):
 
 | Item | Value |
 |---|---|
-| Live app release | `20b74d959d8fe18b` (release65, E405 Meta cash Purchase and Sales report breakdown; mobile wallets from E399 closed) |
-| Source commit | `ed73369` on `product-modern` (fast-forwarded from `meta-cash-reports`; local only, see section 2) |
+| Live app release | `5d9cd84582b451a7` (release67, E406/E407 Dashboard menu, Settings menu, Quick Setup; mobile wallets from E399 closed) |
+| Source commit | `be26e0b` on `product-modern` (fast-forwarded from `dash-shell`; local only, see section 2) |
 | Database schema | 152 (latest migrations `20261115100000_meta_cash_purchase` and `20261115110000_sales_report_breakdown`, from E405) |
-| Previous release for rollback | `323a3854a7d59f91` (release64, E404 customer account permissions) |
+| Previous release for rollback | `9f7526e3145e50a1` (release66, E406 menu, Settings menu, Quick Setup) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Mobile wallets: switched on with UIG `5904481` at 06:52 UTC, then closed at 07:22 UTC because Paymob refused that
@@ -259,6 +259,7 @@ Every release below is app only (no migration) unless stated, and every one was 
 | Edit orders courier panel, "no booking at PDC" | E403, release63 `5ac5d29991c7e7a4`, `76f48fa` | Edit orders shows the Confirm Orders courier panel (labels, Reconcile, waits for label and bill after Confirm); Reconcile says when PDC has no booking, then a guarded Release frees the order (fresh read-only lookup, an hour old, evidence kept); migration `20261114233000_pdc_unbooked_release` (schema 150). TESTproduct2026 deleted. |
 | Customer account permissions | E404, release64 `323a3854a7d59f91`, `4beff7d` | Disabling, enabling or deleting a store customer needs `users.manage`; view-only staff see no account buttons; label "Manage admin and store users". |
 | Meta cash Purchase, Sales report breakdown | E405, release65 `20b74d959d8fe18b`, `ed73369` | Cash orders count as a Meta Purchase when placed (setting: when placed or when completed), deposits once paid; Sales reports status filter, breakdown rings and lists, Home month ring, 24 hours Customer feedback; reports use the store time zone. |
+| Menu, Settings menu, Quick Setup | E406/E407, release66 `9f7526e3145e50a1`, release67 `5d9cd84582b451a7`, `be26e0b` | A group opens its first page; Settings menu on every Settings page; no navigation wait; Quick Setup fills missing essentials; store name in the menu. Next: DASH-R7 plan (`docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md`). |
 
 Owner decisions already answered (10 November): retire Classic (yes); group CRM tickets and Support
 under Customers now and merge into one inbox later; one "Returns and claims" entry under Orders with
@@ -385,7 +386,7 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   `/release60/artifact'` → `/release61/artifact'`; schema 148.
 - The wallet switch (`wallet-switch-e399` and its `close/`) reads `../release59` and stops when another release is
   current, and it expects schema 148. Point the fresh copy at the newest release and schema before the next switch:
-  now `../release65` with schema 152.
+  now `../release67` with schema 152.
 - Release63 `5ac5d29991c7e7a4` (E403) is a migration release made with `make-release63.py` from release62's scripts
   (schema 149 → 150). Its first apply committed the migration and stopped at the cutover guard. `release63/resume.mjs`
   (owner: "Yes, resume cutover") finished it.

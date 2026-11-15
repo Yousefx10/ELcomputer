@@ -9,10 +9,57 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E405 is the latest release: cash orders count as a Meta Purchase when placed, deposit pre-orders count once paid, and Sales reports gain a status filter, breakdown rings, a Home month ring and a 24 hours Customer feedback window, live as release65 20b74d959d8fe18b (two migrations, schema 152). The wallet switch must now point at release65 and check schema 152. Before it, E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E407 is the latest release: the Dashboard menu names the store, live as release67 5d9cd84582b451a7 (app only, schema 152), after E406 (menu redesign, Settings menu on every Settings page, seamless page changes, Quick Setup rebuilt; release66 9f7526e3145e50a1). The next Dashboard work is planned in docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md (DASH-R7). The wallet switch must now point at release67 and check schema 152. Before it, E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E407 — STORE NAME IN THE DASHBOARD MENU, LIVE as release67 5d9cd84582b451a7 (app only, schema 152) — 15 November 2026
+
+Found in the live check of E406: the live logo is white (made for the storefront header), so on the white menu it was
+invisible and squeezed the name to "ELco...". Commit `be26e0b`: the menu shows the store name only.
+- Built (15835 entries), qualified (14487 assets, 19 API checks), check passed. Apply once: `E407_INSTALLED` at
+  11:17:46 UTC (pause 3.1 s). Verify: `E407_AWAITING_NATURAL_MON` 11:18, `E407_INSTALLED_NATURAL_MON_PASS` 13:51 UTC.
+- `product-modern` fast-forwarded to `be26e0b`. Rollback: point `current` at release66 `9f7526e3145e50a1`.
+
+# E406 — DASHBOARD MENU, SETTINGS MENU, SEAMLESS PAGE CHANGES AND QUICK SETUP, LIVE as release66 9f7526e3145e50a1 (app only, schema 152) — 15 November 2026
+
+Owner: fix the Dashboard overall: the menu design, a group should open its first page, page and submenu changes
+should be seamless, Settings' inner menu should show on every Settings page, no AI captions, and Quick Setup should
+help fill the store essentials instead of showing progress; "complete what i asked in this prompt so we deploy it".
+
+**Found live (read-only).** A page change waited about 0.5 s with no feedback, then showed "0 Total" before the real
+count. Cause: the Dashboard route guard awaited a fresh ERP-state request on every navigation. A menu group only
+opened. Shipping, Email, SMS, Team and Quick Setup had no Settings menu. Quick Setup was a technical checklist.
+
+**Change.** Commit `378653e` (branch `dash-shell` from `ed73369`). Not pushed.
+- Menu: a group opens its first page; the clicked row is marked at once; groups slide open, one at a time;
+  "Workspace" and "Admin workspace" captions removed.
+- Route guard: a known ERP state is used at once and refreshed in the background at most once a minute (the server
+  still checks ERP ownership). A thin loading bar shows a page is on its way. Catalog counts show "—" while loading.
+- Settings: opens its first section; `DashboardSettingsNav` shows beside every Settings page through the layout
+  (one slot, no remount). Store details, Payment methods, Bill design and Activity log lose their old collapsible
+  headers and captions; Shipping loses its count box and captions.
+- Quick Setup: a step list that opens on the first missing essential and saves through the Settings section route
+  (store name and logo, contact details, search engines, cash on delivery), then opens the next; delivery, email,
+  SMS and policies link to their pages (from the existing setup status). Live it shows 3 left: contact details,
+  search engine text, delivery.
+- Home and Reports: a tiny period before reads as a multiple ("4,928×") instead of +492650%.
+
+**Local checks.** New `dashboard-setup-browser` 9/9 (EN/AR, light/dark, 390/1440; saves send the loaded values as
+expected); `dashboard-menu-browser` 9/9 with group-opens-first-page and fold checks; Settings, Store content,
+theme, truthful-screens, quick-setup tests updated and passing. 53 files run: the failures are the same as on
+`ed73369` (dashboard-access, dashboard-reads, daftra-erp-database, ui-localization, quick-setup-progress reset
+coverage).
+
+**Release66.** Made with `make-release66.py` (release61 app-only scripts at schema 152). Built (15702 entries),
+qualified (14354 assets, 19 API checks), check passed. Apply once: `E406_INSTALLED` at 10:59:31 UTC (pause 3.3 s).
+Verify: `E406_AWAITING_NATURAL_MON`, then `E406_INSTALLED_NATURAL_MON_PASS` at 11:09:40 UTC. Checked live: menu,
+group click, Settings menu, Quick Setup.
+
+**Also checked 15 Nov (see the DASH-R7 plan, section 5).** Edit orders Confirm runs the same status triggers, Daftra
+export, PDC booking and bill as packing, without scanning, video or message (gap: DASH-DIRECT-SERIAL-01). Daftra's
+own PDF cannot be fetched by API (DAFTRA-PDF-01; recheck evidence outside the repo).
 
 # E405 — META PURCHASE FOR CASH ORDERS AND DEPOSITS; SALES REPORT STATUS FILTER, BREAKDOWN RINGS AND 24 HOURS — LIVE as release65 20b74d959d8fe18b (two migrations, schema 150 -> 152) — 15 November 2026
 
