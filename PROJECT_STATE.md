@@ -9,10 +9,43 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E408 is the latest release: Payments rebuilt around open cases (Needs attention, All payments, Methods and rules; Mark reviewed) and one top-bar alerts bell, live as release68 b2e67e3585bb44ce (one migration, schema 153). The next Dashboard work is DASH-R7B in docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md. The wallet switch must now point at release68 and check schema 153. Before it, E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E409 is the latest release: Daftra jobs that need a person explain themselves (Open in Daftra, Mark done) and shared Daftra products refresh stock, live as release69 c01bc876e6ddfddd (app only, schema 153). The next Dashboard work is DASH-R7B in docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md. The wallet switch must now point at release69 and check schema 153. Before it, E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E409 — DAFTRA JOBS THAT NEED A PERSON; SHARED DAFTRA PRODUCTS REFRESH STOCK, LIVE as release69 c01bc876e6ddfddd (app only, schema 153) — 15 November 2026
+
+Owner: "now can you fix me the daftara? retry does nothing and i don't understand what's problem with those 3"; then
+"Commit and build".
+
+**Found (read-only).** The 3 failed Sync queue jobs were all stopped for a person, so Retry ran and stopped again:
+- One `order.export` for a cash order cancelled on 8 Nov after its Daftra invoice was made: the website does not cancel
+  or credit Daftra invoices (DAFTRA-CANCEL-01, known since 12 Nov).
+- Two `inventory.import` (14 Nov): the stock refresh refused because 17 Daftra products are each linked to two store
+  options: 14 keyboards whose Blue and Red switch options are one Daftra item, and 3 colour pairs sharing one Daftra
+  item (Rapoo M300 light grey/black, Rapoo M300L grey/white, AULA F75 White Contour/Gradient Grey).
+
+**Change.** Commit `be47057` (branch `daftra-manual-jobs` from `16d268f`). Not pushed.
+- `mapDaftraInventory`: one Daftra product may feed several linked options; each gets its balance. A link to a missing
+  option still marks the product invalid. The shared-link refusal is removed (the cache keys on the store option).
+- Sync queue: jobs that need a person show the reason in plain words (EN/AR), link to the Daftra invoice (order jobs)
+  and offer **Mark done** (status completed with `resolvedManually`, staff id and time; admin log `erp.daftra.resolve`)
+  instead of Retry. The two stock jobs keep Retry, which now succeeds.
+
+**Checks.** `daftra-sync` 14/14 (new shared-link cases), `dashboard-erp-browser` 44/44 (manual job: reason, Open in
+Daftra, Mark done, no Retry; EN/AR). Daftra/ERP suites: only `daftra-erp-database` 2 and `ui-localization` 1, as on
+`16d268f`.
+
+**Release69.** `make-release69.py` (release61 app-only scripts at schema 153). Built (16112 entries), qualified (14754
+assets, 19 API checks), check passed. Apply once: `E409_INSTALLED` 15:16:08 UTC (pause 4.3 s). Verify:
+`E409_AWAITING_NATURAL_MON` 15:16, `E409_INSTALLED_NATURAL_MON_PASS` 15:26:28 UTC. Live Sync queue checked (read-only).
+`product-modern` fast-forwarded to `be47057`.
+
+**Owner next.** Press Retry on a stock job (it should finish). Cancel or credit the cancelled order's invoice in Daftra,
+then press Mark done. Decide whether the 3 colour pairs should have separate Daftra items.
+
+**Rollback.** Point `current` at release68 `b2e67e3585bb44ce` and restart; no database change.
 
 # E408 — PAYMENTS REBUILT AROUND OPEN CASES, ALERTS BELL, LIVE as release68 b2e67e3585bb44ce (one migration, schema 152 -> 153) — 15 November 2026
 
