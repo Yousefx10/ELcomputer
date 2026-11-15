@@ -9,10 +9,47 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E407 is the latest release: the Dashboard menu names the store, live as release67 5d9cd84582b451a7 (app only, schema 152), after E406 (menu redesign, Settings menu on every Settings page, seamless page changes, Quick Setup rebuilt; release66 9f7526e3145e50a1). The next Dashboard work is planned in docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md (DASH-R7). The wallet switch must now point at release67 and check schema 152. Before it, E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E408 is the latest release: Payments rebuilt around open cases (Needs attention, All payments, Methods and rules; Mark reviewed) and one top-bar alerts bell, live as release68 b2e67e3585bb44ce (one migration, schema 153). The next Dashboard work is DASH-R7B in docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md. The wallet switch must now point at release68 and check schema 153. Before it, E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E408 — PAYMENTS REBUILT AROUND OPEN CASES, ALERTS BELL, LIVE as release68 b2e67e3585bb44ce (one migration, schema 152 -> 153) — 15 November 2026
+
+Owner: "Option A" for Payment monitoring (DASH-R7A in the plan), "creative design UI ... current theme color ... no AI
+captions"; then "Commit and build", answering "Ship it with the migration?".
+
+**Change.** Commit `16d268f` (branch `payments-attention` from `be26e0b`). Not pushed.
+- Payments (Orders > Payments) has three tabs. **Needs attention** turns the payment monitor's cases into plain words
+  with order, customer, method, age and amount, grouped as Money at risk, To check, Left at Paymob (folded; card
+  checkouts that ended over a day ago without a Paymob result; one press marks them all "Customer left") and Reviewed.
+  **Mark reviewed** takes a reason (customer left, card declined, test order, duplicate, handled elsewhere, other with
+  a note) and the staff name; it needs `payments.review`. A review holds while the case's evidence (order status,
+  payment status, amount paid, attempts and transactions) is unchanged and reopens on new evidence. **All payments**:
+  checkout list with state chips and search. **Methods and rules**: methods, retry switch, transfer settings.
+- One alerts bell in the top bar replaces the "Needs review" chip: payments to check, orders with problems, Daftra
+  sync failures, tickets waiting; red when money may be at risk; "All clear" otherwise. The Orders page loses the
+  monitor panel; `PaymentMonitor.vue` is removed. The server monitor worker and its status file are unchanged.
+- Migration `20261116100000_payment_case_reviews`: `private.payment_case_reviews` (RLS on, no API grants) and
+  server-only `payment_case_review` / `payment_case_reviews`; no order or payment change.
+- Not built: "Check with Paymob". The existing inquiry helper needs a legacy Paymob API key, which the live server does
+  not have (only the secret, public and HMAC keys). Adding it is a production secret change for the owner.
+
+**Local checks.** New `dashboard-payments-browser` 10/10 (EN/AR, light/dark, 390/1440, review flow, bulk review, bell),
+`payment-cases` 3/3, `payment-case-reviews-native` 6/6; truthful-screen and monitor tests updated. Failures in the
+63-file run also fail on `be26e0b` (dashboard-access, dashboard-reads, ui-localization, payment-embedded-browser,
+payment-first-browser, payment-transfer-fulfillment).
+
+**Release68.** Made with `make-release68.py` (release65 migration lineage with the bounded cutover wait). Built
+(15980 entries), qualified (14622 assets, 19 API checks). Prepare: seal `8596c8a8…`; check passed. Apply once with the
+owner's words: `E408_INSTALLED` at 14:42:38 UTC (migration committed, pause 5.4 s, no cutover wait needed). Verify:
+`E408_AWAITING_NATURAL_MON` 14:42, `E408_INSTALLED_NATURAL_MON_PASS` 14:52:32 UTC. `product-modern` fast-forwarded to
+`16d268f`.
+
+**Live (read-only).** Needs attention: 1 to check (checkouts without a result); Left at Paymob: 7 card checkouts 13 to
+20 days old. The bell also shows 3 failed Daftra sync jobs (not looked into yet).
+
+**Rollback.** Point `current` at release67 `5d9cd84582b451a7` and restart; the older app never reads the review table.
 
 # E407 — STORE NAME IN THE DASHBOARD MENU, LIVE as release67 5d9cd84582b451a7 (app only, schema 152) — 15 November 2026
 
