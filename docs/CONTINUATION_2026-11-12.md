@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (14 November 2026, after E403):
+Live state (15 November 2026, after E404):
 
 | Item | Value |
 |---|---|
-| Live app release | `5ac5d29991c7e7a4` (release63, E403 Edit orders courier panel and "no booking at PDC"; mobile wallets from E399 closed) |
-| Source commit | `76f48fa` on `product-modern` (fast-forwarded from `pdc-no-booking`; local only, see section 2) |
+| Live app release | `323a3854a7d59f91` (release64, E404 customer account permissions; mobile wallets from E399 closed) |
+| Source commit | `4beff7d` on `product-modern` (fast-forwarded from `customer-users-permissions`; local only, see section 2) |
 | Database schema | 150 (latest migration `20261114233000_pdc_unbooked_release`, from E403) |
-| Previous release for rollback | `d556a53daca1bfac` (release62, E402 item tracking) |
+| Previous release for rollback | `5ac5d29991c7e7a4` (release63, E403 Edit orders courier panel) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Mobile wallets: switched on with UIG `5904481` at 06:52 UTC, then closed at 07:22 UTC because Paymob refused that
@@ -257,6 +257,7 @@ Every release below is app only (no migration) unless stated, and every one was 
 | DASH-R6 Meta tracking | E401, release61 `dda84e69ed01604a`, `82deb2e` | Saved-state line (browser, server with no-token warning, consent, Test Events); one settings panel: Browser pixel with consent option cards, Conversions API with token pill and a locking remove option, Advanced kept open while editing; save row with unsaved/saved/errors and "Load saved settings" on a stale revision; recent events with counts by state, time, attempts and a draft-safe Refresh. Request and token rules unchanged. |
 | Item tracking and Hot offers look | E402, release62 `d556a53daca1bfac`, `ab2f10a` | Serialized items: "How items are identified" (Store labels or Daftra codes, settings save); Register labels in Daftra mode with immediate printing; Daftra codes list with stock and "Use Daftra codes"; Scan item finds product codes; migration `20261114230000_item_tracking` (schema 149). Hot offers: band and badge colours, fire/shine title effects with a motion switch, preview; compositor-only, on-screen only, reduced-motion still. |
 | Edit orders courier panel, "no booking at PDC" | E403, release63 `5ac5d29991c7e7a4`, `76f48fa` | Edit orders shows the Confirm Orders courier panel (labels, Reconcile, waits for label and bill after Confirm); Reconcile says when PDC has no booking, then a guarded Release frees the order (fresh read-only lookup, an hour old, evidence kept); migration `20261114233000_pdc_unbooked_release` (schema 150). TESTproduct2026 deleted. |
+| Customer account permissions | E404, release64 `323a3854a7d59f91`, `4beff7d` | Disabling, enabling or deleting a store customer needs `users.manage`; view-only staff see no account buttons; label "Manage admin and store users". |
 
 Owner decisions already answered (10 November): retire Classic (yes); group CRM tickets and Support
 under Customers now and merge into one inbox later; one "Returns and claims" entry under Orders with
@@ -294,13 +295,13 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
 - **Owner decisions still open** (plan section 6): 5) methods that cannot work: hide them or show them
   off with a reason; 6) Bank transfer is on in Settings but not offered at checkout: turn it off (a
   production setting, needs the owner's words); 8) answered 14 Nov: Serialized items and Scan item work with Daftra, both ways, admin chooses (E402);
-  the 50 test units still need a decision; 9) does an image URL box still appear anywhere.
+  the 50 test units were deleted with TESTproduct2026 (E403); 9) does an image URL box still appear anywhere.
 - **Old WordPress wallet, passwords and Google sign-in (E396):** planned in
   [legacy-accounts-wallet-plan.md](legacy-accounts-wallet-plan.md). 13 customers, 1,069 EGP. Owner decisions
   first; nothing changed in production. Private evidence: `legacy-wallet-login-review-20261114/`.
 - **DASH-WEIGHT-01:** two parcel weights (Order flow vs PDC default weight); waits for the owner.
-- **Permission gap still open:** the `customer-users` routes let `users.view` edit and delete store
-  customers. Noted, not changed.
+- **Permission gap: fixed (E404).** Disabling, enabling or deleting a store customer needs `users.manage`.
+  Still open: deleting a customer who has orders or wallet entries can fail with a raw database message.
 - **Reports:** `dashboard_get_analysis_overview` hard-codes the `Africa/Cairo` time zone in reusable SQL.
 - **Payment monitor:** a standing WARNING with 8 unverified-payment items and 2 orders needing staff,
   shown under Payments > Payment monitoring. These need the owner's review. A transient "Store access
@@ -382,11 +383,13 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   `/release60/artifact'` → `/release61/artifact'`; schema 148.
 - The wallet switch (`wallet-switch-e399` and its `close/`) reads `../release59` and stops when another release is
   current, and it expects schema 148. Point the fresh copy at the newest release and schema before the next switch:
-  now `../release63` with schema 150.
+  now `../release64` with schema 150.
 - Release63 `5ac5d29991c7e7a4` (E403) is a migration release made with `make-release63.py` from release62's scripts
   (schema 149 → 150). Its first apply committed the migration and stopped at the cutover guard. `release63/resume.mjs`
-  (owner: "Yes, resume cutover") finished it. A later app-only release takes release61's app-only scripts with
-  every schema check at 150, predecessor `5ac5d29991c7e7a4`, base `76f48fa`, previous artifact `release63/artifact`.
+  (owner: "Yes, resume cutover") finished it.
+- Release64 `323a3854a7d59f91` (E404) is app only, made with `make-release64.py` (release61's app-only scripts at schema
+  150). The next app-only release copies that pattern with predecessor `323a3854a7d59f91`, base `4beff7d`, previous
+  artifact `release64/artifact`.
 - A migration's schema reload can fail a minute-cadence worker run (PDC tracking did at 14:43). The cutover guard then
   stops on that worker's last result. Check the workers right after a migration commit before any cutover.
 - Release62 `d556a53daca1bfac` (E402) is a migration release made with `make-release62.py` (release61's app scripts,

@@ -9,10 +9,47 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E403 is the latest release: the Edit orders courier panel and the guarded "no booking at PDC" release, live as release63 5ac5d29991c7e7a4 (schema 150). The wallet switch must now point at release63 and check schema 150. TESTproduct2026 is deleted, and the stuck 23 Oct test order is released and Completed. Before it, E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E404 is the latest release: customer account changes (disable, enable, delete) need users.manage, live as release64 323a3854a7d59f91 (app only, schema 150). The wallet switch must now point at release64 and check schema 150. Before it, E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E404 — CUSTOMER ACCOUNT CHANGES NEED users.manage, LIVE as release64 323a3854a7d59f91 (app only, schema 150) — 15 November 2026
+
+Owner: "what's next?", then "Fix permission gap", then "Commit and build".
+
+**The gap.**
+- `PATCH` and `DELETE` on `/api/customer-users/:id` (disable, enable or delete a store customer) checked only `users.view`.
+- So staff who could only view customers could change or delete them.
+- The Users tab showed those buttons to them.
+
+**Change.** Commit `4beff7d`, branch `customer-users-permissions` from `76f48fa`. Not pushed.
+- Both routes now need `users.manage`. Listing and opening customers still need `users.view`.
+- The Users tab shows the account-status block only with `users.manage`. View-only staff still see the active badge.
+- The `users.manage` label now reads "Manage admin and store users" (EN and AR).
+- The PATCH route imports `readBody` from h3.
+- Other write routes that accept only a view permission were checked and are fine:
+  - SMS send and marketing check their send permissions inside the route;
+  - catalog import checks its own permission;
+  - document quick-access saves only the admin's own pins.
+
+**Local checks.**
+- `customer-access` 7/7: view-only gets 403 on PATCH and DELETE and the customer stays active; with `users.manage`, disable and enable work.
+- `dashboard-customers-browser` 10/10: view-only staff see no account buttons.
+- Also passing: dashboard-navigation, dashboard-permissions (unit, native, API), legacy-wallet-native, quick-setup, sms-settings, dashboard-truthful-screens.
+- Failing the same way on `76f48fa`: dashboard-reads 1, dashboard-access 1, ui-localization 1, sms-api 2.
+
+**Release64 `323a3854a7d59f91`.**
+- Made with `make-release64.py`: release61's app-only scripts lifted to schema 150. Predecessor `5ac5d29991c7e7a4`, base `76f48fa`, previous artifact `release63/artifact`.
+- Built (15418 entries) and qualified (14079 asset and 19 API checks).
+- Prepare: seal `713d7d3d…`. The read-only check passed. Monitor: WARNING, 8 exceptions, 0 staff items.
+- Apply ran once with the owner's words "Commit and build": `E404_INSTALLED` at 03:27:21 UTC (pause 5.0 s, one restart, styles modern/modern).
+- `operator.mjs verify`: `E404_AWAITING_NATURAL_MON` with 14079 hosted asset hashes matching, then `E404_INSTALLED_NATURAL_MON_PASS` at 03:36:11 UTC (schema 150 preserved).
+- `product-modern` fast-forwarded to `4beff7d`.
+
+**Not changed.** Deleting a customer who has orders or wallet entries can still fail with a raw database message. That needs its own decision.
+
+**Rollback.** Point `current` at release63 `5ac5d29991c7e7a4` and restart; there is no database change.
 
 # E403 — EDIT ORDERS COURIER PANEL AND THE "NO BOOKING AT PDC" RELEASE LIVE as release63 5ac5d29991c7e7a4 (schema 150); TESTproduct2026 DELETED; TEST ORDER COMPLETED — 14 November 2026
 
