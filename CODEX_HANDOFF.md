@@ -9,10 +9,64 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E404 is the latest release: customer account changes (disable, enable, delete) need users.manage, live as release64 323a3854a7d59f91 (app only, schema 150). The wallet switch must now point at release64 and check schema 150. Before it, E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E405 is the latest release: cash orders count as a Meta Purchase when placed, deposit pre-orders count once paid, and Sales reports gain a status filter, breakdown rings, a Home month ring and a 24 hours Customer feedback window, live as release65 20b74d959d8fe18b (two migrations, schema 152). The wallet switch must now point at release65 and check schema 152. Before it, E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E405 — META PURCHASE FOR CASH ORDERS AND DEPOSITS; SALES REPORT STATUS FILTER, BREAKDOWN RINGS AND 24 HOURS — LIVE as release65 20b74d959d8fe18b (two migrations, schema 150 -> 152) — 15 November 2026
+
+Owner: "for cash orde count as meta purchase? when placed." and "continue the next, once you finish", with notes asking for
+more statistics and circle charts on the Dashboard ("the old dashboard looked bad but contained useful informations"),
+a 24H choice in Customer feedback, and a completed or cancelled filter in reports.
+
+Then "Commit and build", answering "Ship E405 with both migrations?".
+
+**Change.** Commit `ed73369`, branch `meta-cash-reports` from `4beff7d`. Not pushed.
+
+MKT-META-PURCHASE-01 (migration `20261115100000_meta_cash_purchase`):
+- New Meta setting `cash_purchase`: `placed` (default) or `delivered`. Meta tracking page: "Cash orders" option cards
+  "When placed" / "When completed".
+- `placed`: a cash order sends Purchase at checkout (value = order total, `payment_method: cash_on_delivery`). The
+  order page claims the same event ID, so the browser and server events deduplicate. Refused parcels still count.
+- `delivered`: CODOrderPlaced at checkout as before, then Purchase when the order is Completed or Delivered, or when the
+  cash is recorded as collected.
+- Deposit pre-orders send Purchase once the verified deposit is paid (fund = `initial_amount_due`).
+- The 24-hour repair also covers deposits and, in `placed` mode, cash orders. Settings revision, consents and existing
+  events are untouched by the migration.
+
+Reports (migration `20261115110000_sales_report_breakdown`):
+- New `dashboard_get_sales_report(from, to, status, bucket)`: status group (all, in progress, completed, cancelled with
+  refunded and returned), totals with the same number of days before, series, orders by status, payment methods,
+  new or returning customers, governorates, delivery companies, top products and categories.
+- `private.report_time_zone()`: Live chat business time zone, UTC when unset. The overview, chart and profit queries use
+  it instead of a fixed `Africa/Cairo` (live value is Africa/Cairo, so numbers do not move). Returned orders stop
+  counting as sales, like cancelled and refunded ones.
+- Sales reports: status filter and range above the chart; a filtered chart shows orders, value and units; a breakdown
+  with totals and change, rings (order status, payment methods, customers, categories, delivery companies when more
+  than one) and ranked lists (top products, governorates).
+- Home: "This month" panel with an order status ring, sales with change, and the average order.
+- Customer feedback: a 24 hours window (visits, carts, activity). The NPS score stays on its 90 days.
+
+**Checks.** The live functions match every anchor both migrations patch (21 of 21, read-only, schema 150).
+- Local suites: 63 files run (Dashboard, Daftra/ERP, Meta, localization, reports, pre-order card, customer access, SMS API). New: `meta-cash-purchase-native` 5/5, `sales-report-native` 5/5; `dashboard-reports-browser` 17/17 and `dashboard-home-browser` 14/14 (EN/AR, light/dark, 390/1440); `dashboard-meta-browser` 14/14; `daftra-costs-create` 13/13; `preorder-card-native` 23/23. The 8 files that fail also fail the same way on `4beff7d`: dashboard-access, dashboard-reads, daftra-erp-database, ui-localization, meta-balance-cod-native (balance fixture), meta-dashboard-browser, meta-tracking-browser (webkit), sms-api.
+
+**Release65 `20b74d959d8fe18b`.**
+- Made with `make-release65.py` (release63 migration lineage, predecessor `323a3854a7d59f91`, base `4beff7d`,
+  previous artifact `release64/artifact`, schema 150 -> 152, marker 0 -> 3). New: the apply waits up to three times,
+  75 s apart, if the cutover guard stops with WORKER_STATE_STOP before writing (the release63 lesson). Not needed here.
+- Built (15557 entries) and qualified (14214 asset and 19 API checks). Prepare: seal `cda95255…`. The read-only
+  check passed.
+- Apply ran once with the owner's words: `E405_INSTALLED` at 09:46:10 UTC (both migrations committed, pause 5.9 s,
+  one restart, styles modern/modern).
+- Verify: `E405_AWAITING_NATURAL_MON` at 09:46:23, then `E405_INSTALLED_NATURAL_MON_PASS` at 09:56:05 UTC. Monitor:
+  WARNING, 8 exceptions, 0 critical (unchanged).
+- Live read-only: the new report answers for the owner in Africa/Cairo (this month 17 orders, 8 counted as sales);
+  Meta `cash_purchase` is `placed`, tracking and the Conversions API stay on, revision 9 unchanged; schema 152.
+- `product-modern` fast-forwarded to `ed73369`.
+
+**Rollback.** Point `current` at release64 `323a3854a7d59f91` and restart; the older app ignores the new query and
+setting, so the database can stay.
 
 # E404 — CUSTOMER ACCOUNT CHANGES NEED users.manage, LIVE as release64 323a3854a7d59f91 (app only, schema 150) — 15 November 2026
 

@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (15 November 2026, after E404):
+Live state (15 November 2026, after E405):
 
 | Item | Value |
 |---|---|
-| Live app release | `323a3854a7d59f91` (release64, E404 customer account permissions; mobile wallets from E399 closed) |
-| Source commit | `4beff7d` on `product-modern` (fast-forwarded from `customer-users-permissions`; local only, see section 2) |
-| Database schema | 150 (latest migration `20261114233000_pdc_unbooked_release`, from E403) |
-| Previous release for rollback | `5ac5d29991c7e7a4` (release63, E403 Edit orders courier panel) |
+| Live app release | `20b74d959d8fe18b` (release65, E405 Meta cash Purchase and Sales report breakdown; mobile wallets from E399 closed) |
+| Source commit | `ed73369` on `product-modern` (fast-forwarded from `meta-cash-reports`; local only, see section 2) |
+| Database schema | 152 (latest migrations `20261115100000_meta_cash_purchase` and `20261115110000_sales_report_breakdown`, from E405) |
+| Previous release for rollback | `323a3854a7d59f91` (release64, E404 customer account permissions) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Mobile wallets: switched on with UIG `5904481` at 06:52 UTC, then closed at 07:22 UTC because Paymob refused that
@@ -258,6 +258,7 @@ Every release below is app only (no migration) unless stated, and every one was 
 | Item tracking and Hot offers look | E402, release62 `d556a53daca1bfac`, `ab2f10a` | Serialized items: "How items are identified" (Store labels or Daftra codes, settings save); Register labels in Daftra mode with immediate printing; Daftra codes list with stock and "Use Daftra codes"; Scan item finds product codes; migration `20261114230000_item_tracking` (schema 149). Hot offers: band and badge colours, fire/shine title effects with a motion switch, preview; compositor-only, on-screen only, reduced-motion still. |
 | Edit orders courier panel, "no booking at PDC" | E403, release63 `5ac5d29991c7e7a4`, `76f48fa` | Edit orders shows the Confirm Orders courier panel (labels, Reconcile, waits for label and bill after Confirm); Reconcile says when PDC has no booking, then a guarded Release frees the order (fresh read-only lookup, an hour old, evidence kept); migration `20261114233000_pdc_unbooked_release` (schema 150). TESTproduct2026 deleted. |
 | Customer account permissions | E404, release64 `323a3854a7d59f91`, `4beff7d` | Disabling, enabling or deleting a store customer needs `users.manage`; view-only staff see no account buttons; label "Manage admin and store users". |
+| Meta cash Purchase, Sales report breakdown | E405, release65 `20b74d959d8fe18b`, `ed73369` | Cash orders count as a Meta Purchase when placed (setting: when placed or when completed), deposits once paid; Sales reports status filter, breakdown rings and lists, Home month ring, 24 hours Customer feedback; reports use the store time zone. |
 
 Owner decisions already answered (10 November): retire Classic (yes); group CRM tickets and Support
 under Customers now and merge into one inbox later; one "Returns and claims" entry under Orders with
@@ -302,7 +303,8 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
 - **DASH-WEIGHT-01:** two parcel weights (Order flow vs PDC default weight); waits for the owner.
 - **Permission gap: fixed (E404).** Disabling, enabling or deleting a store customer needs `users.manage`.
   Still open: deleting a customer who has orders or wallet entries can fail with a raw database message.
-- **Reports:** `dashboard_get_analysis_overview` hard-codes the `Africa/Cairo` time zone in reusable SQL.
+- **Reports:** done in E405 (live): reports use the store's business time zone; status filter, breakdown rings, Home
+  month ring and a 24 hours Customer feedback window. MKT-META-PURCHASE-01 is done too (cash orders count when placed).
 - **Payment monitor:** a standing WARNING with 8 unverified-payment items and 2 orders needing staff,
   shown under Payments > Payment monitoring. These need the owner's review. A transient "Store access
   check failed" alert made one pass critical on 12 Nov 10:00 UTC.
@@ -383,13 +385,17 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   `/release60/artifact'` → `/release61/artifact'`; schema 148.
 - The wallet switch (`wallet-switch-e399` and its `close/`) reads `../release59` and stops when another release is
   current, and it expects schema 148. Point the fresh copy at the newest release and schema before the next switch:
-  now `../release64` with schema 150.
+  now `../release65` with schema 152.
 - Release63 `5ac5d29991c7e7a4` (E403) is a migration release made with `make-release63.py` from release62's scripts
   (schema 149 → 150). Its first apply committed the migration and stopped at the cutover guard. `release63/resume.mjs`
   (owner: "Yes, resume cutover") finished it.
 - Release64 `323a3854a7d59f91` (E404) is app only, made with `make-release64.py` (release61's app-only scripts at schema
   150). The next app-only release copies that pattern with predecessor `323a3854a7d59f91`, base `4beff7d`, previous
   artifact `release64/artifact`.
+- Release65 `20b74d959d8fe18b` (E405) is a migration release made with `make-release65.py` from release63's scripts
+  (schema 150 → 152, two migrations). Its apply waits up to three times, 75 s apart, for a worker-state stop at the
+  cutover guard. The next migration release copies it (predecessor `20b74d959d8fe18b`, base `ed73369`, previous
+  artifact `release65/artifact`); an app-only release copies `make-release64.py` with schema checks at 152.
 - A migration's schema reload can fail a minute-cadence worker run (PDC tracking did at 14:43). The cutover guard then
   stops on that worker's last result. Check the workers right after a migration commit before any cutover.
 - Release62 `d556a53daca1bfac` (E402) is a migration release made with `make-release62.py` (release61's app scripts,
