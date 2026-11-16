@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (15 November 2026, after E409):
+Live state (16 November 2026, after E410):
 
 | Item | Value |
 |---|---|
-| Live app release | `c01bc876e6ddfddd` (release69, E409 Daftra jobs; mobile wallets from E399 closed) |
-| Source commit | `be47057` on `product-modern` (fast-forwarded from `daftra-manual-jobs`; local only, see section 2) |
-| Database schema | 153 (latest migration `20261116100000_payment_case_reviews`, from E408) |
-| Previous release for rollback | `b2e67e3585bb44ce` (release68, E408 Payments and alerts) |
+| Live app release | `7577f4da61249bbe` (release70, E410 Daftra unknown cost; mobile wallets from E399 closed) |
+| Source commit | `e9454cd` on `product-modern` (fast-forwarded from `daftra-unknown-cost`; local only, see section 2) |
+| Database schema | 154 (latest migration `20261116110000_erp_inventory_unknown_cost`, from E410) |
+| Previous release for rollback | `c01bc876e6ddfddd` (release69, E409 Daftra jobs) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Mobile wallets: switched on with UIG `5904481` at 06:52 UTC, then closed at 07:22 UTC because Paymob refused that
@@ -262,6 +262,7 @@ Every release below is app only (no migration) unless stated, and every one was 
 | Menu, Settings menu, Quick Setup | E406/E407, release66 `9f7526e3145e50a1`, release67 `5d9cd84582b451a7`, `be26e0b` | A group opens its first page; Settings menu on every Settings page; no navigation wait; Quick Setup fills missing essentials; store name in the menu. Next: DASH-R7 plan (`docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md`). |
 | Payments and alerts | E408, release68 `b2e67e3585bb44ce`, `16d268f` | Payments: Needs attention (plain-word cases, Mark reviewed with reason, Left at Paymob folded), All payments, Methods and rules; one alerts bell in the top bar. |
 | Daftra jobs | E409, release69 `c01bc876e6ddfddd`, `be47057` | Sync queue jobs that need a person: plain reason, Open in Daftra, Mark done; one Daftra product may feed several store options in the stock refresh. |
+| Daftra unknown cost | E410, release70 `7577f4da61249bbe`, `e9454cd` | The stock refresh keeps an empty cost for Daftra products without a price instead of stopping (migration, schema 154). |
 
 Owner decisions already answered (10 November): retire Classic (yes); group CRM tickets and Support
 under Customers now and merge into one inbox later; one "Returns and claims" entry under Orders with
@@ -388,7 +389,7 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   `/release60/artifact'` → `/release61/artifact'`; schema 148.
 - The wallet switch (`wallet-switch-e399` and its `close/`) reads `../release59` and stops when another release is
   current, and it expects schema 148. Point the fresh copy at the newest release and schema before the next switch:
-  now `../release69` with schema 153.
+  now `../release70` with schema 154.
 - Release63 `5ac5d29991c7e7a4` (E403) is a migration release made with `make-release63.py` from release62's scripts
   (schema 149 → 150). Its first apply committed the migration and stopped at the cutover guard. `release63/resume.mjs`
   (owner: "Yes, resume cutover") finished it.

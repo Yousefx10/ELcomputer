@@ -9,10 +9,42 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E409 is the latest release: Daftra jobs that need a person explain themselves (Open in Daftra, Mark done) and shared Daftra products refresh stock, live as release69 c01bc876e6ddfddd (app only, schema 153). The next Dashboard work is DASH-R7B in docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md. The wallet switch must now point at release69 and check schema 153. Before it, E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E410 is the latest release: the Daftra stock refresh keeps an unknown cost empty instead of stopping, live as release70 7577f4da61249bbe (one migration, schema 154). The next Dashboard work is DASH-R7B in docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md. The wallet switch must now point at release70 and check schema 154. Before it, E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E410 — DAFTRA STOCK REFRESH KEEPS AN UNKNOWN COST EMPTY, LIVE as release70 7577f4da61249bbe (one migration, schema 153 -> 154) — 16 November 2026
+
+Owner: pasted the two stock job errors with "should i mark done? after retry did nothing, or you can review the reason
+from your end?"; then "Commit and build" (answer to "Ship the stock refresh fix with its migration?").
+
+**Found (read-only).** After E409 the two `inventory.import` jobs no longer stopped on shared links. Retry stopped them
+again with "Stock mappings or numeric balances require manual review." 257 of the 410 Daftra products have no purchase
+or average price, and the stock cache required a cost, so the whole refresh was refused. Nothing else was wrong. The
+older "linked to more than one store item" text on the jobs came from 14 Nov, before E409.
+
+**Change.** Commit `e9454cd` (branch `daftra-unknown-cost` from `be47057`). Not pushed.
+- Migration `20261116110000_erp_inventory_unknown_cost`: `public.erp_inventory_cache.cost` may be empty. Its
+  `cost >= 0` check and the table grants stay as they were.
+- `mapDaftraInventory`: a missing or blank price keeps the cost empty; a negative or non-numeric price still marks the
+  product invalid.
+
+**Checks.** `daftra-sync` 14/14 (new empty, blank, negative and non-numeric price cases); new
+`erp-inventory-unknown-cost-native` 1/1 (empty cost stored, a known cost stored, a negative cost refused).
+
+**Release70.** `make-release70.py` (release68 migration scripts with the bounded cutover wait, schema 153 -> 154;
+marker: the cost column is nullable; checks: the cost check is still present, no update grant for `authenticated` or
+`anon`, cache rows, quantity and jobs unchanged). Built (16243 entries), qualified (14885 assets, 19 API checks), check
+passed 03:39 UTC. Apply once: `E410_INSTALLED` 03:41:12 UTC (pause 4.7 s, no provider calls). Verify:
+`E410_AWAITING_NATURAL_MON` 03:42 (public HTTP pass, `MIGRATED_SCHEMA154`), `E410_INSTALLED_NATURAL_MON_PASS` 04:03:01 UTC. `product-modern`
+fast-forwarded to `e9454cd`.
+
+**Owner next.** Press Retry on a stock job (it should finish now). Cancel or credit the cancelled order's invoice in
+Daftra, then Mark done. Adding purchase prices in Daftra helps reports; stock no longer depends on them.
+
+**Rollback.** Point `current` at release69 `c01bc876e6ddfddd` and restart. The older app never writes an empty cost,
+so the database can stay at 154.
 
 # E409 — DAFTRA JOBS THAT NEED A PERSON; SHARED DAFTRA PRODUCTS REFRESH STOCK, LIVE as release69 c01bc876e6ddfddd (app only, schema 153) — 15 November 2026
 
