@@ -4,7 +4,7 @@ The owner asked for a complete redesign of the Dashboard: look, UX, logic and mi
 This plan checks what the first plan ([DASHBOARD_REFRESH_PLAN_2026-11-09.md](DASHBOARD_REFRESH_PLAN_2026-11-09.md))
 delivered, lists what is left, and proposes the next releases. Each release needs the owner's OK.
 
-Live now: release70 `7577f4da61249bbe`, commit `e9454cd`, schema 154 (E409 and E410 were Daftra fixes). DASH-R7A (Payments and alerts, option A) is live as E408;
+Live now: release71 `fe19492976b6d80f`, commit `9a2e066`, schema 154. DASH-R7B (Settings pages) is live as E411; next is DASH-R7C. DASH-R7A (Payments and alerts, option A) is live as E408;
 "Check with Paymob" waits for a legacy Paymob API key on the server.
 
 ## 1. What is done (live)
@@ -21,12 +21,14 @@ Live now: release70 `7577f4da61249bbe`, commit `e9454cd`, schema 154 (E409 and E
 | Confirm Orders rebuilt (one screen, Check per item, Finish books PDC) | E358 |
 | Reports status filter and rings, Home month ring, 24-hour feedback | E405 |
 | Menu redesign (group opens its first page), Settings menu on every Settings page, seamless page changes, Quick Setup rebuilt | E406, E407 |
+| Payments rebuilt around open cases, alerts bell (DASH-R7A) | E408 |
+| Settings pages on the kit, one save bar per page, logo checkerboard (DASH-R7B, DASH-LOGO-01) | E411 |
 
 ## 2. What is not done
 
 ### 2.1 Screens still in the old style (large shadow cards, 24 px titles, captions)
 
-- **Settings pages:** Store details (long, uneven two-column grid, white logo shows white on white), Payment methods,
+- **Settings pages:** done in E411 (DASH-R7B). Was: Store details (long, uneven two-column grid, white logo shows white on white), Payment methods,
   Order flow, Bill design, After-sales policies, Shipping and delivery, Live Chat settings, Team (admin users),
   ERP connection, Activity log, Reset system.
 - **Payments page and Payment monitoring** (see section 4).
@@ -42,7 +44,7 @@ Live now: release70 `7577f4da61249bbe`, commit `e9454cd`, schema 154 (E409 and E
 | DASH-PAYMON-01 | The payment monitor shows 8 warnings (6 terminal, 1 overdue, 1 checkout) that never clear | A real payment problem looks the same as old noise |
 | DASH-CUST-DEL-01 | Deleting a customer with orders or wallet entries shows a raw database error | Confusing error, no guidance |
 | DASH-DIRECT-SERIAL-01 | Edit orders Confirm skips item scanning, so serialized units are not linked to the order | Warranty lookup by label misses those orders (only when serialized items are used) |
-| DASH-LOGO-01 | Store details previews a white logo on white | The logo looks missing |
+| DASH-LOGO-01 | Store details previews a white logo on white (fixed in E411: checkerboard previews) | The logo looks missing |
 | DASH-ERRORS-01 | Some admin endpoints still return raw database text; Arabic falls back to "Request failed" | Unclear errors |
 | DASH-DARK-01 | Dark mode remaps Tailwind grey, slate and blue scales globally | Odd contrast on old screens |
 | RESET-COVERAGE-01 | System reset refuses new tables it does not know (test `quick-setup-progress` fails the same way live) | Reset blocked |

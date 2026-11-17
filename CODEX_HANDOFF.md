@@ -9,10 +9,42 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E410 is the latest release: the Daftra stock refresh keeps an unknown cost empty instead of stopping, live as release70 7577f4da61249bbe (one migration, schema 154). The next Dashboard work is DASH-R7B in docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md. The wallet switch must now point at release70 and check schema 154. Before it, E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E411 is the latest release: the Settings pages redesign (DASH-R7B), live as release71 fe19492976b6d80f (app only, schema 154). The next Dashboard work is DASH-R7C (product editor) in docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md. The wallet switch must now point at release71 and check schema 154. Before it, E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E411 — SETTINGS PAGES REDESIGN (DASH-R7B), LIVE as release71 fe19492976b6d80f (app only, schema 154) — 17 November 2026
+
+Owner: "okay start R7B, design the setting pages ... keep the verticall navigation bar in settings, if you want to
+improve a better version it's fine"; after the screenshots, "Commit and build" (answer to "Ship the Settings redesign
+as release71?").
+
+**Change.** Commit `9a2e066` (branch `dash-r7b-settings` from `e9454cd`). Not pushed. App only.
+- The eleven Settings pages on the shared kit, one save bar per page kept in view, no captions: Store details (logo
+  preview on light and dark backgrounds; Store, Logo, Site theme, Catalog and Stock panels), Payment methods, Order
+  flow (paid and cash lanes, Courier panel), Bill design (live small copy of the bill that shows only typed text),
+  After-sales (in-page tabs, field cards), Live Chat (status, agents online and local time; hours rows; file type
+  chips), ERP connection (facts strip with the sync queue link), Activity log, Reset system, Team, Shipping.
+- The vertical Settings menu stays; the current page gets a brand marker.
+- Logos preview on a checkerboard (DASH-LOGO-01 fixed). The image upload field uses the kit everywhere.
+- Fixed: category and product after-sales rules showed only the Inherit switch since the 10 Nov switch change; the
+  value control shows again and stays disabled while the rule inherits.
+- Same saves and requests as before; no server or database change.
+
+**Checks.** Build and typecheck pass. New `dashboard-settings-pages-browser` (15) and
+`dashboard-settings-team-shipping-browser` (9): every page in EN/AR, light/dark, 390/1440, no sideways scroll, same
+save requests, the after-sales value control. Dashboard, ERP and related suites: only the known failures
+(`dashboard-access` 1, `dashboard-reads` 1, `ui-localization` 1, `daftra-erp-database` 2). `dashboard-erp-api` had
+failed since E409 (its Daftra stand-in lacked `normalizeDaftraAccountUrl`); fixed in the test.
+
+**Release71.** `make-release71.py` (release61 app-only scripts at schema 154). Built (16398 entries), qualified (15021
+assets, 19 API checks), check passed 08:48 UTC. Apply once: `E411_INSTALLED` 08:50:47 UTC (pause 5.5 s, no provider
+calls). Verify: `E411_AWAITING_NATURAL_MON` 08:51, `E411_INSTALLED_NATURAL_MON_PASS` 09:11:24 UTC. `product-modern` fast-forwarded to `9a2e066`.
+
+**Next.** DASH-R7C (product editor) in docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md.
+
+**Rollback.** Point `current` at release70 `7577f4da61249bbe` and restart; no database change.
 
 # E410 — DAFTRA STOCK REFRESH KEEPS AN UNKNOWN COST EMPTY, LIVE as release70 7577f4da61249bbe (one migration, schema 153 -> 154) — 16 November 2026
 
