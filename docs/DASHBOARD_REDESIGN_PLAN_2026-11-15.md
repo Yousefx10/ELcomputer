@@ -4,7 +4,7 @@ The owner asked for a complete redesign of the Dashboard: look, UX, logic and mi
 This plan checks what the first plan ([DASHBOARD_REFRESH_PLAN_2026-11-09.md](DASHBOARD_REFRESH_PLAN_2026-11-09.md))
 delivered, lists what is left, and proposes the next releases. Each release needs the owner's OK.
 
-Live now: release71 `fe19492976b6d80f`, commit `9a2e066`, schema 154. DASH-R7B (Settings pages) is live as E411; next is DASH-R7C. DASH-R7A (Payments and alerts, option A) is live as E408;
+Live now: release72 `110af678bd4a95e2`, commit `1e84faa`, schema 154. DASH-R7B (Settings pages) is live as E411. The owner put sign-in switches, email templates and order cancellation (E412 entry) before DASH-R7C. DASH-R7A (Payments and alerts, option A) is live as E408;
 "Check with Paymob" waits for a legacy Paymob API key on the server.
 
 ## 1. What is done (live)

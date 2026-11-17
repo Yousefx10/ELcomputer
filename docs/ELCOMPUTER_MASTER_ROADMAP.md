@@ -9,10 +9,45 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E411 is the latest release: the Settings pages redesign (DASH-R7B), live as release71 fe19492976b6d80f (app only, schema 154). The next Dashboard work is DASH-R7C (product editor) in docs/DASHBOARD_REDESIGN_PLAN_2026-11-15.md. The wallet switch must now point at release71 and check schema 154. Before it, E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E412 is the latest release: customer bills show the logo again, live as release72 110af678bd4a95e2 (app only, schema 154). Next, in the owner's order: sign-in switches and email templates (AUTH-SWITCHES-01, EMAIL-TEMPLATES-01, AUTH-EMAIL-HOOK-01), then ORDER-CANCEL-01; DASH-R7C (product editor) after them. The wallet switch must now point at release72 and check schema 154. Before it, E411 (Settings pages redesign, release71 fe19492976b6d80f), E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E412 — BILL LOGO SHOWS AGAIN, LIVE as release72 110af678bd4a95e2 (app only, schema 154) — 17 November 2026
+
+Owner: "the bill design doesn't show the logo even it's attached"; release order chosen as "Logo fix first".
+
+**Found (read-only).** The saved bill logo is a valid PNG under the uploads folder (3841 x 1456, 485 KB, below the
+2 MB limit). The loader turned the public path into an absolute path and passed it to the uploads safety check, which
+takes a path inside the uploads folder; the check refused it, the error was swallowed and every bill (and the
+Dashboard preview) was drawn without a logo.
+
+**Change.** Commit `1e84faa` (branch `bill-logo-fix` from `9a2e066`). Not pushed. App only. `loadBillLogo` passes the
+relative path and reads the absolute path the check returns. New `tests/bill-logo.test.mjs` (design logo, store logo
+fallback, switched off, PNG/JPEG only, missing file, path escape); it fails on the old loader.
+
+**Release72.** `make-release72.py` (release61 app-only scripts at schema 154). Built (16529 entries), qualified (15152
+assets, 19 API checks), check passed 09:27 UTC. Apply once: `E412_INSTALLED` 09:28:51 UTC (pause 3.9 s, no provider
+calls). Verify: `E412_AWAITING_NATURAL_MON` 09:28, `E412_INSTALLED_NATURAL_MON_PASS` 09:46:51 UTC. `product-modern` fast-forwarded to `1e84faa`.
+
+**Owner requests recorded the same day (17 Nov), with decisions:**
+- PDC-UNCERTAIN-01: two Edit orders bookings (12 and 14 Nov) ended "uncertain": sent once, PDC's reply was not a clear
+  "created" and was not stored; both orders pass every booking check. Owner: press Reconcile in the courier panel; if
+  PDC has no booking, press No booking at PDC, then book again. Follow-up: keep the reply class when a booking ends
+  uncertain and run the read-only REF lookup once by itself.
+- ORDER-CANCEL-01: cancel an order from the order panel while the parcel is not collected. Refresh the courier status
+  first. Card-paid orders: refund to the store wallet (owner choice). Send the cancelled SMS and a cancel email.
+  Daftra: delete the invoice (owner choice), only if Daftra allows it; verify the call first. PDC's V6 API has no
+  cancel call: staff cancel the AWB on PDC's site and tracking confirms "Order Cancelled"; ask PDC for a cancel call.
+- EMAIL-TEMPLATES-01: one email layout (logo, store name, footer) and editable EN/AR bodies with variables and a
+  preview for order received, payment confirmed, order cancelled, bill and the sign-in emails.
+- AUTH-EMAIL-HOOK-01: login, sign-up and password reset emails through Supabase's Send Email hook so they use the
+  Dashboard templates (owner choice); the owner turns the hook on once and pastes its secret.
+- AUTH-SWITCHES-01: a Show Google sign in switch beside Facebook's, with each provider's status from Supabase.
+- Release order (owner choice): E412 logo fix; then sign-in switches and email templates; then order cancellation.
+
+**Rollback.** Point `current` at release71 `fe19492976b6d80f` and restart; no database change.
 
 # E411 — SETTINGS PAGES REDESIGN (DASH-R7B), LIVE as release71 fe19492976b6d80f (app only, schema 154) — 17 November 2026
 
