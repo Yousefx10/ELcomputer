@@ -14,6 +14,27 @@ the earlier general Claude guide now points to it. Existing text/work is preserv
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
 
+# DAFTRA-CANCEL-01 — CANCELLED ORDER INVOICE ALREADY GONE; API DELETE CONFIRMED WITH A TEST DRAFT — 19 November 2026
+
+Owner: "Yes, delete that invoice", then "Yes, use a draft".
+
+**Cancelled order (8 Nov).** Read-only: the cash order (cancelled, never paid) is linked to Daftra invoice 425 with one
+remote write (the invoice creation, no payment). Daftra answers 404 for invoice 425, a search by the order number
+finds no invoice, and no payment exists for it; the newest invoices were 429-433, so 425 was removed by hand
+earlier. The guarded script checks everything before deleting, so no delete was sent. Its Sync queue job
+(`order.export`, failed, manual) only needs Mark done.
+
+**API deletion test.** One guarded server script (ids and statuses printed only): a temporary client 579
+("TEST API delete check - delete me") and draft invoice 434 (1 EGP free-text line, no stock item, reserved
+`@example.invalid` client email; Daftra refuses an invoice without a client email). `DELETE /api2/invoices/434.json`
+answered 200 "successful": Daftra moves the invoice to its trash for 90 days; a read afterwards is 404. Deleting the
+client was refused (403) while its invoice is in the trash. Left in Daftra: invoice 434 in the trash and client 579;
+empty 434 from the trash, then delete client 579 (or leave both; they hold no amounts or stock).
+
+**For ORDER-CANCEL-01.** Invoice deletion through the API works and stays recoverable for 90 days. Not yet known:
+whether Daftra deletes an invoice that has a recorded payment (card orders), or whether its payment
+(`/invoice_payments`) must be deleted first; decide that with the card refund-to-wallet flow.
+
 # E413 — EMAIL TEMPLATES, SUPABASE EMAIL HOOK, GOOGLE SIGN-IN SWITCH, LIVE as release73 eb04b8939f536ec8 (one migration, schema 154 -> 155) — 17–19 November 2026
 
 Owner: "commit > build > deploy" (answer to "Ship E413 as release73 with its migration (Google switch, hook secret
