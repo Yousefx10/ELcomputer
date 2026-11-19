@@ -9,10 +9,71 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E412 is the latest release: customer bills show the logo again, live as release72 110af678bd4a95e2 (app only, schema 154). Next, in the owner's order: sign-in switches and email templates (AUTH-SWITCHES-01, EMAIL-TEMPLATES-01, AUTH-EMAIL-HOOK-01), then ORDER-CANCEL-01; DASH-R7C (product editor) after them. The wallet switch must now point at release72 and check schema 154. Before it, E411 (Settings pages redesign, release71 fe19492976b6d80f), E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E413 is the latest release: email templates, the Supabase email hook (with its Caddy route) and the Google sign-in switch, live as release73 eb04b8939f536ec8 (one migration, schema 155). Next: ORDER-CANCEL-01, then DASH-R7C (product editor). The wallet switch must now point at release73 and check schema 155. Before it, E412 (bill logo, release72 110af678bd4a95e2), E411 (Settings pages redesign, release71 fe19492976b6d80f), E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E413 — EMAIL TEMPLATES, SUPABASE EMAIL HOOK, GOOGLE SIGN-IN SWITCH, LIVE as release73 eb04b8939f536ec8 (one migration, schema 154 -> 155) — 17–19 November 2026
+
+Owner: "commit > build > deploy" (answer to "Ship E413 as release73 with its migration (Google switch, hook secret
+table)?"); then "Yes, add the route" and "DO ALL THOSE AND CONTINUE" (answers naming the Caddy route, the monitor
+fingerprint update and one Caddy SIGUSR1 reload).
+
+**Change.** Commit `c44bbcf` (branch `email-templates` from `1e84faa`). Not pushed.
+- EMAIL-TEMPLATES-01: Dashboard > Email > Templates shows the email look (store logo on or off, accent colour, footer
+  EN/AR, saved in the email settings config) and the store's own emails: order received (cash, card), payment
+  confirmed, bill and the sign-in emails. Each opens in place with EN/AR text, values to insert at the cursor, a live
+  preview in the real layout and "Use default text"; saving stores an `email_templates` row with the built-in key.
+  Defaults live in `app/utils/emailSystemTemplates.js` and reproduce the earlier text exactly. A template that cannot
+  be loaded defers an order email instead of dropping it. The cancel email is defined but hidden until ORDER-CANCEL-01.
+- AUTH-EMAIL-HOOK-01: `POST /api/webhooks/supabase-email` takes Supabase's Send Email hook (Standard Webhooks
+  signature, 5 s), renders the built-in sign-in email (signup, recovery, magic link, email change with two emails,
+  reauthentication code) with the link as a button and sends it through Brevo at once; the link is never stored.
+  Notification-only actions are acknowledged unsent. Off (404) until the hook secret is saved in Email > Templates:
+  stored encrypted in `private.auth_email_hook`, read and replaced only through `public.auth_email_hook_secret()` and
+  `public.auth_email_hook_secret_set(uuid,text)` (service role; active staff; activity log). The server variable
+  `NUXT_SUPABASE_EMAIL_HOOK_SECRET` overrides it when set (unset today).
+- AUTH-SWITCHES-01: `site_settings.auth_google_enabled` (default true) and a Sign-in buttons group on the
+  Authentication page with each provider's status in Supabase. The login page shows Google only when both are on.
+- Migration `20261117100000_sign_in_settings` (schema 155).
+
+**Checks.** Build and typecheck pass. New: `auth-email-hook` 3, `auth-email-hook-native` 1,
+`dashboard-email-templates-browser` 9; the email, order email, bill and messaging suites pass. Known failures only:
+`dashboard-access` 1, `dashboard-reads` 1, `ui-localization` 1, `daftra-erp-database` 2, `quick-setup-progress` 1,
+`system-reset-compatibility` 8 and `system-reset-database` 12 (both fail the same way on live: "Unrecognized tables
+found", RESET-COVERAGE-01; `private.auth_email_hook` joins that list).
+
+**Release73.** `make-release73.py` (release70 migration scripts with the bounded cutover wait; the new functions are
+listed as added and the new column is left out of the settings-columns fingerprint). Built (16667 entries), qualified
+(15286 assets, 19 API checks), check passed 12:45 UTC on 17 Nov. Apply once: `E413_INSTALLED` 12:47:45 UTC (pause
+6.3 s, no provider calls). The first verify passed the host and database checks, then stopped: Caddy answered 403 on
+the new hook path because the Caddyfile closes `/api/webhooks/*` except PDC (the Brevo webhook is closed too).
+
+**Caddy route (19 Nov).** A first attempt on 17 Nov was undone before it took effect: `systemctl reload caddy` is not
+available (CanReload=no, admin API off) and the monitor pins the Caddyfile's SHA-256
+(`/etc/commerce-monitor/config.json` `caddy_sha256`, critical alert on change); the exact original was restored at
+12:52 UTC and Caddy never reloaded. After an isolated SIGUSR1 test of the installed Caddy v2.11.7 on a throwaway
+config, on 19 Nov at 07:54:25 UTC one guarded command checked the Caddyfile, pin and Caddy PID, backed up both files
+(`/etc/caddy/Caddyfile.bak-e413-route-20261119T075425Z`, `/etc/commerce-monitor/config.json.bak-e413-route-20261119T075425Z`),
+installed the Caddyfile with an `@supabase_email_hook` block (HTTPS POST only, 20 KB, short timeouts, same shape as
+PDC) together with the new pin (Caddyfile `4bd4b277da497c3a…`), and sent one SIGUSR1 ("successfully reloaded config
+from file", same PID). Checks: the hook POST answers the app's 404 JSON; GET on it and the Brevo webhook stay 403;
+storefront, cart, login, Dashboard login and payment capabilities answer 200; the 07:55 monitor pass shows the
+configuration matching, no new alerts and nothing critical.
+
+**Verification.** The sealed verify now stops with PROTECTED_FILE_DRIFT because the Caddyfile differs from its
+prepare-time record; the operator was not edited or rerun past that. Equivalent read-only checks on 19 Nov: the
+current release is `eb04b8939f536ec8` with the sealed commit and archive in its certificate; of the ten protected
+files only the Caddyfile changed (the approved route); the database has 155 migrations (last `sign_in_settings`), the
+Google switch on, one empty hook row with RLS and no table grants, and the two functions for the service role only.
+
+**Owner next.** To send sign-in emails from the Dashboard templates: Supabase > Authentication > Hooks > Send Email >
+HTTP; paste the address shown in Email > Templates > Sign-in emails, generate the secret, paste it there and save.
+Reconcile the two uncertain PDC bookings (PDC-UNCERTAIN-01). Then ORDER-CANCEL-01.
+
+**Rollback.** App: point `current` at release72 `110af678bd4a95e2` and restart (the older app ignores the new switch
+and the hook table; the database can stay). Route: restore both backups above and send one SIGUSR1.
 
 # E412 — BILL LOGO SHOWS AGAIN, LIVE as release72 110af678bd4a95e2 (app only, schema 154) — 17 November 2026
 
