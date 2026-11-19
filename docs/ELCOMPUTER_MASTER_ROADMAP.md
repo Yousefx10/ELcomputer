@@ -14,6 +14,34 @@ the earlier general Claude guide now points to it. Existing text/work is preserv
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
 
+# ORDER-CANCEL-01 — DESIGN (owner decisions 17–19 Nov 2026), BUILD STARTED 19 November 2026
+
+Owner: cancel an order when it is not collected yet; check the courier's latest status first; cancel the AWB;
+send SMS and email; cancel the bill in Daftra. Decisions: card payments go back to the store wallet; the Daftra
+invoice is deleted; for a card order its Daftra payment is deleted too ("Yes, delete both").
+
+**Facts checked.** Edit orders > Cancel today only changes the status (`order_direct_status`, any open order, even
+out for delivery). Cancelling already refunds the wallet part (`private.customer_order_wallet` posts `order_refund`
+with the order id) and fires the cancelled SMS rule and the Daftra export job. PDC V6 has no cancel call; PDC reports
+`registered` until the courier collects, then `picked_up` and later states, and an "Order Cancelled" status after a
+cancel on its site. `processPdcTracking({orderId})` refreshes one order within the polling limits. Daftra: `DELETE
+/api2/invoices/{id}.json` moves an invoice to the trash for 90 days (confirmed on a test draft); invoice payments are
+listed by `GET /api2/invoice_payments.json?invoice_id=`; deleting a payment is still unconfirmed.
+
+**Flow.**
+1. Edit orders > Cancel opens a review: the courier status refreshed now, what the customer gets back (wallet part,
+   card part to the wallet), the Daftra invoice, and the AWB to cancel at PDC.
+2. Refused when the courier has the parcel (picked up or later: use Return), when a booking is uncertain (Reconcile
+   first), or when the order is closed. A guest card order (no account for a wallet) is refused with "Refund at
+   Paymob by hand, then cancel".
+3. Confirm cancels in one database transaction: status cancelled (existing triggers: wallet part, SMS, Daftra job,
+   unpaid stock release), the card amount as a separate `order_refund` wallet entry (reference `card:<order id>`),
+   payment status refunded, and an `order_cancelled` email event (the built-in cancel email with the refund line).
+4. The Daftra job for a cancelled order deletes the invoice's payments, then the invoice (trash, 90 days); a missing
+   invoice counts as done; any refusal stops the job for a person with the reason. Returned and refunded orders stay
+   manual.
+5. A booked AWB is shown to cancel on PDC's site; the order keeps "Cancel at PDC" until tracking reports it.
+
 # DAFTRA-CANCEL-01 — CANCELLED ORDER INVOICE ALREADY GONE; API DELETE CONFIRMED WITH A TEST DRAFT — 19 November 2026
 
 Owner: "Yes, delete that invoice", then "Yes, use a draft".
