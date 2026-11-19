@@ -9,10 +9,56 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E414 is the latest release: cancel an order from Edit orders (courier refreshed first, wallet refund, cancel email, Daftra invoice and payment deleted), live as release74 03177fdbf9e6de8a (one migration, schema 156). Next: DASH-R7C (product editor). The wallet switch must now point at release74 and check schema 156. Before it, E413 (email templates, Supabase email hook, Google sign-in switch; release73 eb04b8939f536ec8, schema 155), E412 (bill logo, release72 110af678bd4a95e2), E411 (Settings pages redesign, release71 fe19492976b6d80f), E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E415 is the latest release: Google's own sign-in button on the login page (GOOGLE-BUTTON-01; off until the Google client ID is set on the server), live as release75 30500193bb702bdb (app only, schema 156). Before it, E414 (order cancel, release74 03177fdbf9e6de8a, schema 156). Next: turn the Google button on (owner adds the site to the Google client's JavaScript origins and sends the client ID), then DASH-R7C (product editor). The wallet switch must now point at release75 and check schema 156. Before it, E413 (email templates, Supabase email hook, Google sign-in switch; release73 eb04b8939f536ec8, schema 155), E412 (bill logo, release72 110af678bd4a95e2), E411 (Settings pages redesign, release71 fe19492976b6d80f), E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E415 — GOOGLE'S OWN SIGN-IN BUTTON (GOOGLE-BUTTON-01), LIVE as release75 30500193bb702bdb (app only, schema 156; off until the client ID is set) — 19 November 2026
+
+Owner: Google's sign-in screen names the Supabase project address; "can we have our elcomputer domain instead of DB
+link?" Options given: Google's own button on the login page (free), a Supabase custom domain (paid add-on), Google
+brand verification (name and logo; Google may require owning every listed domain). Owner: "Yes, build it" (answer to
+"Build Google's own sign-in button so Google shows elcomputer.net?"). Release words: "commit and build" (answer to
+"Ship the Google button as release75 (app only)?").
+
+**Change.** Commit `654aae6` (branch `google-button` from `ab5ad82`). Not pushed. App only, no migration.
+- With `NUXT_PUBLIC_GOOGLE_CLIENT_ID` set, the login page shows Google's own button (Google Identity Services, popup)
+  in place of the Supabase redirect, so Google names the page's address. The ID token goes to
+  `supabase.auth.signInWithIdToken` with a fresh nonce per button (Google gets its SHA-256 hex, Supabase the raw
+  value). Supabase still verifies the token and owns accounts and sessions; the Google provider in Supabase stays on
+  (its client ID checks the token's audience). The existing finish (profile, disabled account, return path) is unchanged.
+- No client ID, a malformed one, or Google's script failing to load keeps the redirect button. Facebook unchanged.
+- Google draws the button: outline in light, filled black in dark, EN/AR, the form's width (200–400 px). Its script
+  loads with the page language (`?hl=`). New input documented in `.env.example`.
+
+**Checks.** Typecheck and build pass. New: `auth-google-button` 5 (client ID format, nonce, token and fresh nonce,
+EN/AR and theme, width, script failure, late script), `auth-google-button-browser` 13 (the real login page: EN/AR,
+light/dark, 390/1440; the nonce Supabase gets matches what Google signed; a refused token; the redirect button when
+Google's script fails, no client ID, or a malformed one). Existing auth tests pass (`auth-page`, `auth-turnstile`,
+`auth-dashboard-captcha`, `deployment-safety`, `password-recovery`). `paymob-security` 3, `public-signup-readiness` 10
+and `ui-localization` 1 fail identically on `ab5ad82` (stale tests). Screenshots used Google's real script with a
+placeholder client ID, so they show Google's own pre-load rendering of the button.
+
+**Release (19 Nov, 13:43–13:56 UTC).** `make-release75.py` (release61's app-only scripts; predecessor
+`03177fdbf9e6de8a`, base `ab5ad82`, previous artifact `release74/artifact`). Qualify `COMPILED_RETAINED_ARTIFACT_PASS`
+(15551 assets, 19 API checks); preflight passed; `E415_INSTALLED` 13:45:42 (one restart, pause 5.8 s, no overrun with
+OPS-RESTART-01); verify `E415_AWAITING_NATURAL_MON` then `E415_INSTALLED_NATURAL_MON_PASS` 13:55:49
+(`PRESERVED_SCHEMA156`). Live login page: `googleClientId` empty, the redirect button shows as before. Source
+`product-modern` fast-forwarded to `654aae6`.
+
+**To turn on.** 1) Owner: Google Cloud > the OAuth Web client used by Supabase's Google provider > Authorized
+JavaScript origins: add `https://elcomputer.net` (www redirects there), and send the client ID. 2) With the owner's
+words: drop-in `/etc/systemd/system/storefront.service.d/zz-google-signin.conf` with
+`Environment=NUXT_PUBLIC_GOOGLE_CLIENT_ID=<web client id>` (value kept out of the repo), daemon-reload, one restart with
+the worker timers paused. Undo: delete the file, daemon-reload, restart. The next release's prepare records it.
+Optional later: Google brand verification, so the screen shows the store name and logo.
+
+Also 19 Nov: the owner asked about a faint line under the phone tab bar on iPhone. It sits where Safari 26's
+see-through toolbar strip begins (the page shows through it); the live home page has no sideways overflow and the tab
+bar is solid white. No change made; a solid strip under Safari's bar is possible but needs an iPhone check.
+
+**Rollback.** Point `current` at release74 `03177fdbf9e6de8a` and restart; no database change.
 
 # E414 — CANCEL AN ORDER FROM EDIT ORDERS (ORDER-CANCEL-01), LIVE as release74 03177fdbf9e6de8a (one migration, schema 155 -> 156) — 19 November 2026
 
