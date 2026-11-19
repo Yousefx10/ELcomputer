@@ -393,7 +393,7 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   `/release60/artifact'` → `/release61/artifact'`; schema 148.
 - The wallet switch (`wallet-switch-e399` and its `close/`) reads `../release59` and stops when another release is
   current, and it expects schema 148. Point the fresh copy at the newest release and schema before the next switch:
-  now `../release74` with schema 156.
+  now `../release74` with schema 156. Its fresh packet records the `zz-shutdown.conf` drop-in (OPS-RESTART-01).
 - Release63 `5ac5d29991c7e7a4` (E403) is a migration release made with `make-release63.py` from release62's scripts
   (schema 149 → 150). Its first apply committed the migration and stopped at the cutover guard. `release63/resume.mjs`
   (owner: "Yes, resume cutover") finished it.

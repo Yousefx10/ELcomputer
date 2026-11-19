@@ -61,8 +61,12 @@ the route and public HTTP checks, and the sealed host script's `guards(after=Tru
 protected files, service, environment, workers, monitor, capabilities, styles). Both passed (`E414_EQUIVALENT_VERIFY_PASS` 09:22 and 09:27 UTC); the natural monitor run at 09:25:03 after the
 restart is WARNING with the same exceptions as before the release (the restart gap's `JOURNAL_UPSTREAM` cleared). Source
 `product-modern` fast-forwarded to `ab5ad82`.
-Follow-up OPS-RESTART-01 (owner decision; production setting): set a short `NITRO_SHUTDOWN_TIMEOUT` (for example 5 s) in
-the app environment before the next release, or give the restart step more time than the stop timeout.
+OPS-RESTART-01 DONE (owner: "Yes, set it", 19 Nov 09:30 UTC): new drop-in
+`/etc/systemd/system/storefront.service.d/zz-shutdown.conf` sets `Environment=NITRO_SHUTDOWN_TIMEOUT=5000`
+(`runtime.env` untouched). Applied with the worker timers paused, one restart (0.06 s; healthy after 0.72 s), timers
+resumed; the app (still release74) runs with the value. Nitro now waits at most 5 s for open connections, then forces
+the exit, so a release restart stays inside the 30 s limits. Undo: delete the file, `systemctl daemon-reload`, restart.
+The next release's prepare records the new drop-in and environment; the wallet switch needs a fresh packet anyway.
 
 **Owner.** The cancelled SMS rule is off today: turn on Dashboard > SMS > Order notifications > Order cancelled.
 Not yet known: whether Daftra deletes an invoice that still has a payment (the job deletes payments first).
