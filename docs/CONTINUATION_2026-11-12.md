@@ -47,14 +47,14 @@ Stack and services:
 - Marketing: Meta Pixel and Conversions API on; Google tag not installed.
 - Languages: English and Arabic (RTL). Themes: Light, Dark, System.
 
-Live state (19 November 2026, after E413):
+Live state (19 November 2026, after E414):
 
 | Item | Value |
 |---|---|
-| Live app release | `eb04b8939f536ec8` (release73, E413 email templates and sign-in; mobile wallets from E399 closed) |
-| Source commit | `c44bbcf` on `product-modern` (fast-forwarded from `email-templates`; local only, see section 2) |
-| Database schema | 155 (latest migration `20261117100000_sign_in_settings`, from E413) |
-| Previous release for rollback | `110af678bd4a95e2` (release72, E412 bill logo) |
+| Live app release | `03177fdbf9e6de8a` (release74, E414 order cancel; mobile wallets from E399 closed) |
+| Source commit | `ab5ad82` on `product-modern` (fast-forwarded from `order-cancel`; local only, see section 2) |
+| Database schema | 156 (latest migration `20261119100000_order_cancel`, from E414) |
+| Previous release for rollback | `eb04b8939f536ec8` (release73, E413 email templates and sign-in) |
 | Docs branch | `claude/handoffs-20261108` (see `git log` for the newest docs commit) |
 
 Mobile wallets: switched on with UIG `5904481` at 06:52 UTC, then closed at 07:22 UTC because Paymob refused that
@@ -263,7 +263,8 @@ Every release below is app only (no migration) unless stated, and every one was 
 | Payments and alerts | E408, release68 `b2e67e3585bb44ce`, `16d268f` | Payments: Needs attention (plain-word cases, Mark reviewed with reason, Left at Paymob folded), All payments, Methods and rules; one alerts bell in the top bar. |
 | Daftra jobs | E409, release69 `c01bc876e6ddfddd`, `be47057` | Sync queue jobs that need a person: plain reason, Open in Daftra, Mark done; one Daftra product may feed several store options in the stock refresh. |
 | Daftra unknown cost | E410, release70 `7577f4da61249bbe`, `e9454cd` | The stock refresh keeps an empty cost for Daftra products without a price instead of stopping (migration, schema 154). |
-| Email templates and sign-in | E413, release73 `eb04b8939f536ec8`, `c44bbcf` | Email > Templates: look and built-in emails; Supabase Send Email hook (Caddy route added 19 Nov, off until its secret is saved); Show Google sign in. Next: ORDER-CANCEL-01. |
+| Email templates and sign-in | E413, release73 `eb04b8939f536ec8`, `c44bbcf` | Email > Templates: look and built-in emails; Supabase Send Email hook (Caddy route added 19 Nov, off until its secret is saved); Show Google sign in. |
+| Order cancel | E414, release74 `03177fdbf9e6de8a`, `ab5ad82` | Edit orders > Cancel reviews the courier (PDC refreshed), refunds to the store wallet, sends the cancel email (and the cancelled SMS when that rule is on), deletes the Daftra invoice and payment. AWBs are cancelled on PDC's site. |
 | Bill logo | E412, release72 `110af678bd4a95e2`, `1e84faa` | Bills and the Dashboard preview show the logo again. Next: sign-in switches and email templates, then order cancellation (decisions in the E412 entry). |
 | Settings pages | E411, release71 `fe19492976b6d80f`, `9a2e066` | DASH-R7B: the eleven Settings pages on the kit with one save bar per page; logo checkerboard; after-sales category/product values editable again. Next: DASH-R7C. |
 
@@ -392,7 +393,7 @@ The page-by-page redesign (DASH-R6) follows the owner's order. Remaining, in tha
   `/release60/artifact'` → `/release61/artifact'`; schema 148.
 - The wallet switch (`wallet-switch-e399` and its `close/`) reads `../release59` and stops when another release is
   current, and it expects schema 148. Point the fresh copy at the newest release and schema before the next switch:
-  now `../release73` with schema 155.
+  now `../release74` with schema 156.
 - Release63 `5ac5d29991c7e7a4` (E403) is a migration release made with `make-release63.py` from release62's scripts
   (schema 149 → 150). Its first apply committed the migration and stopped at the cutover guard. `release63/resume.mjs`
   (owner: "Yes, resume cutover") finished it.

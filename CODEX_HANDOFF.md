@@ -9,12 +9,65 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E413 is the latest release: email templates, the Supabase email hook (with its Caddy route) and the Google sign-in switch, live as release73 eb04b8939f536ec8 (one migration, schema 155). Next: ORDER-CANCEL-01, then DASH-R7C (product editor). The wallet switch must now point at release73 and check schema 155. Before it, E412 (bill logo, release72 110af678bd4a95e2), E411 (Settings pages redesign, release71 fe19492976b6d80f), E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E414 is the latest release: cancel an order from Edit orders (courier refreshed first, wallet refund, cancel email, Daftra invoice and payment deleted), live as release74 03177fdbf9e6de8a (one migration, schema 156). Next: DASH-R7C (product editor). The wallet switch must now point at release74 and check schema 156. Before it, E413 (email templates, Supabase email hook, Google sign-in switch; release73 eb04b8939f536ec8, schema 155), E412 (bill logo, release72 110af678bd4a95e2), E411 (Settings pages redesign, release71 fe19492976b6d80f), E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
 
-# ORDER-CANCEL-01 — DESIGN (owner decisions 17–19 Nov 2026), BUILD STARTED 19 November 2026
+# E414 — CANCEL AN ORDER FROM EDIT ORDERS (ORDER-CANCEL-01), LIVE as release74 03177fdbf9e6de8a (one migration, schema 155 -> 156) — 19 November 2026
+
+Owner: cancel an order when the courier has not collected it; check the courier's latest status first; cancel the
+AWB; send SMS and email; cancel the Daftra bill. Decisions: card payments go back to the store wallet; the Daftra
+invoice is deleted, and for a card order its payment too ("Yes, delete both"). Release words: "yes built and deploy" (answer to "Ship order cancel as release74 with its migration (order_cancel function, cancel email type)?").
+
+**Change.** Commit `ab5ad82` (branch `order-cancel` from `c44bbcf`). Not pushed.
+- Edit orders > Cancel opens a review in the order panel. The server refreshes the order's PDC status first
+  (`processPdcTracking` for one order; "checked now", or the last check time when PDC is not due or unavailable), then
+  shows what goes back to the store wallet, the Daftra invoice to delete and the AWB to cancel on PDC's site, with an
+  optional reason. Refusals: closed order, courier has the parcel (picked up or later: use Return), booking not
+  reconciled, guest card order (refund at Paymob first).
+- `public.order_cancel(p_admin, p_order, p_reason)` (service role; owner, or Orders plus direct order changes)
+  decides again in one transaction: packing sessions cancelled, status cancelled (existing triggers refund the wallet
+  part, queue the cancelled SMS rule and the Daftra job, release unpaid stock), a paid card amount back to the wallet
+  as its own `order_refund` entry (reference `card:<order id>`, idempotent), payment status refunded, a direct-change
+  record and an `order_cancelled` email event when order emails are on. Routes: `GET`/`POST
+  /api/admin-orders/[id]/cancel`; the POST records `orders.status.cancel` in the activity log.
+- The cancel email is a built-in email (Email > Templates): order number and the wallet refund line, EN/AR.
+  `private.order_email_reason` sends it only for a cancelled order.
+- Daftra: the job for a cancelled order lists the invoice's payments, deletes each, then deletes the invoice (Daftra
+  trash, 90 days). Each deletion is recorded in `erp_remote_writes` first (`invoice_payment.delete:<id>`,
+  `invoice.delete`), so a retry repeats nothing; a missing invoice counts as done; a refusal stops the job for a
+  person with the reason. Returned and refunded orders stay manual.
+- PDC V6 has no cancel call and tracking stops for cancelled orders, so the AWB is shown in the review and in the
+  done notice; staff cancel it on PDC's site.
+- Migration `20261119100000_order_cancel` (schema 156).
+
+**Checks.** Build and typecheck pass. New or extended: `order-cancel-native` 5 (cash and card refunds, no double
+refund, refusals, permission, the cancelled SMS rule, the email rule), `daftra-sync` 16 (payment then invoice, retry,
+missing invoice, refusal, no bill), `order-email-notifications` 34 (cancel email EN/AR; end to end through the email transaction), `dashboard-order-panel-browser`
+22 (review EN/AR, light/dark, 390/1440; refused review; late refusal). Regression run of 92 files (962 passing): only the known failures (`dashboard-access` 1, `dashboard-reads` 1,
+`ui-localization` 1, `daftra-erp-database` 2, `quick-setup-progress` 1, `system-reset-compatibility` 8,
+`system-reset-database` 12) and `private-packing-videos` 2 (no ffmpeg on the build Mac). Two tests changed with the owner's
+decision: the templates editor now lists the cancel email; a billed cancelled order now deletes its invoice.
+
+**Release (19 Nov, 09:17–09:20 UTC).** Qualify `COMPILED_RETAINED_ARTIFACT_PASS`; preflight passed; migration committed
+(`E414_SCHEMA156_COMMITTED`). The cutover switched `current` and restarted the app, but the old process did not exit on
+SIGTERM: Nitro waits up to 30 s for open connections (`NITRO_SHUTDOWN_TIMEOUT` default) and systemd stops at 30 s, so it
+was killed at 09:20:05 and the new one listened at 09:20:09 (about 34 s without the app; earlier stops took under 1 s).
+The host script's 30 s restart limit then stopped with `TimeoutExpired` before writing `installed.json` (timers were
+resumed; apply is consumed, never rerun). The sealed `verify` needs that receipt, so `release74/verify-equivalent.mjs`
+ran the same checks read-only: the operator's own snapshot/preserved code (schema 156, marker 1, nothing else changed),
+the route and public HTTP checks, and the sealed host script's `guards(after=True)` (release, inventory, certificate,
+protected files, service, environment, workers, monitor, capabilities, styles). Both passed (`E414_EQUIVALENT_VERIFY_PASS` 09:22 and 09:27 UTC); the natural monitor run at 09:25:03 after the
+restart is WARNING with the same exceptions as before the release (the restart gap's `JOURNAL_UPSTREAM` cleared). Source
+`product-modern` fast-forwarded to `ab5ad82`.
+Follow-up OPS-RESTART-01 (owner decision; production setting): set a short `NITRO_SHUTDOWN_TIMEOUT` (for example 5 s) in
+the app environment before the next release, or give the restart step more time than the stop timeout.
+
+**Owner.** The cancelled SMS rule is off today: turn on Dashboard > SMS > Order notifications > Order cancelled.
+Not yet known: whether Daftra deletes an invoice that still has a payment (the job deletes payments first).
+
+# ORDER-CANCEL-01 — DESIGN (owner decisions 17–19 Nov 2026), LIVE AS E414 (see above)
 
 Owner: cancel an order when it is not collected yet; check the courier's latest status first; cancel the AWB;
 send SMS and email; cancel the bill in Daftra. Decisions: card payments go back to the store wallet; the Daftra
@@ -40,7 +93,8 @@ listed by `GET /api2/invoice_payments.json?invoice_id=`; deleting a payment is s
 4. The Daftra job for a cancelled order deletes the invoice's payments, then the invoice (trash, 90 days); a missing
    invoice counts as done; any refusal stops the job for a person with the reason. Returned and refunded orders stay
    manual.
-5. A booked AWB is shown to cancel on PDC's site; the order keeps "Cancel at PDC" until tracking reports it.
+5. A booked AWB is shown to cancel on PDC's site, in the review and in the done notice. PDC tracking skips
+   cancelled orders, so no lasting reminder was built.
 
 # DAFTRA-CANCEL-01 — CANCELLED ORDER INVOICE ALREADY GONE; API DELETE CONFIRMED WITH A TEST DRAFT — 19 November 2026
 
