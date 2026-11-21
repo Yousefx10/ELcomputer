@@ -4,7 +4,7 @@ The owner asked for a complete redesign of the Dashboard: look, UX, logic and mi
 This plan checks what the first plan ([DASHBOARD_REFRESH_PLAN_2026-11-09.md](DASHBOARD_REFRESH_PLAN_2026-11-09.md))
 delivered, lists what is left, and proposes the next releases. Each release needs the owner's OK.
 
-Live now: release75 `30500193bb702bdb`, commit `654aae6`, schema 156 (E415 Google's own sign-in button, after E414 order cancel). DASH-R7B (Settings pages) is live as E411. The owner put sign-in switches, email templates and order cancellation (E412 entry) before DASH-R7C. DASH-R7A (Payments and alerts, option A) is live as E408;
+Live now: release76 `c2a271c8f5c008f0`, commit `a198ba6`, schema 156 (E416 Google button dark-mode fix, after E415 Google's own sign-in button). DASH-R7B (Settings pages) is live as E411. The owner put sign-in switches, email templates and order cancellation (E412 entry) before DASH-R7C. DASH-R7A (Payments and alerts, option A) is live as E408;
 "Check with Paymob" waits for a legacy Paymob API key on the server.
 
 ## 1. What is done (live)

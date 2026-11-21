@@ -9,10 +9,30 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E415 is the latest release: Google's own sign-in button on the login page (GOOGLE-BUTTON-01; on since 19 Nov 14:40 UTC, Google now names elcomputer.net), live as release75 30500193bb702bdb (app only, schema 156). Before it, E414 (order cancel, release74 03177fdbf9e6de8a, schema 156). Next: release the Google button's dark-mode fix (built; waiting for the owner's words), then DASH-R7C (product editor). The wallet switch must now point at release75 and check schema 156. Before it, E413 (email templates, Supabase email hook, Google sign-in switch; release73 eb04b8939f536ec8, schema 155), E412 (bill logo, release72 110af678bd4a95e2), E411 (Settings pages redesign, release71 fe19492976b6d80f), E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E416 is the latest release: the Google button's dark-mode fix, live as release76 c2a271c8f5c008f0 (app only, schema 156). Before it, E415 (Google's own sign-in button on the login page, GOOGLE-BUTTON-01; on since 19 Nov 14:40 UTC, Google now names elcomputer.net; release75 30500193bb702bdb). Before it, E414 (order cancel, release74 03177fdbf9e6de8a, schema 156). Next: DASH-R7C (product editor). The wallet switch must now point at release76 and check schema 156. Before it, E413 (email templates, Supabase email hook, Google sign-in switch; release73 eb04b8939f536ec8, schema 155), E412 (bill logo, release72 110af678bd4a95e2), E411 (Settings pages redesign, release71 fe19492976b6d80f), E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E416 — GOOGLE BUTTON DARK-MODE FIX (GOOGLE-BUTTON-01), LIVE as release76 c2a271c8f5c008f0 (app only, schema 156) — 21 November 2026
+
+Owner: "Commit and build" (answer to "Ship the dark-mode fix as release76?").
+
+**Change.** Commit `a198ba6` (branch `google-button` on `654aae6`). Not pushed. App only. In dark mode Google's button
+sat on a white band: the site's `color-scheme: dark` made Chrome paint Google's light frame on an opaque white
+backdrop. The button container now uses `color-scheme: light`. `auth-google-button-browser` checks it (18 pass with
+`auth-google-button`).
+
+**Release (21 Nov, 07:57–08:18 UTC).** `make-release76.py` (release61's app-only scripts; predecessor
+`30500193bb702bdb`, base `654aae6`, previous artifact `release75/artifact`). Typecheck and build pass; qualify
+`COMPILED_RETAINED_ARTIFACT_PASS` (15683 assets, 19 API checks); preflight passed; `E416_INSTALLED` 08:04:45 (one
+restart, pause 5.6 s); verify `E416_AWAITING_NATURAL_MON` 08:05:05 (the command then did not exit for about ten minutes;
+read-only, result already written), `E416_INSTALLED_NATURAL_MON_PASS` 08:17:57 (19 s, `PRESERVED_SCHEMA156`). The
+packet recorded the `zz-google-signin.conf` drop-in; the new app keeps the client ID. Live in Chrome: `/login` 1440,
+`/login` 390 and `/ar/login` 390 dark show Google's button (no redirect button, no Google errors); in dark mode the root
+is dark, the button container and frame light, and no white band. Source `product-modern` fast-forwarded to `a198ba6`.
+
+**Rollback.** Point `current` at release75 `30500193bb702bdb` and restart; no database change.
 
 # E415 — GOOGLE'S OWN SIGN-IN BUTTON (GOOGLE-BUTTON-01), LIVE as release75 30500193bb702bdb (app only, schema 156; turned on 19 Nov 14:40 UTC) — 19 November 2026
 
@@ -62,7 +82,7 @@ Drop-in `zz-google-signin.conf` written, daemon-reload, worker timers paused, on
 `/login` 1440 and `/ar/login` 390 show Google's button (frame 400x44 and 362x44), no redirect button, no Google
 errors. Found then: in dark mode Google's frame sat on a white band (the page's `color-scheme: dark` makes Chrome paint
 the light frame on an opaque backdrop). Fix: `color-scheme: light` on the button's container, checked by injecting it
-on the live page in a local browser; uncommitted in `work-dash-io` with a test (18 pass), waiting for release words.
+on the live page in a local browser; released as E416 (see above).
 
 Also 19 Nov: the owner asked about a faint line under the phone tab bar on iPhone. It sits where Safari 26's
 see-through toolbar strip begins (the page shows through it); the live home page has no sideways overflow and the tab
