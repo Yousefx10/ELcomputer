@@ -1,6 +1,6 @@
 # Session handoff — 21 November 2026
 
-Read this first in a new conversation. It covers the session of 15–21 November 2026 (E411 to E416) and
+Read this first in a new conversation. It covers the session of 15–21 November 2026 (E411 to E417) and
 everything still open. Older history stays in [the main handoff](HANDOFF_2026-11-09.md), the
 [master roadmap](ELCOMPUTER_MASTER_ROADMAP.md), `PROJECT_STATE.md` and `CODEX_HANDOFF.md`.
 
@@ -11,10 +11,10 @@ This repository is **public**. Server access, keys and other private details are
 
 | Item | Value |
 |---|---|
-| App release | `c2a271c8f5c008f0` (release76, E416), installed 21 Nov 08:04 UTC |
-| Source | `a198ba6` on `product-modern` in `../product-modern-20261107/source` (local, not pushed) |
+| App release | `655cb98159cf8328` (release77, E417), installed 21 Nov 10:33 UTC |
+| Source | `4e21295` on `product-modern` in `../product-modern-20261107/source` (local, not pushed) |
 | Database schema | 156, latest migration `20261119100000_order_cancel` (E414) |
-| Rollback | point `current` at release75 `30500193bb702bdb` and restart (no database change) |
+| Rollback | point `current` at release76 `c2a271c8f5c008f0` and restart (no database change) |
 | Docs branch | `claude/handoffs-20261108` in this checkout (local, not pushed) |
 | Server drop-ins added this session | `zz-shutdown.conf` (`NITRO_SHUTDOWN_TIMEOUT=5000`), `zz-google-signin.conf` (Google client ID) |
 | Monitor | WARNING with the usual payment-verification exceptions; no critical alerts |
@@ -32,6 +32,7 @@ Nothing from this session is pushed. Pushing needs the owner to ask.
 | OPS-RESTART-01 | server setting | Nitro waits at most 5 s on shutdown, so a release restart never overruns systemd's 30 s |
 | E415 | release75 `30500193bb702bdb` | Google's own sign-in button (GOOGLE-BUTTON-01); turned on 19 Nov 14:40 UTC |
 | E416 | release76 `c2a271c8f5c008f0` | Google button dark-mode fix (no white band behind Google's frame) |
+| E417 | release77 `655cb98159cf8328` | DASH-R7C: one-page product editor, Add product on the same layout, Scan item unit on the kit |
 
 ### Order cancel (E414), as the owner decided
 
@@ -78,12 +79,8 @@ Nothing from this session is pushed. Pushing needs the owner to ask.
 
 ## 4. Next development
 
-1. **DASH-R7C Product editor** — next in [the Dashboard plan](DASHBOARD_REDESIGN_PLAN_2026-11-15.md):
-   one page with a sticky section list, one save row, Add product on the same layout, Scan item and
-   Serialized details on the kit. Follow AGENTS.md and the product safety docs
-   ([save](product-save-safety.md), [editor](product-editor-safety.md), [media](media-safety.md),
-   [listing](product-listing.md)). Show screenshots (EN/AR, light/dark, phone/desktop) before asking for a release.
-2. Then DASH-R7D (orders follow-ups), R7E (customers), R7F (search and polish), per the plan.
+1. **DASH-R7C Product editor** — done as E417 (release77). The owner checks the live editor (Edit, Add, Scan item).
+2. Next: DASH-R7D (orders follow-ups), then R7E (customers), R7F (search and polish), per the plan.
 3. PDC-UNCERTAIN-01 follow-up: keep PDC's reply class when a booking ends uncertain.
 4. RESET-COVERAGE-01: system reset must cover the newer tables and functions (`private.auth_email_hook` too).
 5. DAFTRA-PDF-01: Daftra's own invoice PDF cannot be fetched by API.
@@ -92,18 +89,18 @@ Nothing from this session is pushed. Pushing needs the owner to ask.
    `dashboard-access` 1, `dashboard-reads` 1, `daftra-erp-database` 2, `quick-setup-progress` 1,
    `system-reset-compatibility` 8, `system-reset-database` 12; `private-packing-videos` needs ffmpeg.
 7. Unknown until the first real card cancel: whether Daftra deletes an invoice that still has a payment.
-8. The wallet switch (`wallet-switch-e399`) must read `../release76` and expect schema 156 before its next use.
+8. The wallet switch (`wallet-switch-e399`) must read `../release77` and expect schema 156 before its next use.
 
 ## 5. How releases work
 
-App code: `../product-modern-20261107/source`. Work in a worktree branch (for example `work-dash-io`, now on
-branch `google-button` at `a198ba6`); start new work from `product-modern`.
+App code: `../product-modern-20261107/source`. Work in a worktree branch (for example `work-dash-r7c`, now on
+branch `dash-r7c-editor` at `4e21295`); start new work from `product-modern`.
 
-**App-only release** (copy `release-tools/make-release76.py` and `build-release76.sh` as release77:
-predecessor `c2a271c8f5c008f0`, base `a198ba6`, previous artifact `release76/artifact`, schema 156):
+**App-only release** (copy `release-tools/make-release77.py` and `build-release77.sh` as release78:
+predecessor `655cb98159cf8328`, base `4e21295`, previous artifact `release77/artifact`, schema 156):
 
-1. `release-tools/build-release77.sh <full commit>` (generate scripts, typecheck, build, package).
-2. In `release77/`: `node qualify.mjs run first` → `COMPILED_RETAINED_ARTIFACT_PASS`.
+1. `release-tools/build-release78.sh <full commit>` (generate scripts, typecheck, build, package).
+2. In `release78/`: `node qualify.mjs run first` → `COMPILED_RETAINED_ARTIFACT_PASS`.
 3. `node operator.mjs prepare`, `check`, `approve '<owner words>'`, `apply`, `verify` (twice: the second
    after the next natural monitor run, every 5 minutes).
 4. Fast-forward `product-modern`, then update the roadmap, both handoffs, the continuation brief and the plan.
@@ -124,8 +121,9 @@ Rules:
   then one SIGUSR1. A Caddy change after `prepare` breaks that release's verify.
 
 Node: `/Users/imac/Documents/ELcomputer/procurement-postgrest-correction-20261018/tools/node-v22.23.1-darwin-x64/bin/node`.
-Browser tests need `COD_REVIEW_PLAYWRIGHT` and a built CSS folder (for example `release76/source/.output/public/_nuxt`);
-see the private notes. Running `run-suite` kills the shared test database (`pkill -f email-audit-pg`), so do not
+Browser tests need `COD_REVIEW_PLAYWRIGHT` and a built CSS folder (for example `release77/source/.output/public/_nuxt`);
+see the private notes. Run them, and the operator steps that reach the server, with the command sandbox off: Chrome
+does not start inside it. macOS has no `timeout`; use `node --test --test-timeout=...`. Running `run-suite` kills the shared test database (`pkill -f email-audit-pg`), so do not
 run it while another suite runs.
 
 ## 6. Owner rules and preferences

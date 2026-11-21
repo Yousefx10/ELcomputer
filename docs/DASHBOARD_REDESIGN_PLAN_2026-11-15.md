@@ -4,7 +4,7 @@ The owner asked for a complete redesign of the Dashboard: look, UX, logic and mi
 This plan checks what the first plan ([DASHBOARD_REFRESH_PLAN_2026-11-09.md](DASHBOARD_REFRESH_PLAN_2026-11-09.md))
 delivered, lists what is left, and proposes the next releases. Each release needs the owner's OK.
 
-Live now: release76 `c2a271c8f5c008f0`, commit `a198ba6`, schema 156 (E416 Google button dark-mode fix, after E415 Google's own sign-in button). DASH-R7B (Settings pages) is live as E411. The owner put sign-in switches, email templates and order cancellation (E412 entry) before DASH-R7C. DASH-R7A (Payments and alerts, option A) is live as E408;
+Live now: release77 `655cb98159cf8328`, commit `4e21295`, schema 156 (E417 one-page product editor, DASH-R7C). DASH-R7B (Settings pages) is live as E411. The owner put sign-in switches, email templates and order cancellation (E412 entry) before DASH-R7C. DASH-R7A (Payments and alerts, option A) is live as E408;
 "Check with Paymob" waits for a legacy Paymob API key on the server.
 
 ## 1. What is done (live)
@@ -23,6 +23,7 @@ Live now: release76 `c2a271c8f5c008f0`, commit `a198ba6`, schema 156 (E416 Googl
 | Menu redesign (group opens its first page), Settings menu on every Settings page, seamless page changes, Quick Setup rebuilt | E406, E407 |
 | Payments rebuilt around open cases, alerts bell (DASH-R7A) | E408 |
 | Settings pages on the kit, one save bar per page, logo checkerboard (DASH-R7B, DASH-LOGO-01) | E411 |
+| Product editor and Add product on one page, Scan item unit on the kit (DASH-R7C) | E417 |
 
 ## 2. What is not done
 
@@ -32,9 +33,9 @@ Live now: release76 `c2a271c8f5c008f0`, commit `a198ba6`, schema 156 (E416 Googl
   Order flow, Bill design, After-sales policies, Shipping and delivery, Live Chat settings, Team (admin users),
   ERP connection, Activity log, Reset system.
 - **Payments page and Payment monitoring** (see section 4).
-- **Product editor** (`products/edit/[id]`) and **Add product**: about 7,900 px tall, many save buttons.
+- **Product editor** and **Add product**: done in E417 (DASH-R7C). Was: about 7,900 px tall, many save buttons.
 - **Returns and claims** (Returns tab and the after-sales Center, Detail and Communication settings).
-- **CRM Calls and tickets** tab and **Scan item** details.
+- **CRM Calls and tickets** tab. (**Scan item** details: done in E417.)
 - **Dashboard login** page.
 
 ### 2.2 Logic and UX problems found
@@ -129,3 +130,43 @@ and the retry switch on one page.
   website's bill (now); or render Daftra's own layout HTML into a PDF on the server (needs a headless browser on the
   VPS); or send customers to Daftra's client portal (needs a Daftra login).
 - Evidence (no secrets, no invoice content): `daftra-pdf-recheck-20261115/` outside the repo.
+
+## 6. DASH-R7C Product editor: plan (21 November)
+
+Branch `dash-r7c-editor` from `product-modern` `a198ba6`, worktree `../work-dash-r7c`. App only: no API,
+database or save-contract change. Files: `products/edit/[id].vue`, `products/add.vue`, the editor parts
+(selling status, warranty, options, SEO, specifications, presentation, family) and the scanned unit in Scan item.
+
+**Layout.**
+- Header panel: main image, title, Draft or Published, SKU, price; Back, Duplicate, View in store.
+- Section list: sticky beside the page from 1024 px (like the Settings menu), a scrolling row under the top
+  bar on phones. It marks the section in view, a dot for unsaved input and a red dot for an error.
+  `?section=` opens a section; the old `?tab=` keys still work.
+- Product details block, one form and one save row: Details, Price and stock, Options (options and selling
+  status), Warranty, Visibility (Draft or Published cards), Search engines.
+- Save row: kept at the bottom of the screen while the product details block is in view. Status, Check save
+  and Reload when needed, Save changes. Other sections with unsaved input show as links.
+- Separate saves: Gallery, Specifications and Presentation as kit panels, each with its own status and save.
+- Delete product in a danger panel at the end (or the item-history note).
+- Add product: same header, list and block; Create draft. Gallery, Specifications and Presentation open
+  after the draft exists.
+- Selling status, pre-order payment and warranty become option cards.
+- Scan item: the scanned unit, order, buyer, return form and history on kit panels.
+
+**Kept (product safety docs).** Same requests and payloads. One product details save (atomic RPC, revision,
+UUID receipt, conflict, Check save, Reload). Gallery, Specifications and Presentation keep their own saves,
+row checks and states; nothing claims an all-sections save. Every section stays mounted, so input survives.
+Leave guard, unload warning and prerequisite draft retention unchanged. Draft-first creation and required
+fields unchanged. Daftra read-only lines, viewer read-only. EN/AR, RTL, light/dark/system, 390 px.
+
+**Checks.** Rewrite `dashboard-product-editor-browser` for one page (input kept, one save with every main
+field, an error scrolls to and focuses its field, section links and dots, deep links, leave guard, Duplicate;
+EN/AR × light/dark × 390/1440), add an Add product check, update the source tests. Screenshots before release.
+
+**Done 21 November as E417.** Live as release77 `655cb98159cf8328` (commit `4e21295`, app only, schema 156). Added
+the section list (`EditorNav`), header (`EditorHead`), section wrapper (`EditorSection`), `useProductEditorSections`
+and `utils/productEditorSections.js`; Selling is its own section; Add has no Visibility section (always Draft).
+`docs/product-editor-safety.md` (app repo) describes the one page. Checks: typecheck and build,
+`dashboard-product-editor-browser` 25/25 (rewritten), `dashboard-items-browser` 22/22 (scanned unit added), source
+tests with only the known `ui-localization` failure. The old Codex-era `scripts/*-browser.mjs` harnesses (not in the
+suite) still expect the DASH-R5 markup in places. Next: DASH-R7D.

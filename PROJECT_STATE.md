@@ -9,10 +9,42 @@ website/database/provider access, import, deployment or push occurred.
 
 Earlier current-v3 exports have different plaintext digests and cannot replace
 the approved primary by filename/count alone. Catalog, core history and selected
-family imports remain consumed. E416 is the latest release: the Google button's dark-mode fix, live as release76 c2a271c8f5c008f0 (app only, schema 156). Before it, E415 (Google's own sign-in button on the login page, GOOGLE-BUTTON-01; on since 19 Nov 14:40 UTC, Google now names elcomputer.net; release75 30500193bb702bdb). Before it, E414 (order cancel, release74 03177fdbf9e6de8a, schema 156). Next: DASH-R7C (product editor). The wallet switch must now point at release76 and check schema 156. Before it, E413 (email templates, Supabase email hook, Google sign-in switch; release73 eb04b8939f536ec8, schema 155), E412 (bill logo, release72 110af678bd4a95e2), E411 (Settings pages redesign, release71 fe19492976b6d80f), E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
+family imports remain consumed. E417 is the latest release: the one-page product editor (DASH-R7C), live as release77 655cb98159cf8328 (app only, schema 156). Before it, E416 (the Google button's dark-mode fix, release76 c2a271c8f5c008f0). Before it, E415 (Google's own sign-in button on the login page, GOOGLE-BUTTON-01; on since 19 Nov 14:40 UTC, Google now names elcomputer.net; release75 30500193bb702bdb). Before it, E414 (order cancel, release74 03177fdbf9e6de8a, schema 156). Next: DASH-R7D (orders follow-ups). The wallet switch must now point at release77 and check schema 156. Before it, E413 (email templates, Supabase email hook, Google sign-in switch; release73 eb04b8939f536ec8, schema 155), E412 (bill logo, release72 110af678bd4a95e2), E411 (Settings pages redesign, release71 fe19492976b6d80f), E410 (Daftra stock refresh keeps an unknown cost empty; release70 7577f4da61249bbe, schema 154), E409 (Daftra jobs that need a person, shared Daftra products; release69 c01bc876e6ddfddd, schema 153), E408 (Payments rebuilt around open cases and the alerts bell, release68 b2e67e3585bb44ce, schema 153), E407 (store name in the menu, release67 5d9cd84582b451a7), E406 (menu, Settings menu, Quick Setup; release66 9f7526e3145e50a1), E405 (Meta Purchase for cash orders when placed, Sales report breakdown; release65 20b74d959d8fe18b, schema 152), E404 (customer account changes need users.manage, release64 323a3854a7d59f91, app only), E403 (Edit orders courier panel and the "no booking at PDC" release as release63 5ac5d29991c7e7a4, schema 150; TESTproduct2026 deleted; the 23 Oct test order completed), E402 (item tracking and the Hot offers look as release62 d556a53daca1bfac, schema 149), E401 (Meta tracking as release61 dda84e69ed01604a), E400 (Import / Export as release60 647ed8a54ca140c4), E399 (Paymob mobile wallets live as release59 9c2eff838f163fc9, schema 148; wallets closed again after Paymob refused the in_store UIG 5904481; waiting for an online UIG integration) and E398 (wallet with card and Apple Pay, coverage setting, old-password fix, full-delivery governorates, Daftra button route, green Hot offers live as release58 5827bfd63032aab4, schema 148). E397 put 513 old customers on the new site with 13 wallets (1,069 EGP); E396 was the plan. Start with docs/HANDOFF_2026-11-09.md;
 the earlier general Claude guide now points to it. Existing text/work is preserved.
 Next: Claude selects the requested missing content and performs a bounded offline
 projection before proposing any new, separately approved production delta.
+
+# E417 — ONE-PAGE PRODUCT EDITOR (DASH-R7C), LIVE as release77 655cb98159cf8328 (app only, schema 156) — 21 November 2026
+
+Owner: "Next task: DASH-R7C, the product editor redesign. Plan it first ... show me screenshots (EN/AR, light/dark,
+phone and desktop) before asking to release." After the screenshots: "Commit and build" (answer to "Ship the product
+editor redesign as release77?").
+
+**Change.** Commit `4e21295` (branch `dash-r7c-editor` from `a198ba6`). Not pushed. App only.
+- Edit and Add product are one page: a header (main image, title, Draft or Published, price, SKU; Back, Duplicate,
+  View in store), a section list (sticky beside the page from 1024 px, a chip row on phones; a dot for unsaved input,
+  red for an error) and one save row for product details: Details, Price and stock, Options, Selling, Warranty,
+  Search engines, Visibility. Gallery, Specifications and Presentation keep their own saves after it; the save row
+  names them when they hold unsaved input. Nothing claims an all-sections save.
+- Option cards for selling status, pre-order payment, warranty coverage and unit, and Draft or Published. Add has no
+  Visibility section and still creates a Draft.
+- Errors scroll to and focus their field. `?section=` opens a section; old `?tab=` links still work.
+- Scan item: the scanned unit, its order, buyer, return form and history on kit panels.
+- Same requests and payloads; no server or database change. `docs/product-editor-safety.md` (app repo) updated.
+
+**Checks.** Typecheck and build pass. `dashboard-product-editor-browser` rewritten for the one page (25 pass: Edit and
+Add in EN/AR, light/dark, 390/1440; errors, deep links, leave guard, Duplicate, Daftra read-only lines).
+`dashboard-items-browser` 22 pass (scanned unit added). Source tests: only the known `ui-localization` failure.
+Browser tests need the command sandbox off (Chrome does not start inside it).
+
+**Release (21 Nov, 10:26–10:44 UTC).** `make-release77.py` (release61's app-only scripts; predecessor
+`c2a271c8f5c008f0`, base `a198ba6`, previous artifact `release76/artifact`). Qualify `COMPILED_RETAINED_ARTIFACT_PASS`
+(15819 assets, 19 API checks); preflight passed 10:31; `E417_INSTALLED` 10:33:46 (one restart, pause 4.7 s, no
+provider calls); verify `E417_AWAITING_NATURAL_MON` 10:34:06, `E417_INSTALLED_NATURAL_MON_PASS` 10:44:14
+(`PRESERVED_SCHEMA156`). Claude did not open the live editor (the browser pane is not signed in); the owner checks it.
+Source `product-modern` fast-forwarded to `4e21295`.
+
+**Rollback.** Point `current` at release76 `c2a271c8f5c008f0` and restart; no database change.
 
 # E416 — GOOGLE BUTTON DARK-MODE FIX (GOOGLE-BUTTON-01), LIVE as release76 c2a271c8f5c008f0 (app only, schema 156) — 21 November 2026
 
