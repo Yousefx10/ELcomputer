@@ -1,5 +1,7 @@
 # ELcomputer: full continuation brief for a new computer or a new Claude account (12 November 2026)
 
+Newest session brief (21 Nov 2026, E411–E416 and what is open): [SESSION_HANDOFF_2026-11-21.md](SESSION_HANDOFF_2026-11-21.md).
+
 This file is written so that a new Claude session (or a developer) can continue the ELcomputer work
 without the earlier conversations. It describes two Claude Code conversations that ran on the owner's
 Mac between 9 and 12 November 2026, the mission of each, everything they did, what is still on the
